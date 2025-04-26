@@ -1,0 +1,76 @@
+/* Estilos generales */
+.supervisor-container {
+    margin-left: 20%;
+    width: 80%;
+    padding: 10px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+  }
+  
+  .supervisor-title {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+  
+  /* Contenedor de paneles */
+  .panels-container {
+    display: flex;
+    gap: 10px; /* Espacio entre paneles */
+    width: 100%;
+    box-sizing: border-box; /* Incluye padding en el cálculo del ancho */
+  }
+  
+  /* Panel principal (70%) */
+  .panel-main {
+    flex: 0 0 calc(70% - 5px); /* 70% del contenedor menos la mitad del gap */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    height:100vh; /* Altura ajustable */
+
+  }
+  
+  /* Panel secundario (30%) */
+  .panel-side {
+    flex: 0 0 calc(30% - 5px); /* 30% del contenedor menos la mitad del gap */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    height: 100vh; /* Misma altura que el panel principal */
+  }
+  
+  /* Títulos de los paneles */
+  .panel-title {
+    color: #34495e;
+    font-size: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+  }
+  
+  /* Contenido de los paneles */
+  .panel-content {
+    height: calc(100% - 40px); /* Ajuste para el título */
+    overflow-y: auto;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .panels-container {
+      flex-direction: column;
+    }
+    
+    .panel-main,
+    .panel-side {
+      flex: 0 0 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+  }

@@ -1,0 +1,263 @@
+/* doctor.css - Estilos para el panel del doctor */
+
+/* Estilos generales */
+
+/* Panel de citas - Grid Layout */
+.doctor-container {
+  margin-left: 20%;
+  width: 80%;
+  padding: 10px 30px 0 30px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color:rgb(187, 218, 236);
+
+}
+
+/* Grid específico para el panel de doctor */
+.doctor-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  background: transparent !important; /* Anula el gradient */
+  padding: 0;
+  margin: 0;
+}
+
+.panel-title {
+  text-align: center;
+  margin: 20px 0;
+  color:rgb(40, 119, 76);
+  font-size: 1.5rem;
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+/* Cards de citas */
+.drcard-material {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: all 0.3s ease;
+  border-left: 4px solid;
+  /* Eliminamos cualquier flex que pueda heredar */
+  display: block;
+  margin: 0;
+}
+
+/* Colores de borde según estado */
+.drcard-material[data-estado="en espera"] {
+  border-left-color: #4299E1; /* Azul */
+}
+
+.drcard-material[data-estado="en consulta"] {
+  border-left-color: #F6AD55; /* Ámbar */
+}
+
+.drcard-material[data-estado="atendido"] {
+  border-left-color: #48BB78; /* Verde */
+}
+
+.drcard-material:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.drcard-material h3 {
+  margin: 0 0 10px 0;
+  color: #2D3748;
+  font-size: 1.2rem;
+}
+
+.drcard-material p {
+  margin: 5px 0;
+  color: #4A5568;
+  font-size: 0.95rem;
+}
+
+.drcard-material p strong {
+  color: #2D3748;
+}
+
+/* Botones de acción */
+.drcard-material button {
+  margin-top: auto;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.drcard-material button[data-action="atender"] {
+  background-color: #4299E1;
+  color: white;
+}
+
+.drcard-material button[data-action="finalizar"] {
+  background-color: #48BB78;
+  color: white;
+}
+
+.drcard-material button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.drcard-material button:active {
+  transform: translateY(0);
+}
+
+/* Indicador de estado */
+.estado-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.estado-programado {
+  background-color: #EBF8FF;
+  color: #2B6CB0;
+}
+
+.estado-en-consulta {
+  background-color: #FFFAF0;
+  color: #C05621;
+}
+
+/* Mensaje cuando no hay citas */
+.no-citas-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #718096;
+  background-color: #F8FAFC;
+  border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .doctor-panel {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.drcard-material {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilo para tarjetas de emergencia */
+.drcard-material.emergency-card {
+  position: relative;
+  background: #fff5f5;
+  border-left-color: #f56565 !important; /* Rojo para emergencias */
+  animation: pulseEmergency 1.5s infinite;
+}
+
+/* Borde rojo fuerte para emergencias */
+.drcard-material.emergency-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #f56565;
+}
+
+/* Estilo para el badge de estado en emergencias */
+.drcard-material.emergency-card .estado-badge {
+  background-color: #fff5f5;
+  color: #c53030;
+  font-weight: bold;
+}
+
+/* Asegurar que los botones se vean bien en emergencias */
+.drcard-material.emergency-card button {
+  background-color: #f56565 !important;
+  color: white !important;
+}
+
+/* Icono de emergencia (opcional) */
+.drcard-material.emergency-card h3::after {
+  content: '🚨';
+  margin-left: 8px;
+}
+
+/* Animación de parpadeo para emergencias */
+@keyframes pulseEmergency {
+  0% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(245, 101, 101, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0); }
+}
+
+.doctor-selection {
+  margin-top: 1rem;
+}
+
+.doctor-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+/* Estilo para cuando ya está en consulta */
+[data-estado="en consulta"] .doctor-selection {
+  display: none;
+}
+
+/* Estilos para la información de tiempo */
+.time-info {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0.25rem 0;
+  padding-top: 0.25rem;
+  border-top: 1px dashed #eee;
+}
+
+.time-info strong {
+  color: #333;
+}
+
+/* Estilos para el botón de finalizar */
+.finalizar-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.finalizar-button:hover {
+  background-color: #388E3C;
+}
+
+/* Estilos para doctor asignado */
+.doctor-assigned {
+  font-size: 0.9rem;
+  color: #2c3e50;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.action-buttons {
+  margin-top: 1rem;
+}

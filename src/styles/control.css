@@ -1,0 +1,415 @@
+.admin-container {
+  margin-left: 20%;
+  width: 80%;
+  padding: 10px 30px 0 30px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color:rgb(187, 218, 236);
+  }
+  
+  .admin-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 24px 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .admin-table th {
+    background-color: #1976d2;
+    color: white;
+    font-weight: 500;
+    padding: 16px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .admin-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .admin-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .admin-clickable-row {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .admin-clickable-row:hover {
+    background-color: rgba(25, 118, 210, 0.04);
+  }
+  
+  .admin-clickable-row:active {
+    background-color: rgba(25, 118, 210, 0.08);
+  }
+
+  /* Efecto de elevación al hacer hover */
+.admin-clickable-row:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+  .admin-tabs {
+    width: 100%;
+    display: flex;
+    gap: 1px;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .admin-tabs button {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background-color: #a1a2a6;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .admin-tabs button:hover {
+    background-color: #698ee4;
+  }
+  
+  .admin-tabs button.activo {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    font-weight: bold;
+  }
+  
+  /* MODAL TABLA */
+  .medl-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: medl-fadeIn 0.3s ease-out;
+  }
+  
+/* Contenedor del modal */
+.medl-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+/* Animaciones */
+@keyframes medl-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes medl-slideUp {
+  from { transform: translateY(20px); }
+  to { transform: translateY(0); }
+}
+  
+/* Encabezado */
+.medl-modal-header {
+  padding: 10px;
+  background: #1976d2;
+  color: white;
+}
+
+.medl-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: white;
+}
+
+/* Contenido */
+.medl-modal-content {
+  padding: 20px;
+}
+
+.medl-modal-content p {
+  margin: 0 0 15px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.medl-modal-content strong {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+/* Formulario */
+.medl-form-group {
+  margin-bottom: 20px;
+}
+
+.medl-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+.medl-form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border 0.3s ease;
+}
+
+.medl-form-group select:focus {
+  border-color: #1976d2;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.medl-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.medl-checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #1976d2;
+}
+
+/* Botones */
+.medl-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.medl-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.medl-btn-primary {
+  background-color: #1976d2;
+  color: white;
+}
+
+.medl-btn-primary:hover {
+  background-color: #1565c0;
+}
+
+.medl-btn-secondary {
+  background-color:rgb(155, 155, 155);
+  color: white;
+}
+
+.medl-btn-secondary:hover {
+  background-color:rgb(100, 97, 97);
+  color:white;
+}
+
+.medl-btn-danger {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.medl-btn-danger:hover {
+  background-color: #b71c1c;
+}
+  
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-table thead {
+      display: none;
+    }
+  
+    .admin-table, .admin-table tbody, .admin-table tr, .admin-table td {
+      display: block;
+      width: 100%;
+    }
+  
+    .admin-table tr {
+      margin-bottom: 1rem;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+  
+    .admin-table td {
+      padding: 0.5rem 0;
+      border: none;
+    }
+  
+    .admin-table td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: block;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-tabs {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .admin-tabs button {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+
+  /* MODAL ADD USER*/
+  /* Overlay - Puedes reutilizar el mismo del modal anterior */
+.medl-add-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: medl-fadeIn 0.3s ease-out;
+}
+
+/* Contenedor del modal */
+.medl-add-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Encabezado */
+.medl-add-modal-header {
+  padding: 10px;
+  background: #2e7d32; /* Verde para diferenciar de edición */
+  color: white;
+}
+
+.medl-add-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color:white;
+}
+
+/* Contenido del formulario */
+.medl-add-modal-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.medl-add-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medl-add-form-group label {
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.medl-add-form-control {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.medl-add-form-control:focus {
+  border-color: #2e7d32;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+}
+
+/* Botones */
+.medl-add-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.medl-add-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.medl-add-btn-cancel {
+  background-color:rgb(194, 48, 48);
+  color: white;
+}
+
+.medl-add-btn-cancel:hover {
+  background-color:rgb(141, 33, 33);
+}
+
+.medl-add-btn-submit {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.medl-add-btn-submit:hover {
+  background-color: #1b5e20;
+}
+
+/* Validación */
+.medl-add-form-error {
+  color: #d32f2f;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}

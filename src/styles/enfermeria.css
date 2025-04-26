@@ -1,0 +1,291 @@
+
+.enfermeria-container {
+  margin-left: 20%;
+  width: 80%;
+  padding: 10px 30px 0 30px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color:rgb(187, 218, 236);
+}
+
+.enfermeria-title {
+  background-color: #e2e8f0; /* gris claro suave */
+  color: #2c5282;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+    
+.custom-tabs {
+  margin: 20px 0;
+}
+
+.tab-list {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto; /* Permite scroll si no caben */
+  scrollbar-width: none; /* Oculta scrollbar en Firefox */
+}
+
+.tab-item {
+  flex:1;
+  text-align:center;
+  padding: 12px 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+  margin-right: 5px;
+  border-radius: 5px 5px 0 0;
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #555;
+  position:relative;
+  margin-right:0;
+  border-right: 1px solid #ddd; /* Línea divisoria entre tabs */
+  min-width: fit-content; /* Evita que se compriman demasiado */
+  white-space: nowrap; /* Evita saltos de línea */
+}
+
+.tab-item:last-child {
+  border-right: none; /* Elimina borde del último tab */
+}
+
+.tab-item:hover {
+  background-color: #e0e0e0;
+}
+
+.tab-item--selected {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #ddd;
+  border-bottom-color: transparent;
+  position: relative;
+}
+
+.tab-item--selected::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #4CAF50;
+}
+
+.tab-panel {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+    .panel-pendientes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        width: 100%;
+        background-color: white;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 0;
+      }
+      
+      .panel-pendientes h2 {
+        text-align: center;
+        margin: 20px 0;
+        color: #2c5282;
+        font-size: 1.5rem;
+        width: 100%;
+        grid-column: 1 / -1;
+      }
+      
+      /* Cards de citas */
+      .item-cita {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+        /* Eliminamos cualquier flex que pueda heredar */
+        display: block;
+        margin: 0 0 15px 0; /* Añadido margen inferior */
+      }
+
+      .item-cita p {
+        margin: 5px 0;
+        color: #4A5568;
+        font-size: 0.95rem;
+      }
+      
+      .item-cita p strong {
+        color: #2D3748;
+      }
+      .item-cita:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+/* Estilo para emergencias */
+.item-cita.emergency {
+  background: #fff9f9;
+  box-shadow: 0 4px 6px rgba(255, 0, 0, 0.1);
+  animation: pulse-border 2s infinite;
+}
+
+/* Tag de emergencia */
+.emergency-tag {
+  background: #ff3d3d;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Animación sutil para el borde */
+@keyframes pulse-border {
+  0% { border-left-color: #ff3d3d; }
+  50% { border-left-color: #ff8a8a; }
+  100% { border-left-color: #ff3d3d; }
+}
+
+      .panel-programadas {
+        width: 100%;
+        max-width: 1000px;
+        padding: 30px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 10px;
+      }
+
+      .panel-consulta {
+        width: 100%;
+        max-width: 1000px;
+        padding: 30px;
+        margin: 0 auto;
+      }
+
+      .panel-checkin {
+        width: 100%;
+        max-width: 1000px;
+        padding: 10px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 10px;
+      }
+
+      .panel-checkin h2 {
+        text-align: center;
+        margin: 20px 0;
+        color: #2c5282;
+        font-size: 1.5rem;
+        width: 100%;
+        grid-column: 1 / -1;
+      }
+
+      .lista-checkin {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        width: 100%;
+        background: transparent !important; /* Anula el gradient */
+        padding: 0;
+        margin: 0;
+      }
+      
+      .item-checkin {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+        /* Eliminamos cualquier flex que pueda heredar */
+        display: block;
+        margin: 0;
+      }
+
+      .checkin-time {
+        font-size: 0.85rem;
+        color: #555;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px dashed #eee;
+      }
+      
+      .checkin-time span {
+        font-weight: bold;
+        color: #333;
+      }
+      
+      .turno-num {
+        font-weight: bold;
+        color: #2c5282;
+      }
+
+      @media (max-width: 768px) {
+        .enfermeria-container {
+          margin-left: 0;
+          width: 100%;
+          padding-top: 70px;
+          align-items: stretch; /* o center según prefieras */
+        }
+    
+        .enfermeria-title {
+          margin-top: 10px;
+        }
+
+        .tab-list {
+          display: flex;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 8px; /* Espacio para scroll */
+        }
+        
+        .tab-item {
+          flex: 0 0 auto; /* Tamaño según contenido */
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+      }
+
+      /* Estilo para tarjetas con orden 0 */
+      .emergency-card {
+        background-color: #fff0f0;
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255, 61, 61, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(255, 61, 61, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 61, 61, 0); }
+      }
+
+      .emergency-tag {
+        background-color:rgba(238, 69, 69, 0.89);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        margin-right: 8px;
+      }
+      
+      .priority-text {
+        color: #ff3d3d;
+        font-weight: bold;
+        margin-left: 8px;
+      }
