@@ -61,6 +61,7 @@ export default function ConsultaCita({ citas }) {
               <th>Motivo</th>
               <th>Fecha</th>
               <th>Estado</th>
+              <th>Cita</th>
             </tr>
           </thead>
           <tbody>
@@ -75,13 +76,20 @@ export default function ConsultaCita({ citas }) {
                       hour12: true,
                       hour: '2-digit',
                       minute: '2-digit',
-                      second: '2-digit',
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
                     })}
                   </td>
                   <td>{cita.estado}</td>
+                  <td>{new Date(cita.programmer_at).toLocaleString('es-MX', {
+                      hour12: true,
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}</td>
                 </tr>
               ))
             ) : (

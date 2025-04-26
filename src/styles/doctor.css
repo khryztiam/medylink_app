@@ -144,6 +144,12 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
+  .doctor-container {
+    margin-left: 0;
+    width: 100%;
+  }
+
   .doctor-panel {
     grid-template-columns: 1fr;
   }
