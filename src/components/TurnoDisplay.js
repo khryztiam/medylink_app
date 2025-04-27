@@ -8,14 +8,12 @@ export default function TurnoVisual() {
   const [showWaiting, setShowWaiting] = useState(false); // 👈 Nuevo estado
   const { logout } = useAuth();
 
-  const fetchCitaEnConsulta = async () => {
+  const fetchCitasEnConsulta = async () => {
     const { data, error } = await supabase
       .from('citas')
       .select('*')
       .eq('estado', 'en consulta')
-      .order('programmer_at', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+      .order('programmer_at', { ascending: true });
 
     if (error) {
       console.error(error);
@@ -23,8 +21,8 @@ export default function TurnoVisual() {
       return;
     }
 
-    if (data && Object.keys(data).length > 0) {
-      setCitaActual(data);
+    if (data && data.length > 0) {
+      setCitaActual(data[0]); // Mostrar solo el primer turno en "en consulta"
       setShowWaiting(false);
     } else {
       setCitaActual(null);
@@ -33,8 +31,8 @@ export default function TurnoVisual() {
   };
 
   useEffect(() => {
-    fetchCitaEnConsulta();
-  
+    fetchCitasEnConsulta();
+
     const canal = supabase
       .channel('supabase_realtime')
       .on(
@@ -43,21 +41,20 @@ export default function TurnoVisual() {
         (payload) => {
           const newEstado = payload.new?.estado;
           const oldEstado = payload.old?.estado;
-  
+
           // Si el estado cambia a "en consulta", actualiza el turno actual
           if (newEstado === 'en consulta' || oldEstado === 'en consulta') {
-            fetchCitaEnConsulta();
+            fetchCitasEnConsulta();
           }
-  
-          // Cuando el estado se cambia a "atendido" o "finalizado", eliminar la cita
+
+          // Si el estado cambia a "atendido" o "finalizado", revisamos si hay otro turno activo
           if (newEstado === 'atendido' || newEstado === 'finalizado') {
-            setCitaActual(null);  // Elimina la cita actual
-            setShowWaiting(true);  // Muestra el mensaje de espera
+            fetchCitasEnConsulta();  // Verifica si queda alguna cita en consulta
           }
         }
       )
       .subscribe();
-  
+
     return () => supabase.removeChannel(canal);
   }, []);
 
@@ -78,7 +75,7 @@ export default function TurnoVisual() {
     <div className="turno-visual-container">
       <button 
         onClick={handleLogout}
-        className="fullscreen-button"
+        className="turno-salir"
       >
         <FaSignOutAlt />
       </button>
@@ -98,12 +95,12 @@ export default function TurnoVisual() {
           </div>
 
           <div className="turno-details">
-            <div className="detail-item">
+          {/*  <div className="detail-item">
               <FaClock className="detail-icon" />
               <span className="detail-label">Hora:</span>
               <span className="detail-value">{formatoHora}</span>
             </div>
-
+          */}
             <div className="detail-item">
               <FaInfoCircle className="detail-icon" />
               <span className="detail-label">Estado:</span>
