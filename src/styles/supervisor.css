@@ -1,87 +1,154 @@
 /* Estilos generales */
 .supervisor-container {
-    margin-left: 20%;
-    width: 80%;
-    padding: 10px 30px 0 30px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color:rgb(187, 218, 236);
-  }
-  
-  .supervisor-title {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
-    font-weight: 600;
-  }
-  
-  /* Contenedor de paneles */
-  .panels-container {
-    display: flex;
-    gap: 10px; /* Espacio entre paneles */
-    width: 100%;
-    box-sizing: border-box; /* Incluye padding en el cálculo del ancho */
-  }
-  
-  /* Panel principal (70%) */
-  .panel-main {
-    flex: 0 0 calc(70% - 5px); /* 70% del contenedor menos la mitad del gap */
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    height:100vh; /* Altura ajustable */
+  margin-left: 20%;
+  width: 80%;
+  padding: 10px 30px 0 30px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color:rgb(187, 218, 236);
+}
 
+.title {
+  background-color: #e2e8f0; /* gris claro suave */
+  color: #2c5282;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+/* Contenedor de paneles */
+.panels-container {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin:20px 0;
+}
+
+/* Panel principal (70%) */
+.panel-main {
+  flex: 1 1 70%;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  min-height: 300px; /* Altura mínima razonable */
+  max-height: calc(100vh - 200px); /* Altura máxima basada en viewport */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Panel secundario (30%) */
+.panel-side {
+  flex: 1 1 30%;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-height: 300px;
+  max-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Títulos de los paneles */
+.panel-title {
+  color: #34495e;
+  font-size: 22px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+/* Contenido de los paneles */
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Cards de resumen */
+.summary-cards {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  background-color:rgb(89, 66, 192);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.summary-card h3 {
+  margin: 0 0 10px 0;
+  color:rgb(252, 252, 252);
+  font-size: 18px;
+}
+
+.summary-card p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color:rgb(224, 255, 110);
+}
+
+/* Lista de citas */
+.citas-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.citas-list li {
+  background: #ecf0f1;
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #2c3e50;
+}
+
+.citas-list li strong {
+  color: #2980b9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .supervisor-container {
+    margin-left: 0;
+    width: 100%;
   }
-  
-  /* Panel secundario (30%) */
+
+  .title {
+    width: 100%;
+    font-size: 24px;
+  }
+
+  .panels-container {
+    margin-top:20px;
+    flex-direction: column;
+  }
+
+  .panel-main,
   .panel-side {
-    flex: 0 0 calc(30% - 5px); /* 30% del contenedor menos la mitad del gap */
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    height: 100vh; /* Misma altura que el panel principal */
+    flex: 0 0 100%;
+    height: auto;
+    margin-bottom: 20px;
   }
-  
-  /* Títulos de los paneles */
-  .panel-title {
-    color: #34495e;
-    font-size: 20px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ecf0f1;
+
+  .summary-cards {
+    flex-direction: column;
   }
-  
-  /* Contenido de los paneles */
-  .panel-content {
-    height: calc(100% - 40px); /* Ajuste para el título */
-    overflow-y: auto;
-  }
-  
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .supervisor-container {
-      margin-left:0;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-  
-    }
-    
-    .supervisor-title {
-      width:100%;
-    }
-    .panels-container {
-      flex-direction: column;
-    }
-    
-    .panel-main,
-    .panel-side {
-      flex: 0 0 100%;
-      height: auto;
-      margin-bottom: 20px;
-    }
-  }
+}

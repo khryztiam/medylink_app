@@ -252,6 +252,11 @@
 
   /* Responsive */
   @media (max-width: 768px) {
+    .admin-container {
+      margin-left: 0;
+      width: 100%;
+      }
+
     .admin-table thead {
       display: none;
     }

@@ -254,7 +254,10 @@ export default function Enfermeria() {
   return (
     <div className="enfermeria-container">
       <h1 className="enfermeria-title">Gestión de Citas</h1>
-
+      <div className="enf-card">
+          {/* eslint-disable @next/next/no-img-element */}
+          <img src="/banner_enfermeria.png" alt="banner" className='enf-card-banner' loading='eager' decoding='sync'/>
+      </div>
       {/* Tabs con React */}
       <Tabs className={`custom-tabs ${isMobile ? 'mobile-view' : ''}`}>
         <TabList className="tab-list">
@@ -424,34 +427,50 @@ export default function Enfermeria() {
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Reprogramar o cancelar cita"
+        className='prog-modal'
+        overlayClassName='prog-modal-overlay'
+        closeTimeoutMS={300}
       >
+        <div className='prog-modal-header'>
         <h2>Reprogramar / Cancelar</h2>
+        </div>
         {selected && (
-          <form onSubmit={handleReprogram}>
-            <div>
-              <label>Nombre: <strong>{selected.nombre}</strong></label>
+          <form onSubmit={handleReprogram} className='prog-modal-content'>
+            <div className='prog-from-group'>
+              <label htmlFor='nombre'>Nombre: <strong>{selected.nombre}</strong></label>
             </div>
             <div>
               <label>Motivo: <strong>{selected.motivo}</strong></label>
             </div>
-            <div className="material-group">
+            <div className="prog-form-group">
               <FechaHoraInput
                 value={nuevaFechaHora}
                 onChange={setNuevaFechaHora}
               />
             </div>
+          <div className='prog-modal-actions'>
             <button
               type="button"
               onClick={handleCheckIn}
-              style={{ background: '#4caf50', marginTop: '1rem' }}
+              className='prog-btn prog-btn-primary'
             >
               Check-in (asignar turno)
             </button>
-            <button type="submit">Confirmar reprogramación</button>
-            <button type="button" onClick={handleCancel} style={{ background: '#e53935' }}>Cancelar cita</button>
+            <button 
+              type="submit" 
+              className='prog-btn prog-btn-secondary'>
+                Reprogramar cita
+            </button>
+            <button 
+              type="button" 
+              onClick={handleCancel} 
+              className='prog-btn prog-btn-danger'>
+                Cancelar cita
+            </button>
+           </div>
           </form>
         )}
-        <button onClick={closeModal} style={{ marginTop: '1rem' }}>Cerrar</button>
+        <button onClick={closeModal} >Cerrar</button>
       </Modal>
       <Modal 
         isOpen={isNuevaCitaModalOpen}
