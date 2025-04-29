@@ -48,6 +48,11 @@ export default function Enfermeria() {
     setProgramadas(prog)
   }
 
+  function reproducirSonidoNuevaCita() {
+    const audio = new Audio('/nueva_cita.mp3'); // Ruta de tu sonido
+    audio.play();
+  }
+
   useEffect(() => {
     load()
   }, [])
@@ -68,6 +73,7 @@ export default function Enfermeria() {
               if (yaExiste) {
                 return prev.map(c => c.id === cita.id ? cita : c);
               } else {
+                reproducirSonidoNuevaCita();
                 return [cita, ...prev];
               }
             });

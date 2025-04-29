@@ -4,7 +4,7 @@ export async function getCitas() {
   const { data, error } = await supabase
     .from('citas')
     .select('*')
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: false }); // cambiar a false para el orden
     if (error) {
         console.error('Error al obtener citas:', error);
         return []; // 👈 Muy importante: retornar array vacío si hay error

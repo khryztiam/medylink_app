@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { FaSignOutAlt, FaUserClock, FaClock, FaInfoCircle, FaUserMd } from 'react-icons/fa';
@@ -7,13 +7,18 @@ export default function TurnoVisual() {
   const [citaActual, setCitaActual] = useState(null);
   const [showWaiting, setShowWaiting] = useState(false); // 👈 Nuevo estado
   const { logout } = useAuth();
+  const audioRef = useRef(null); // 👈 usamos un ref para el sonido
+
+  useEffect(() => {
+    audioRef.current = new Audio('/turno_paciente.mp3');
+  }, []);
 
   const fetchCitasEnConsulta = async () => {
     const { data, error } = await supabase
       .from('citas')
       .select('*')
       .eq('estado', 'en consulta')
-      .order('programmer_at', { ascending: true });
+      .order('consultation_at', { ascending: false });
 
     if (error) {
       console.error(error);
@@ -38,18 +43,23 @@ export default function TurnoVisual() {
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'citas' },
-        (payload) => {
+        async (payload) => {
           const newEstado = payload.new?.estado;
           const oldEstado = payload.old?.estado;
 
           // Si el estado cambia a "en consulta", actualiza el turno actual
-          if (newEstado === 'en consulta' || oldEstado === 'en consulta') {
-            fetchCitasEnConsulta();
+          if (newEstado === 'en consulta' && oldEstado !== 'en consulta') {
+            reproducirSonidoConsulta();
           }
 
-          // Si el estado cambia a "atendido" o "finalizado", revisamos si hay otro turno activo
-          if (newEstado === 'atendido' || newEstado === 'finalizado') {
-            fetchCitasEnConsulta();  // Verifica si queda alguna cita en consulta
+          if (
+            newEstado === 'en consulta' ||
+            oldEstado === 'en consulta' ||
+            newEstado === 'atendido' ||
+            newEstado === 'finalizado'
+          ) {
+            // Siempre que cambia el estado importante, refresca
+            await fetchCitasEnConsulta();
           }
         }
       )
@@ -57,6 +67,14 @@ export default function TurnoVisual() {
 
     return () => supabase.removeChannel(canal);
   }, []);
+
+  const reproducirSonidoConsulta = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    }
+  };
 
   const formatoHora = citaActual?.programmer_at
     ? new Date(citaActual.programmer_at).toLocaleString('es-MX', {
