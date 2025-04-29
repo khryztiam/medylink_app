@@ -55,8 +55,7 @@ export default function TurnoVisual() {
           if (
             newEstado === 'en consulta' ||
             oldEstado === 'en consulta' ||
-            newEstado === 'atendido' ||
-            newEstado === 'finalizado'
+            newEstado === 'atendido'
           ) {
             // Siempre que cambia el estado importante, refresca
             await fetchCitasEnConsulta();

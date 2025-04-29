@@ -4,6 +4,7 @@
   width: 80%;
   padding: 10px 30px 0 30px;
   min-height: 100vh;
+  height: auto; /* Asegura que crezca si el contenido es mayor */
   display: flex;
   flex-direction: column;
   background-color:rgb(187, 218, 236);
@@ -29,6 +30,7 @@
   width: 100%;
   box-sizing: border-box;
   margin:20px 0;
+  flex: 1; /* Ocupa todo el espacio disponible */
 }
 
 /* Panel principal (70%) */
@@ -69,6 +71,7 @@
 .panel-content {
   flex: 1;
   overflow-y: auto;
+  min-height: 0; /* Permite que el contenido haga scroll */
 }
 
 /* Cards de resumen */
@@ -129,6 +132,9 @@
   .supervisor-container {
     margin-left: 0;
     width: 100%;
+    padding: 10px 15px; /* Padding reducido en móvil */
+    min-height: 100vh;
+    height: auto;
   }
 
   .title {
@@ -137,15 +143,18 @@
   }
 
   .panels-container {
-    margin-top:20px;
     flex-direction: column;
+    flex: 1;
+    margin-bottom: 20px;
+    gap: 15px;
   }
 
   .panel-main,
   .panel-side {
-    flex: 0 0 100%;
-    height: auto;
-    margin-bottom: 20px;
+    flex: 1 1 auto; /* Altura flexible */
+    width: 100%;
+    max-height: none; /* Elimina límite máximo */
+    min-height: 200px; /* Altura mínima reducida */
   }
 
   .summary-cards {

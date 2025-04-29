@@ -60,7 +60,10 @@ const Supervisor = () => {
     const { data, error } = await supabase
       .from('citas')
       .select('check_in, check_out')
-      .eq('estado', 'atendido');
+      .eq('estado', 'atendido')
+  // Filtramos para obtener solo citas atendidas hoy
+    .gte('check_in', hoyInicio.toISOString())
+    .lte('check_in', hoyFin.toISOString());
 
     if (error) {
       console.error('Error al calcular tiempo promedio:', error);
@@ -73,12 +76,25 @@ const Supervisor = () => {
     }
 
     const tiempos = data
-      .filter(cita => cita.check_in && cita.check_out)
+      .filter(cita => {
+      // Aseguramos que ambas fechas existan y sean del mismo día
+      if (!cita.check_in || !cita.check_out) return false;
+      
+      const inicio = new Date(cita.check_in);
+      const fin = new Date(cita.check_out);
+      // Verificamos que sean del mismo día
+      return inicio.toDateString() === fin.toDateString();
+    })
       .map(cita => {
         const inicio = new Date(cita.check_in);
         const fin = new Date(cita.check_out);
         return (fin - inicio) / 60000; // minutos
       });
+        // Si no hay tiempos válidos después del filtrado
+  if (tiempos.length === 0) {
+    setTiempoPromedio(null);
+    return;
+  }
 
     const promedio = tiempos.reduce((a, b) => a + b, 0) / tiempos.length;
     setTiempoPromedio(promedio.toFixed(1));

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
+
 export default function ConsultaCita({ citas }) {
   const { role, idsap } = useAuth()
   const [searchSAP, setSearchSAP] = useState('')
   const [filteredCitas, setFilteredCitas] = useState([])
+
 
   const esPaciente = role === 'paciente'
 
@@ -82,14 +84,17 @@ export default function ConsultaCita({ citas }) {
                     })}
                   </td>
                   <td>{cita.estado}</td>
-                  <td>{new Date(cita.programmer_at).toLocaleString('es-MX', {
+                  <td>
+                    {cita.programmer_at ?
+                    new Date(cita.programmer_at).toLocaleString('es-MX', {
                       hour12: true,
                       hour: '2-digit',
                       minute: '2-digit',
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
-                    })}</td>
+                      }): '' }
+                  </td>
                 </tr>
               ))
             ) : (

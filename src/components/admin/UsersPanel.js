@@ -27,19 +27,21 @@
     fetchUsers();
   },[]);
 
-    const handleUpdateUser = async (id, updatedUser) => {
+    const handleUpdateUser = async (id, { role, status }) => {
       try {
         const response = await fetch(`/api/admin/actualizarUser/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedUser),
+          body: JSON.stringify({ role, status }),
         });
 
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Error desconocido');
         alert('Usuario actualizado correctamente');
 
-        setUsers(prev => prev.map(user => user.id === id ? { ...user, ...updatedUser } : user));
+        setUsers(prev =>
+          prev.map(user => (user.id === id ? { ...user, role, status } : user))
+        );
       } catch (error) {
         alert('Error: ' + error.message);
       }
@@ -232,6 +234,7 @@
                     <option value="enfermeria">Enfermería</option>
                     <option value="doctor">Doctor</option>
                     <option value="admin">Administrador</option>
+                    <option value="turno">Administrador</option>
                   </select>
                 </div>
 
@@ -266,7 +269,10 @@
                 <button 
                   className="medl-btn medl-btn-primary"
                   onClick={() => {
-                    handleUpdateUser(selectedUser.id, selectedUser);
+                    handleUpdateUser(selectedUser.id, {
+                      role: selectedUser.role,
+                      status: selectedUser.status,
+                    });
                     setSelectedUser(null);
                   }}
                 >

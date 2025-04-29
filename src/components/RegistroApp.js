@@ -3,15 +3,19 @@ import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
 import Modal from 'react-modal';
 import Link from 'next/link';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 Modal.setAppElement('#__next');
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [idsap, setIdsap] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
 
@@ -22,6 +26,10 @@ export default function RegisterPage() {
     setError('');
 
     try {
+        // Validar que las contraseñas coincidan
+        if (password !== confirmPassword) {
+          throw new Error('Las contraseñas no coinciden');
+        }
       // Validar si el ID SAP ya está registrado
       const { data: existingUser } = await supabase
         .from('app_users')
@@ -88,6 +96,7 @@ export default function RegisterPage() {
     }
   };
 
+
   return (
     <div className="register-container">
       <div className='login-modal-header'>
@@ -106,14 +115,37 @@ export default function RegisterPage() {
         </div>
 
         <div className="material-group">
-          
           <input
-            type="password"
+            type={showPassword ? "text" : "password"} // Cambia el tipo según el estado
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder='Contraseña'
             required
           />
+          <button 
+            type="button" 
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+            >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
+
+        <div className="material-group">
+          <input
+             type={showConfirmPassword ? "text" : "password"} // Cambia el tipo según el estado
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder='Confirmar contraseña'
+            required
+          />
+          <button 
+              type="button" 
+              className="toggle-password"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </div>
 
         <div className="material-group">
@@ -148,3 +180,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+

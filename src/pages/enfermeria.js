@@ -23,10 +23,21 @@ export default function Enfermeria() {
     const [nuevaFechaHora, setNuevaFechaHora] = useState('')
     const [enEspera, setEnEspera] = useState([])
     const [isMobile, setIsMobile] = useState(false);
-    const [citas, setCitas] = useState([])
+    const [todasLasCitas, setTodasLasCitas] = useState([])
     const [miCita, setMiCita] = useState(null)
     const [mensaje, setMensaje] = useState('');
     const [tipoMensaje, setTipoMensaje] = useState('');
+
+    useEffect(() => {
+      const fetchTodasCitas = async () => {
+        const { data } = await supabase
+          .from('citas')
+          .select('*')
+          .order('created_at', { ascending: false });
+        setTodasLasCitas(data);
+      };
+      fetchTodasCitas();
+    }, []);
 
       // Detectar cambio de tamaño de pantalla
   useEffect(() => {
@@ -374,7 +385,7 @@ export default function Enfermeria() {
         <div className="material-group">
           <button onClick={openNuevaCitaModal}>Solicitar Cita</button>
         </div>
-          <ConsultaCita citas={[...pendientes, ...programadas]} />
+          <ConsultaCita citas={todasLasCitas} />
           {mensaje && (
           <div className={`mensaje-alerta ${tipoMensaje}`}>
             {mensaje}
