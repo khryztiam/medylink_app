@@ -14,6 +14,17 @@ export default async function handler(req, res) {
   const supabase = supabaseAdmin();
 
   try {
+    // Verificar si el usuario existe en 'app_users'
+    const { data: user, error: userError } = await supabase
+      .from('app_users')
+      .select('id')
+      .eq('id', id)
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
     // 1. Eliminar el usuario de la tabla 'app_users'
     const { error: deleteAppUserError } = await supabase
       .from('app_users')

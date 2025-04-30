@@ -13,39 +13,48 @@
       role: 'paciente',
       idsap: '',
     });
+    const [loading, setLoading] = useState(false);  // Estado de carga
 
-    useEffect(() =>{
+  // Cargar usuarios
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setLoading(true);
         const res = await fetch('/api/admin/listarUsers');
         const data = await res.json();
         setUsers(data);
       } catch (err) {
         console.error('Error cargando usuarios:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUsers();
-  },[]);
+  }, []);
 
-    const handleUpdateUser = async (id, { role, status }) => {
-      try {
-        const response = await fetch(`/api/admin/actualizarUser/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ role, status }),
-        });
+  // Función para actualizar el usuario
+  const handleUpdateUser = async (id, { role, status }) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/admin/actualizarUser`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, role, status }),
+      });
 
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Error desconocido');
-        alert('Usuario actualizado correctamente');
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error desconocido');
+      alert('Usuario actualizado correctamente');
 
-        setUsers(prev =>
-          prev.map(user => (user.id === id ? { ...user, role, status } : user))
-        );
-      } catch (error) {
-        alert('Error: ' + error.message);
-      }
-    };
+      setUsers(prev =>
+        prev.map(user => (user.id === id ? { ...user, role, status } : user))
+      );
+    } catch (error) {
+      alert('Error: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
     const handleDeleteUser = async (id) => {
       const confirmation = confirm("¿Estás seguro de que deseas eliminar este usuario?");
