@@ -53,7 +53,7 @@ export default function DoctorPanel({ citas, onAtender, onFinalizar }) {
                   defaultValue=""
                   onChange={(e) => e.target.value && onAtender(cita.id, e.target.value)}
                 >
-                  <option value="">Seleccione doctor...</option>
+                  <option value="">Seleccione medico...</option>
                   {doctors.map((doctor) => (
                     <option key={doctor} value={doctor}>
                       {doctor}

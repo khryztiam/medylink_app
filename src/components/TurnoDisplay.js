@@ -128,7 +128,7 @@ export default function TurnoVisual() {
 
             <div className="detail-item">
               <FaUserMd className="detail-icon" />
-              <span className="detail-label">Doctor:</span>
+              <span className="detail-label">Medico:</span>
               <span className="detail-value doctor">
                 {citaActual.doctor_name || 'Por asignar'}
               </span>
@@ -141,7 +141,7 @@ export default function TurnoVisual() {
       {!citaActual && showWaiting && (
         <div className="waiting-message animate-fade-in">
           <FaUserClock className="waiting-icon" />
-          <p>Esperando que un doctor inicie una consulta...</p>
+          <p>Esperando que un medico inicie una consulta...</p>
         </div>
       )}
     </div>

@@ -13,14 +13,15 @@
       role: 'paciente',
       idsap: '',
     });
+
     const [loading, setLoading] = useState(false);  // Estado de carga
 
   // Cargar usuarios
-  useEffect(() => {
+
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/admin/listarUsers');
+        const res = await fetch('/api/admin/users');
         const data = await res.json();
         setUsers(data);
       } catch (err) {
@@ -29,30 +30,29 @@
         setLoading(false);
       }
     };
-    fetchUsers();
-  }, []);
+
+    useEffect(() => {
+      fetchUsers();
+    }, []);
 
   // Función para actualizar el usuario
-  const handleUpdateUser = async (id, { role, status }) => {
-    setLoading(true);
+  const handleUpdateUser = async (id, updates) => {
     try {
-      const response = await fetch(`/api/admin/actualizarUser`, {
+      const res = await fetch(`/api/admin/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, role, status }),
+        body: JSON.stringify(updates),
       });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Error desconocido');
-      alert('Usuario actualizado correctamente');
-
-      setUsers(prev =>
-        prev.map(user => (user.id === id ? { ...user, role, status } : user))
-      );
+  
+      const data = await res.json();
+  
+      if (!res.ok) throw new Error(data.error || 'Error al actualizar usuario');
+  
+      alert('Usuario actualizado');
+      fetchUsers(); // recarga tabla
     } catch (error) {
-      alert('Error: ' + error.message);
-    } finally {
-      setLoading(false);
+      console.error(error);
+      alert(error.message);
     }
   };
 
@@ -61,25 +61,25 @@
       if (!confirmation) return;
 
       try {
-        const res = await fetch(`/api/admin/eliminarUser?id=${id}`, { method: 'DELETE' });
-
-        if (!res.ok) {
-          const error = await res.json();
-          alert('Error al eliminar usuario: ' + error.error);
-          return;
-        }
-
-        setUsers(users.filter(user => user.id !== id));
-        alert('Usuario eliminado correctamente');
-      } catch (err) {
-        console.error('Error eliminando usuario:', err);
-        alert('Error al eliminar usuario');
+        const res = await fetch(`/api/admin/users/${id}`, {
+          method: 'DELETE',
+        });
+    
+        const data = await res.json();
+    
+        if (!res.ok) throw new Error(data.error || 'Error al eliminar usuario');
+    
+        alert('Usuario eliminado');
+        fetchUsers(); // actualiza tabla
+      } catch (error) {
+        console.error(error);
+        alert(error.message);
       }
     };
 
     const handleCreateUser = async () => {
       try {
-        const response = await fetch('/api/admin/crearUser', {
+        const response = await fetch('/api/admin/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newUser),
@@ -92,7 +92,7 @@
         setShowModal(false);
         resetNewUserForm(); // Limpiar el formulario
         
-        const res = await fetch('/api/admin/listarUsers');
+        const res = await fetch('/api/admin/users');
         const data = await res.json();
         setUsers(data);
       } catch (error) {
@@ -195,7 +195,7 @@
                 >
                   <option value="paciente">Paciente</option>
                   <option value="enfermeria">Enfermería</option>
-                  <option value="doctor">Doctor</option>
+                  <option value="medico">Medico</option>
                   <option value="admin">Administrador</option>
                 </select>
               </div>
@@ -241,9 +241,9 @@
                   >
                     <option value="paciente">Paciente</option>
                     <option value="enfermeria">Enfermería</option>
-                    <option value="doctor">Doctor</option>
+                    <option value="medico">Medico</option>
                     <option value="admin">Administrador</option>
-                    <option value="turno">Administrador</option>
+                    <option value="turno">Turno</option>
                   </select>
                 </div>
 

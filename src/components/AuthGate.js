@@ -7,10 +7,10 @@ import UnauthorizedAlert from '@/components/NoAuth';
 const roleRoutes = {
   paciente: ['/', '/paciente'],
   enfermeria: ['/', '/enfermeria','/turno'],
-  doctor: ['/', '/doctor'],
+  medico: ['/', '/medico'],
   turno:['/','/turno'],
   supervisor: ['/', '/supervisor'],
-  admin: ['/', '/admin/control', '/paciente', '/enfermeria', '/doctor','/turno','/supervisor'],
+  admin: ['/', '/admin/control', '/paciente', '/enfermeria', '/medico','/turno','/supervisor'],
 };
 
 export default function AuthGate({ children }) {
@@ -42,8 +42,8 @@ export default function AuthGate({ children }) {
         case 'enfermeria':
           router.replace('/enfermeria');
           break;
-        case 'doctor':
-          router.replace('/doctor');
+        case 'medico':
+          router.replace('/medico');
           break;
         case 'turno':
             router.replace('/turno');

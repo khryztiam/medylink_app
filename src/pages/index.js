@@ -59,10 +59,10 @@ export default function MenuPage() {
       role: 'paciente'
     },
     {
-      title: 'Doctor',
+      title: 'Medico',
       icon: <FaUserMd size={48} className="text-blue-600" />,
       description: 'Panel médico',
-      role: 'doctor'
+      role: 'medico'
     },
     {
       title: 'Enfermería',

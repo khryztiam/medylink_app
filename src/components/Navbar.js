@@ -14,7 +14,7 @@ export default function Navbar() {
     //{ href: '/', label: 'Inicio', icon: <FaHome />, roles: ['paciente', 'enfermeria', 'doctor', 'admin'] },
     { href: '/paciente', label: 'Paciente', icon: <FaUserInjured />, roles: ['paciente', 'admin'] },
     { href: '/enfermeria', label: 'Enfermería', icon: <FaUserNurse />, roles: ['enfermeria', 'admin'] },
-    { href: '/doctor', label: 'Doctor', icon: <FaUserMd />, roles: ['doctor', 'admin'] },
+    { href: '/medico', label: 'Medico', icon: <FaUserMd />, roles: ['medico', 'admin'] },
     //{ href: '/turno', label: 'Turno', icon: <FaClock />, roles: ['turno', 'admin'] },
     { href: '/supervisor', label: 'Supervisor', icon: <FaUserShield />, roles: ['supervisor', 'admin'] },
     { href: '/admin/control', label: 'Admin', icon: <FaUserCog />, roles: ['admin'] },
