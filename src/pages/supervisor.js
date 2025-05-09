@@ -202,7 +202,6 @@ const Supervisor = () => {
 
         {/* Panel secundario */}
         <div className="panel-side">
-          <EstadoConsulta />
           <div className="panel-content">
             <CitaForm onSubmit={handleNuevaCita}/>
             {mensaje && (
