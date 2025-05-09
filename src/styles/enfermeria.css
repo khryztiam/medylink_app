@@ -456,3 +456,68 @@
     height: auto;
   }
 }
+
+/* Floating Medico Status */
+.floating-medico-status {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.floating-medico-status .status-toggle {
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.floating-medico-status.activo .status-toggle {
+  background: #4CAF50;
+  color: white;
+}
+
+.floating-medico-status.inactivo .status-toggle {
+  background: #F44336;
+  color: white;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.status-text {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* Efecto hover */
+.floating-medico-status:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .floating-medico-status {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .status-text {
+    display: none;
+  }
+  
+  .floating-medico-status .status-toggle {
+    padding: 15px;
+    border-radius: 50%;
+  }
+}

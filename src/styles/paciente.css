@@ -356,3 +356,54 @@
     width: 100%;
   }
 }
+
+/* Floating Status - Versión paciente */
+.floating-status-paciente {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.floating-status-paciente .estado-consultorio {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50px;
+  padding: 0.8rem 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 600;
+}
+
+/* Estados */
+.floating-status-paciente .estado-consultorio[data-status="activo"] {
+  color: #2e7d32;
+  border: 2px solid #2e7d32;
+}
+
+.floating-status-paciente .estado-consultorio[data-status="inactivo"] {
+  color: #c62828;
+  border: 2px solid #c62828;
+}
+
+/* Efecto hover */
+.floating-status-paciente .estado-consultorio:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .floating-status-paciente {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .floating-status-paciente .estado-consultorio {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}

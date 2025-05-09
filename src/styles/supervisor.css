@@ -84,7 +84,6 @@
 
 .summary-card {
   flex: 1;
-  background-color:rgb(89, 66, 192);
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 1px 5px rgba(0,0,0,0.1);
@@ -93,7 +92,7 @@
 
 .summary-card h3 {
   margin: 0 0 10px 0;
-  color:rgb(252, 252, 252);
+  color:rgb(43, 23, 23);
   font-size: 18px;
 }
 
@@ -101,7 +100,23 @@
   margin: 0;
   font-size: 24px;
   font-weight: bold;
-  color:rgb(224, 255, 110);
+  color:rgb(64, 65, 60);
+}
+
+/* Colores diferentes para cada hijo (puedes usar clases específicas o :nth-child) */
+.summary-cards > .summary-card:nth-child(1) {
+  background-color: #e3f2fd; /* Azul claro para "Programaciones" */
+  border-left: 4px solid #2196f3;
+}
+
+.summary-cards > .summary-card:nth-child(2) {
+  background-color: #fff4e1; /* Amarillo claro para "En espera" */
+  border-left: 4px solid #ff7f07;
+}
+
+.summary-cards > .summary-card:nth-child(3) {
+  background-color: #e8f5e9; /* Verde claro para "Tiempo Promedio" */
+  border-left: 4px solid #4caf50;
 }
 
 /* Lista de citas */
@@ -160,4 +175,47 @@
   .summary-cards {
     flex-direction: column;
   }
+}
+
+/* Añade esto a tu archivo CSS */
+.estado-consultorio {
+  background-color: #f8f9fa;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  
+}
+
+.estado-consultorio p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Estado activo */
+.estado-consultorio p[data-status="activo"] {
+  color: #2e7d32;
+}
+
+/* Estado inactivo */
+.estado-consultorio p[data-status="inactivo"] {
+  color: #c62828;
+}
+
+/* Estado INACTIVO */
+.estado-consultorio[data-status="inactivo"] {
+  background-color: rgba(252, 207, 207, 0.64); /* Mejor opacidad */
+  border-left: 4px solid #c62828;
+  color: #c62828; /* Color de texto coherente */
+}
+
+/* Estado ACTIVO */
+.estado-consultorio[data-status="activo"] {
+  background-color: rgba(232, 245, 233, 0.9); /* Ligera transparencia */
+  border-left: 4px solid #2e7d32;
+  color: #2e7d32; /* Color de texto coherente */
 }

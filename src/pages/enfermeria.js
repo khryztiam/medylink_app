@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Modal from 'react-modal'
+import MedicoActivo from '@/components/MedicoActivo'
 
 Modal.setAppElement('#__next')
 
@@ -496,6 +497,7 @@ export default function Enfermeria() {
         <CitaForm onSubmit={handleNuevaCita} user={user} onCancel={() => setIsNuevaCitaModalOpen(false)}
         />
       </Modal>
+      <MedicoActivo />
     </div>
   )
 }

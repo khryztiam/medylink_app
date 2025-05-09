@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import CitaForm from '@/components/CitaForm'; // 👈 Asegúrate de que el path esté correcto
 import { v4 as uuidv4 } from 'uuid';
 import { agregarCita, getCitas } from '../lib/citasData'
+import EstadoConsulta from '@/components/EstadoConsulta';
 
 const Supervisor = () => {
   const [citasProgramadas, setCitasProgramadas] = useState([]);
@@ -10,7 +11,8 @@ const Supervisor = () => {
   const [tiempoPromedio, setTiempoPromedio] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const [tipoMensaje, setTipoMensaje] = useState(''); // exito / error
-  const [cuposOcupados, setCuposOcupados] = useState(0);
+  const [cuposProgramados, setCuposProgramados] = useState(0);
+  const [cuposEnEspera, setCuposEnEspera] = useState(0);
 
   const hoyInicio = new Date();
   hoyInicio.setHours(0, 0, 0, 0);
@@ -23,20 +25,22 @@ const Supervisor = () => {
     const { data, error } = await supabase
       .from('citas')
       .select('*')
-      .not('estado', 'eq', 'pendiente')  // Excluye estado 'pendiente'
+      .in('estado', ['programado', 'en espera'])  // Excluye estado 'pendiente'
       .gte('programmer_at', hoyInicio.toISOString())
       .lte('programmer_at', hoyFin.toISOString())
       .order('programmer_at', { ascending: true });
 
     if (error) {
-      console.error('Error al obtener cupos ocupados:', error);
-      return;
+      console.error('Error al obtener los estados:', error);
+      return { programado: [], enEspera: [] }; // Retorna objetos vacíos en caso de error
     }
 
-    // Contamos las citas ocupadas
-    const cuposOcupados = data.length;
+    // Contar los estados
+    const programado = data.filter(cita => cita.estado === 'programado');
+    const enEspera = data.filter(cita => cita.estado === 'en espera');
 
-    setCuposOcupados(cuposOcupados);
+    setCuposProgramados(cuposProgramados);
+    setCuposEnEspera(cuposEnEspera);;
   };
 
   // Fetch inicial de citas programadas
@@ -162,10 +166,15 @@ const Supervisor = () => {
           <h2 className="panel-title">Resumen de Citas</h2>
 
           <div className="summary-cards">
-            {/* Cupos Disponibles */}
+            {/* Programados */}
             <div className="summary-card">
-              <h3>Cupos Disponibles</h3>
-              <p>{cuposTotales - cuposOcupados} / {cuposTotales}</p>
+              <h3>Programaciones</h3>
+              <p>{cuposProgramados}</p>
+            </div>
+            {/* En espera */}
+            <div className="summary-card">
+              <h3>En espera</h3>
+              <p>{cuposEnEspera}</p>
             </div>
 
             {/* Tiempo Promedio */}
@@ -193,7 +202,7 @@ const Supervisor = () => {
 
         {/* Panel secundario */}
         <div className="panel-side">
-          
+          <EstadoConsulta />
           <div className="panel-content">
             <CitaForm onSubmit={handleNuevaCita}/>
             {mensaje && (

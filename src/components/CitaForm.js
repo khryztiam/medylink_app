@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/context/AuthContext";
+import EstadoConsulta from './EstadoConsulta';
 
 
 export default function CitaForm({ onSubmit }) {
@@ -67,6 +68,7 @@ export default function CitaForm({ onSubmit }) {
     <div className='pac-modal-header'>
       <h2>Solicitud de cita</h2>
     </div>
+    <EstadoConsulta />
     <div className='pac-modal-content'>
     <div className="pac-form-group">
     <label htmlFor="sap">SAP</label>

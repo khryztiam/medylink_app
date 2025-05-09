@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useAuth } from '@/context/AuthContext'
 import CitaForm from '../components/CitaForm'
 import ConsultaCita from '../components/ConsultaCita'
+import EstadoConsulta from '@/components/EstadoConsulta'
 import Modal from 'react-modal'
 
 Modal.setAppElement('#__next')
@@ -70,6 +71,9 @@ export default function Home() {
       <div className="pac-card">
           {/* eslint-disable @next/next/no-img-element */}
           <img src="/banner01.jpg" alt="banner" className='pac-card-banner' loading='eager' decoding='sync'/>
+          <div className="floating-status-paciente">
+            <EstadoConsulta />
+          </div>
           <button onClick={openModal} className='pac-card-button'>Solicitar Cita</button>
       </div>
 
