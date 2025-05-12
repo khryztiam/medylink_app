@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
 import Modal from 'react-modal';
@@ -96,6 +96,13 @@ export default function RegisterPage() {
     }
   };
 
+useEffect(() => {
+  if (idsap.trim() !== '') {
+    setEmail(`${idsap.toLowerCase()}@yazaki.com`);
+  } else {
+    setEmail('');
+  }
+}, [idsap]);
 
   return (
     <div className="register-container">
@@ -105,11 +112,21 @@ export default function RegisterPage() {
       <form onSubmit={handleRegister} className='login-modal-content'>
         <div className="material-group">
           <input
+            type="text"
+            value={idsap}
+            onChange={(e) => setIdsap(e.target.value)}
+            placeholder='SAP'
+            required
+          />
+        </div>
+
+        <div className="material-group">
+          <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
             placeholder='Email' 
             className='login-form-control'
+            readOnly
             required
           />
         </div>
@@ -146,16 +163,6 @@ export default function RegisterPage() {
             >
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
-        </div>
-
-        <div className="material-group">
-          <input
-            type="text"
-            value={idsap}
-            onChange={(e) => setIdsap(e.target.value)}
-            placeholder='SAP'
-            required
-          />
         </div>
 
         {error && (
