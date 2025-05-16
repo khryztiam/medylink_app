@@ -14,7 +14,7 @@ export default function MenuPage() {
   const [selectedRole, setSelectedRole] = useState(null);
   const { login, user, role, status, loading } = useAuth();
   const router = useRouter();
-  const [idsapInput, setIdsapInput] = useState('');
+  const [sapidInput, setSapidInput] = useState('');
   const [userInput, setUserInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -145,13 +145,26 @@ export default function MenuPage() {
             <form onSubmit={handleLogin} className='login-modal-content'>
 
               <div className="login-form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">SapID</label>
                 <input
                   type="text"
-                  placeholder="Usuario"                  
-                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="Ingrese su SAP ID"
+                  onChange={(e) => {
+                    const sapid = e.target.value.trim();
+                    setUserInput(`${sapid}@yazaki.com`);
+                  }}
                   className='login-form-control'
                   required
+                />
+              </div>
+
+              <div className="login-form-group">
+              <label htmlFor="email">Email</label>
+                <input
+                  type="hidden"
+                  value={userInput} // mostrar el email generado
+                  className='login-form-control'
+                  readOnly
                 />
               </div>
               <div className="login-form-group">
