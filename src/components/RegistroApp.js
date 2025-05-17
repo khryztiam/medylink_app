@@ -122,7 +122,7 @@ useEffect(() => {
 
         <div className="material-group">
           <input
-            type="email"
+            type="hidden"
             value={email}
             placeholder='Email' 
             className='login-form-control'
@@ -180,7 +180,7 @@ useEffect(() => {
         <div className="mt-4">
           <p>
             ¿Ya tienes una cuenta?{' '}
-            <Link href="/" className="text-blue-600 underline">Inicia sesión aquí</Link>
+            <Link href="/" className="modal-footer-link">Inicia sesión aquí</Link>
           </p>
         </div>
       </form>
