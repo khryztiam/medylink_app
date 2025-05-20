@@ -13,14 +13,14 @@ export async function getCitas() {
       return data || []; // 👈 Asegura que siempre retorna un array
     }
 
-export async function agregarCita({ nombre, motivo, idSAP, emergency }) {
+export async function agregarCita({ nombre, motivo, idSAP, emergency, isss }) {
     // Asegurarse de que idSAP sea un número entero
     if (!idSAP || isNaN(idSAP)) {
         throw new Error('El campo idSAP es obligatorio y debe ser un número válido.')
       }
     const { data, error } = await supabase
     .from('citas')
-    .insert([{ idSAP, nombre, motivo, estado: 'pendiente', emergency:emergency }])
+    .insert([{ idSAP, nombre, motivo, estado: 'pendiente', emergency:emergency, isss:isss }])
     .single()
   if (error) throw error
   return data

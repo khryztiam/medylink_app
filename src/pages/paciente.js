@@ -27,7 +27,7 @@ export default function Home() {
     fetchCitas()
   }, [])
 
-  const handleNuevaCita = (nombre, motivo, idSAPInt, urgente) => {
+  const handleNuevaCita = (nombre, motivo, idSAPInt, urgente, isss) => {
     try {
       const nuevaCita = {
         id: uuidv4(),
@@ -37,6 +37,7 @@ export default function Home() {
         estado: 'pendiente',
         orden_llegada: null,
         emergency: urgente,
+        isss: isss,
       }
 
       agregarCita(nuevaCita)

@@ -12,6 +12,7 @@ export default function CitaForm({ onSubmit }) {
   const [idSAP, setIdSAP] = useState('')
   const [buscando, setBuscando] = useState(false)
   const [urgente, setUrgente] = useState(false)
+  const [isss, setIsss] = useState(false)
 
     // Si el usuario es PACIENTE, autocompleta los datos
     useEffect(() => {
@@ -56,11 +57,12 @@ export default function CitaForm({ onSubmit }) {
       alert('Completa los campos')
       return
     }
-    onSubmit(nombre.trim(), motivo.trim(), idSAPInt, urgente)
+    onSubmit(nombre.trim(), motivo.trim(), idSAPInt, urgente, isss)
     setNombre('')
     setMotivo('')
     setIdSAP('')
     setUrgente(false)
+    setIsss(false)
   }
 
   return (
@@ -100,15 +102,30 @@ export default function CitaForm({ onSubmit }) {
       />
     </div>
 
-    <div className="pac-checkbox-container">
-    <label htmlFor="urgente" className='form-checkbox-label'>Es una emergencia?</label>
+    <div className="pac-toggle-container">
+    <label htmlFor="urgente" className='pac-toggle-label'>Es una emergencia?</label>
+    <label className="pac-toggle-switch">
       <input
         type="checkbox"
         id="urgente"
-        className='form-checkbox'
-        value={urgente}
+        checked={urgente}
         onChange={(e) => setUrgente(e.target.checked)}
       />
+      <span className={`pac-toggle-slider ${urgente ? 'toggle-rojo' : ''}`}/>
+    </label>  
+    </div>
+
+    <div className="pac-toggle-container">
+      <label htmlFor="toggle-isss" className="pac-toggle-label">Consulta ISSS</label>
+      <label className="pac-toggle-switch">
+        <input
+          type="checkbox"
+          id="toggle-isss"
+          checked={isss}
+          onChange={(e) => setIsss(e.target.checked)}
+        />
+        <span className="pac-toggle-slider" />
+      </label>
     </div>
 
     <div className="pac-form-group">

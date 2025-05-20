@@ -226,7 +226,7 @@ export default function Enfermeria() {
     load();
   };
   
-  const handleNuevaCita = async (nombre, motivo, idSAPInt, urgente) => {
+  const handleNuevaCita = async (nombre, motivo, idSAPInt, urgente, isss) => {
     try {
       const nuevaCita = {
         id: uuidv4(),
@@ -236,6 +236,7 @@ export default function Enfermeria() {
         estado: 'pendiente',
         orden_llegada: null,
         emergency: urgente,
+        isss: isss,
         created_at: new Date().toISOString(), // Añade fecha de creación
         programmer_at: null // Añade esto si es necesario
       };
@@ -302,8 +303,10 @@ export default function Enfermeria() {
             : pendientes.map(cita => (
               <div 
                 key={cita.id} 
-                className={`item-cita ${cita.emergency ? 'emergency-card' : ''}`}
-                style={{ borderLeftColor: cita.emergency ? '#ff3d3d' : '#4CAF50' }}
+                className={`item-cita 
+                  ${cita.emergency ? 'emergency-card' : ''} 
+                  ${cita.isss ? 'isss-card' : ''}`
+                }
                 >
                 <div className="cita-header">
                   <p className="cita-nombre"><strong>{cita.nombre}</strong></p>
