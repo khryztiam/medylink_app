@@ -7,6 +7,7 @@ import CitaForm from '../components/CitaForm'
 import ConsultaCita from '../components/ConsultaCita'
 import EstadoConsulta from '@/components/EstadoConsulta'
 import Modal from 'react-modal'
+import { supabase } from '@/lib/supabase'
 
 Modal.setAppElement('#__next')
 
@@ -25,42 +26,77 @@ export default function Home() {
     }
   
     fetchCitas()
-  }, [])
+        // Configuración de la suscripción a cambios en tiempo real
+    const subscription = supabase
+      .channel('citas_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Escucha todos los eventos (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'citas'
+        },
+        (payload) => {
+          // Actualiza el estado según el tipo de cambio
+          switch(payload.eventType) {
+            case 'INSERT':
+              setCitas(prev => [payload.new, ...prev])
+              break
+            case 'UPDATE':
+              setCitas(prev => prev.map(cita => 
+                cita.id === payload.new.id ? payload.new : cita
+              ))
+              break
+            case 'DELETE':
+              setCitas(prev => prev.filter(cita => cita.id !== payload.old.id))
+              break
+            default:
+              break
+          }
+        }
+      )
+      .subscribe()
 
-  const handleNuevaCita = (nombre, motivo, idSAPInt, urgente, isss) => {
-    try {
-      const nuevaCita = {
-        id: uuidv4(),
-        nombre,
-        motivo,
-        idSAP: idSAPInt,
-        estado: 'pendiente',
-        orden_llegada: null,
-        emergency: urgente,
-        isss: isss,
+    // Limpieza al desmontar el componente
+      return () => {
+        supabase.removeChannel(subscription)
+      }
+    }, [])
+
+
+    const handleNuevaCita = async (nombre, motivo, idSAPInt, urgente, isss) => {
+      try {
+        const nuevaCita = {
+          id: uuidv4(),
+          nombre,
+          motivo,
+          idSAP: idSAPInt,
+          estado: 'pendiente',
+          orden_llegada: null,
+          emergency: urgente,
+          isss: isss,
+        }
+
+        await agregarCita(nuevaCita)
+        setMiCita(nuevaCita)
+
+        // Mensaje de éxito
+        setTipoMensaje('exito')
+        setMensaje('✅ Cita creada exitosamente.')
+
+        closeModal()
+      } catch (error) {
+        console.error('Error al crear la cita:', error)
+        setTipoMensaje('error')
+        setMensaje('❌ Ocurrió un error al crear la cita.')
       }
 
-      agregarCita(nuevaCita)
-      setCitas(getCitas())
-      setMiCita(nuevaCita)
-
-      // Mensaje de éxito
-      setTipoMensaje('exito')
-      setMensaje('✅ Cita creada exitosamente.')
-
-      closeModal()
-    } catch (error) {
-      console.error('Error al crear la cita:', error)
-      setTipoMensaje('error')
-      setMensaje('❌ Ocurrió un error al crear la cita.')
+      // Ocultar mensaje después de 3 segundos
+      setTimeout(() => {
+        setMensaje('')
+        setTipoMensaje('')
+      }, 3000)
     }
-
-    // Ocultar mensaje después de 3 segundos
-    setTimeout(() => {
-      setMensaje('')
-      setTipoMensaje('')
-    }, 3000)
-  }
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
