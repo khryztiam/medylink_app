@@ -202,7 +202,7 @@
   }
   
   .table-material tr:nth-child(even) {
-    background-color: #f8fafc;
+    background-color: #f8fafc !important;
   }
   
   .table-material tr:hover {
@@ -469,3 +469,4 @@
     font-size: 0.9rem;
   }
 }
+

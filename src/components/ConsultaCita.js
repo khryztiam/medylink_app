@@ -37,6 +37,20 @@ export default function ConsultaCita({ citas }) {
     }
   }
 
+   // Función para determinar la clase CSS según el estado
+  const getRowStyle = (estado) => {
+    switch(estado) {
+      case 'programado':
+        return { backgroundColor: '#e6f7ff', borderLeft: '4px solid #1890ff' }
+      case 'atendido':
+        return { backgroundColor: '#f6ffed', borderLeft: '4px solid #52c41a' }
+      case 'pendiente':
+        return { backgroundColor: '#fff2f0', borderLeft: '4px solid #fa8c16' }
+      default:
+        return {}
+    }
+  }
+
   return (
     <div className="consulta-cita">
 
@@ -69,7 +83,14 @@ export default function ConsultaCita({ citas }) {
           <tbody>
             {filteredCitas.length > 0 ? (
               filteredCitas.map((cita) => (
-                <tr key={cita.id}>
+                <tr 
+                  key={cita.id} 
+                  style={{
+                    ...getRowStyle(cita.estado),
+                    // Mantenemos el hover y zebra striping de tus estilos
+                    ':hover': { backgroundColor: '#ebf8ff' }
+                  }}
+                >
                   <td>{cita.nombre}</td>
                   <td>{cita.idSAP}</td>
                   <td>{cita.motivo}</td>
