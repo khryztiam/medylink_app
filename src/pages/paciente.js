@@ -7,6 +7,7 @@ import CitaForm from '../components/CitaForm'
 import ConsultaCita from '../components/ConsultaCita'
 import EstadoConsulta from '@/components/EstadoConsulta'
 import Modal from 'react-modal'
+import { supabase } from '@/lib/supabase'
 
 Modal.setAppElement('#__next')
 
@@ -41,40 +42,39 @@ export default function Home() {
     return () => unsubscribe(); // Limpieza al desmontar
     }, []);
 
-  const handleNuevaCita = (nombre, motivo, idSAPInt, urgente, isss) => {
-    try {
-      const nuevaCita = {
-        id: uuidv4(),
-        nombre,
-        motivo,
-        idSAP: idSAPInt,
-        estado: 'pendiente',
-        orden_llegada: null,
-        emergency: urgente,
-        isss: isss,
+    const handleNuevaCita = async (nombre, motivo, idSAPInt, urgente, isss) => {
+      try {
+        const nuevaCita = {
+          id: uuidv4(),
+          nombre,
+          motivo,
+          idSAP: idSAPInt,
+          estado: 'pendiente',
+          orden_llegada: null,
+          emergency: urgente,
+          isss: isss,
+        }
+
+        await agregarCita(nuevaCita)
+        setMiCita(nuevaCita)
+
+        // Mensaje de éxito
+        setTipoMensaje('exito')
+        setMensaje('✅ Cita creada exitosamente.')
+
+        closeModal()
+      } catch (error) {
+        console.error('Error al crear la cita:', error)
+        setTipoMensaje('error')
+        setMensaje('❌ Ocurrió un error al crear la cita.')
       }
 
-      agregarCita(nuevaCita)
-      setCitas(getCitas())
-      setMiCita(nuevaCita)
-
-      // Mensaje de éxito
-      setTipoMensaje('exito')
-      setMensaje('✅ Cita creada exitosamente.')
-
-      closeModal()
-    } catch (error) {
-      console.error('Error al crear la cita:', error)
-      setTipoMensaje('error')
-      setMensaje('❌ Ocurrió un error al crear la cita.')
+      // Ocultar mensaje después de 3 segundos
+      setTimeout(() => {
+        setMensaje('')
+        setTipoMensaje('')
+      }, 3000)
     }
-
-    // Ocultar mensaje después de 3 segundos
-    setTimeout(() => {
-      setMensaje('')
-      setTipoMensaje('')
-    }, 3000)
-  }
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
