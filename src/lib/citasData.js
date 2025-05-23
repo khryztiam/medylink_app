@@ -76,3 +76,25 @@ export async function finalizarCita(id) {
   if (error) throw new Error(`Error al finalizar: ${error.message}`);
   return data;
 }
+
+// Función para suscribirse a cambios en la tabla 'citas'
+export const subscribeToCitas = (callback) => {
+  const subscription = supabase
+    .channel('citas_changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*', // INSERT, UPDATE, DELETE
+        schema: 'public',
+        table: 'citas',
+      },
+      (payload) => {
+        callback(payload);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(subscription);
+  };
+};

@@ -159,7 +159,6 @@ export default function MenuPage() {
               </div>
 
               <div className="login-form-group">
-              <label htmlFor="email">Email</label>
                 <input
                   type="hidden"
                   value={userInput} // mostrar el email generado

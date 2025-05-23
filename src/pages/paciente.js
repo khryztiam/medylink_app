@@ -25,7 +25,21 @@ export default function Home() {
     }
   
     fetchCitas()
-  }, [])
+    // Suscripción a cambios en tiempo real
+    const unsubscribe = subscribeToCitas((payload) => {
+      if (payload.eventType === 'INSERT') {
+        setCitas((prev) => [...prev, payload.new]);
+      } else if (payload.eventType === 'UPDATE') {
+        setCitas((prev) =>
+          prev.map((cita) => (cita.id === payload.new.id ? payload.new : cita))
+        );
+      } else if (payload.eventType === 'DELETE') {
+        setCitas((prev) => prev.filter((cita) => cita.id !== payload.old.id));
+      }
+    });
+
+    return () => unsubscribe(); // Limpieza al desmontar
+    }, []);
 
   const handleNuevaCita = (nombre, motivo, idSAPInt, urgente, isss) => {
     try {
