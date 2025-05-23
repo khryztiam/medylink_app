@@ -1,6 +1,6 @@
 // pages/paciente.js
 import { useState, useEffect } from 'react'
-import { agregarCita, getCitas } from '../lib/citasData'
+import { agregarCita, getCitas, subscribeToCitas } from '../lib/citasData'
 import { v4 as uuidv4 } from 'uuid'
 import { useAuth } from '@/context/AuthContext'
 import CitaForm from '../components/CitaForm'
