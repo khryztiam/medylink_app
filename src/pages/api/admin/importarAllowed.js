@@ -28,7 +28,6 @@ export default async function handler(req, res) {
         idsap: Number(row.idsap),
         nombre: row.nombre.trim(),
         grupo: row.grupo ? Number(row.grupo) : null,
-        descripcion: row.descripcion ? row.descripcion.trim() : null,
         puesto: row.puesto ? row.puesto.trim() : null
       }
     })
