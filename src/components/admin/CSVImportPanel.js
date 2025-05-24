@@ -17,10 +17,19 @@ export default function CSVImportPanel() {
       Papa.parse(file, {
         header: true,
         complete: async (results) => {
+          // Validar y convertir idsap
+          const dataWithNumericIds = results.data.map(row => {
+            const idsap = Number(row.idsap)
+            if (isNaN(idsap)) {
+              throw new Error(`idsap inválido: ${row.idsap}`)
+            }
+            return { ...row, idsap }
+          })
+
           const response = await fetch('/api/admin/importarAllowed', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: results.data })
+            body: JSON.stringify({ data: dataWithNumericIds})
           })
 
           if (!response.ok) {

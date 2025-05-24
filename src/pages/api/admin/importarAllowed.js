@@ -8,6 +8,19 @@ export default async function handler(req, res) {
   try {
     const { data: csvUsers } = req.body
 
+    // Convertir idsap del CSV a números
+    const processedUsers = csvUsers.map(user => {
+      const idsap = Number(user.idsap)
+      if (isNaN(idsap)) {
+        throw new Error(`Valor idsap inválido: ${user.idsap}`)
+      }
+      return {
+        ...user,
+        idsap: idsap // Asegurar que es número
+      }
+    })
+
+
     // Paso 1: Obtener todos los IDs actuales de Supabase
     const { data: existingUsers, error: fetchError } = await supabaseAdmin
       .from('allowed_users')
@@ -16,10 +29,10 @@ export default async function handler(req, res) {
     if (fetchError) throw fetchError
 
     const existingIds = existingUsers.map(user => String(user.idsap))
-    const csvIds = csvUsers.map(user => String(user.idsap))
+    const csvIds = processedUsers.map(user => String(user.idsap))
 
     // Paso 2: Identificar usuarios a agregar y eliminar
-    const usersToAdd = csvUsers.filter(user => !existingIds.includes(String(user.idsap)))
+    const usersToAdd = processedUsers.filter(user => !existingIds.includes(String(user.idsap)))
     const usersToRemove = existingUsers.filter(user => !csvIds.includes(String(user.idsap)))
 
     // Paso 3: Ejecutar operaciones en transacción
