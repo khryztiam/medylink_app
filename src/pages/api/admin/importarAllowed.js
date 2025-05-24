@@ -1,72 +1,59 @@
-// pages/api/admin/importarAllowed.js
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export default async function handler(req, res) {
-  // Configurar headers para JSON
+  // Configuración básica de CORS y métodos permitidos
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Content-Type', 'application/json');
 
+  // Manejo de preflight para CORS
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' });
-  }
-
-  const supabase = supabaseAdmin();
-  let entries;
-
-  try {
-    // Parsear el body
-    entries = JSON.parse(req.body);
-  } catch (e) {
-    return res.status(400).json({ error: 'Cuerpo de solicitud no válido' });
-  }
-
-  if (!Array.isArray(entries)) {
-    return res.status(400).json({ error: 'Formato incorrecto: se esperaba un array' });
+    return res.status(405).json({ 
+      error: 'Método no permitido',
+      allowedMethods: ['POST'] 
+    });
   }
 
   try {
-    // 1. Obtener IDs existentes
-    const { data: existingUsers, error: fetchError } = await supabase
-      .from('allowed_users')
-      .select('idsap');
+    // Parseo seguro del body
+    const { entries } = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
-    if (fetchError) throw fetchError;
+    if (!Array.isArray(entries)) {
+      return res.status(400).json({ error: 'El cuerpo debe contener un array "entries"' });
+    }
 
-    const existingIds = existingUsers.map(user => user.idsap);
+    // Procesamiento de datos
+    const formatted = entries.map(item => ({
+      idsap: String(item.idsap || '').trim(),
+      nombre: String(item.nombre || '').trim(),
+      grupo: String(item.grupo || '').trim(),
+      descripcion: String(item.descripcion || '').trim(),
+      puesto: String(item.puesto || '').trim()
+    })).filter(item => item.idsap);
 
-    // 2. Procesar datos
-    const formatted = entries
-      .filter(entry => entry.idsap)
-      .map(entry => ({
-        idsap: String(entry.idsap).trim(),
-        nombre: entry.nombre?.trim() || '',
-        grupo: entry.grupo?.trim() || '',
-        descripcion: entry.descripcion?.trim() || '',
-        puesto: entry.puesto?.trim() || ''
-      }));
-
-    // 3. Ejecutar upsert
-    const { data: upsertedData, error: upsertError } = await supabase
+    // Operación en Supabase
+    const { data, error } = await supabaseAdmin()
       .from('allowed_users')
       .upsert(formatted, { onConflict: ['idsap'] })
-      .select('*');
+      .select();
 
-    if (upsertError) throw upsertError;
-
-    // 4. Calcular métricas
-    const inserted = upsertedData.filter(user => !existingIds.includes(user.idsap)).length;
-    const updated = upsertedData.length - inserted;
+    if (error) throw error;
 
     return res.status(200).json({
       success: true,
-      inserted,
-      updated,
-      total: upsertedData.length
+      inserted: data.length,
+      timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
-    console.error('Error en importarAllowed:', err);
+  } catch (error) {
+    console.error('Error en API:', error);
     return res.status(500).json({ 
-      error: err.message || 'Error interno del servidor' 
+      error: error.message || 'Error interno del servidor',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 }

@@ -1,4 +1,3 @@
-// Componente CSVImportPanel.js
 import { useState } from 'react';
 import Papa from 'papaparse';
 
@@ -18,50 +17,59 @@ export default function CSVImportPanel() {
       skipEmptyLines: true,
       complete: async ({ data }) => {
         try {
-          // 1. Formatea los datos (sin filtrar, para mantener consistencia con el backend)
-          const entries = data.map(row => ({
-            idsap: String(row.idsap || '').trim(),
-            nombre: row.nombre?.trim() || '',
-            grupo: row.grupo?.trim() || '',
-            puesto: row.puesto?.trim() || '',
-          }));
+          const payload = {
+            entries: data
+              .filter(row => row.idsap)
+              .map(row => ({
+                idsap: row.idsap,
+                nombre: row.nombre,
+                grupo: row.grupo,
+                descripcion: row.descripcion,
+                puesto: row.puesto
+              }))
+          };
 
-          // 2. Envía al endpoint
-          const res = await fetch('/api/admin/importarAllowed', {
+          const response = await fetch('/api/admin/importarAllowed', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entries }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            credentials: 'include'
           });
 
-          const result = await res.json();
-          if (!res.ok) throw new Error(result.error || 'Error desconocido');
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `HTTP ${response.status}`);
+          }
 
-          // 3. Muestra resultados (asume que el backend devuelve {success, inserted, deleted})
+          const result = await response.json();
           setImportResult({
             success: true,
-            inserted: result.inserted || entries.length,
-            deleted: result.deleted || 0,
+            inserted: result.inserted,
+            message: `Importados ${result.inserted} registros`
           });
-        } catch (err) {
-          setImportResult({ 
-            error: err.message.includes('405') 
-              ? 'Error: Endpoint no disponible (contacta al administrador)' 
-              : err.message 
+
+        } catch (error) {
+          setImportResult({
+            error: error.message.includes('405')
+              ? 'Error: Configuración del servidor incorrecta'
+              : error.message
           });
         } finally {
           setLoading(false);
         }
       },
-      error: () => {
-        setImportResult({ error: 'El archivo CSV no es válido' });
+      error: (error) => {
+        setImportResult({ error: `Error al procesar CSV: ${error.message}` });
         setLoading(false);
-      },
+      }
     });
   };
 
   return (
     <div className="admin-import-panel">
-      <h2>Importar Lista de IDs SAP</h2>
+      <h2>Importar Lista Maestro</h2>
         <div className='material-group'>
           <input 
             type="file" 
