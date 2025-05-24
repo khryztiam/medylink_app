@@ -2,70 +2,44 @@ import { useState } from 'react';
 import Papa from 'papaparse';
 
 export default function CSVImportPanel() {
-  const [importResult, setImportResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleCSVUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0])
+  }
+  const handleUpload = async () => {
+    if (!file) return
 
-    setLoading(true);
-    setImportResult(null);
+    setIsLoading(true);
 
+  try{
     Papa.parse(file, {
       header: true,
-      skipEmptyLines: true,
-      complete: async ({ data }) => {
-        try {
-          const payload = {
-            entries: data
-              .filter(row => row.idsap)
-              .map(row => ({
-                idsap: row.idsap,
-                nombre: row.nombre,
-                grupo: row.grupo,
-                descripcion: row.descripcion,
-                puesto: row.puesto
-              }))
-          };
-
+      complete: async (results) => {
+      // Enviar datos al backend
           const response = await fetch('/api/admin/importarAllowed', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
-            credentials: 'include'
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `HTTP ${response.status}`);
+            body: JSON.stringify({ data: results.data }),
+          })
+          
+          if (response.ok) {
+            onUploadComplete?.(await response.json())
           }
-
-          const result = await response.json();
-          setImportResult({
-            success: true,
-            inserted: result.inserted,
-            message: `Importados ${result.inserted} registros`
-          });
-
-        } catch (error) {
-          setImportResult({
-            error: error.message.includes('405')
-              ? 'Error: Configuración del servidor incorrecta'
-              : error.message
-          });
-        } finally {
-          setLoading(false);
+        },
+        error: (error) => {
+          console.error('Error al cargar el CSV:', error)
+          setIsLoading(false)
         }
-      },
-      error: (error) => {
-        setImportResult({ error: `Error al procesar CSV: ${error.message}` });
-        setLoading(false);
-      }
-    });
-  };
+      })
+    } catch (error) {
+      console.error('Eror de carga:', error)
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="admin-import-panel">
@@ -74,11 +48,11 @@ export default function CSVImportPanel() {
           <input 
             type="file" 
             accept=".csv" 
-            onChange={handleCSVUpload}
-            disabled={loading}
+            onChange={handleFileChange}
+            disabled={!file || isLoading}
           />
         </div>
-      {loading && <p>Importando...</p>}
+      {isLoading && <p>Importando...</p>}
       {importResult && (
         <div className="admin-import-result">
           {importResult.error && <p className="error">{importResult.error}</p>}
