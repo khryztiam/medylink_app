@@ -17,7 +17,7 @@ export default function CSVImportPanel() {
       Papa.parse(file, {
         header: true,
         complete: async (results) => {
-          const response = await fetch('/api/sync-users', {
+          const response = await fetch('/api/admin/importarAllowed', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: results.data })
