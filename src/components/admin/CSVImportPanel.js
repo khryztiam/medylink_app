@@ -2,44 +2,45 @@ import { useState } from 'react';
 import Papa from 'papaparse';
 
 export default function CSVImportPanel() {
-  const [file, setFile] = useState(null)
+  const [stats, setStats] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0])
-  }
-  const handleUpload = async () => {
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0]
     if (!file) return
 
-    setIsLoading(true);
+    setIsLoading(true)
+    setError(null)
 
-  try{
-    Papa.parse(file, {
-      header: true,
-      complete: async (results) => {
-      // Enviar datos al backend
-          const response = await fetch('/api/admin/importarAllowed', {
+    try {
+      Papa.parse(file, {
+        header: true,
+        complete: async (results) => {
+          const response = await fetch('/api/sync-users', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ data: results.data }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: results.data })
           })
-          
-          if (response.ok) {
-            onUploadComplete?.(await response.json())
+
+          if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(errorText || 'Error en la solicitud')
           }
+
+          setStats(await response.json())
         },
         error: (error) => {
-          console.error('Error al cargar el CSV:', error)
-          setIsLoading(false)
+          throw new Error(`Error al procesar CSV: ${error.message}`)
         }
       })
-    } catch (error) {
-      console.error('Eror de carga:', error)
-      setIsLoading(false)
+      } catch (err) {
+        console.error('Error:', err)
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
+      }
     }
-  }
 
   return (
     <div className="admin-import-panel">
@@ -48,20 +49,18 @@ export default function CSVImportPanel() {
           <input 
             type="file" 
             accept=".csv" 
-            onChange={handleFileChange}
-            disabled={!file || isLoading}
+            onChange={handleFileUpload}
+            disabled={isLoading}
           />
         </div>
       {isLoading && <p>Importando...</p>}
-      {importResult && (
-        <div className="admin-import-result">
-          {importResult.error && <p className="error">{importResult.error}</p>}
-          {importResult.success && (
-            <p>
-              Importados: <strong>{importResult.inserted}</strong> nuevos IDs. <br />
-              Eliminados: <strong>{importResult.deleted}</strong> que ya no estaban en el CSV.
-            </p>
-          )}
+      {stats && (
+        <div style={{ marginTop: '20px', padding: '15px', background: '#f0f0f0', borderRadius: '5px' }}>
+          <h3>Resultados de la sincronización:</h3>
+          <p><strong>Total en CSV:</strong> {stats.total}</p>
+          <p><strong>Nuevos usuarios agregados:</strong> {stats.added}</p>
+          <p><strong>Usuarios eliminados:</strong> {stats.removed}</p>
+          <p>{stats.message}</p>
         </div>
       )}
     </div>

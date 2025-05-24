@@ -1,35 +1,48 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export default async function handler(req, res) {
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Metodo no permitido' })
   }
 
   try {
-    const { data: csvData } = req.body
+    const { data: csvUsers } = req.body
 
-    if (!csvData || !Array.isArray(csvData)) {
-      return res.status(400).json({ error: 'Datos CSV no válidos' })
-    }
+    // Paso 1: Obtener todos los IDs actuales de Supabase
+    const { data: existingUsers, error: fetchError } = await supabaseAdmin
+      .from('allowed_users')
+      .select('id')
 
-    // Procesamiento de datos
-    // Insertar datos en Supabase
-    const { data, error } = await supabaseAdmin
-      .from('allowed_users') // Reemplaza con tu tabla
-      .insert(csvData)
+    if (fetchError) throw fetchError
 
-    if (error) {
-      console.error('Error al insertar datos:', error)
-      return res.status(500).json({ error: error.message })
-    }
+    const existingIds = existingUsers.map(user => String(user.id))
+    const csvIds = csvUsers.map(user => String(user.id))
+    
+    // Paso 2: Identificar usuarios a agregar y eliminar
+    const usersToAdd = csvUsers.filter(user => !existingIds.includes(String(user.id)))
+    const usersToRemove = existingUsers.filter(user => !csvIds.includes(String(user.id)))
 
-    return res.status(200).json({ 
-      message: 'Datos insertados correctamente',
-      insertedRows: data.length 
+    // Paso 3: Ejecutar operaciones en transacción
+    const { error: transactionError } = await supabaseAdmin.rpc('sync_users', {
+      add_users: usersToAdd,
+      remove_ids: usersToRemove.map(user => user.id)
     })
+
+    if (transactionError) throw transactionError
+
+    // Respuesta exitosa
+    return res.status(200).json({
+      added: usersToAdd.length,
+      removed: usersToRemove.length,
+      total: csvUsers.length,
+      message: 'Sincronización completada'
+    })
+
   } catch (error) {
-    console.error('Server error:', error)
-    return res.status(500).json({ error: 'Error interno del servidor' })
+    console.error('Error en sincronización:', error)
+    return res.status(500).json({ 
+      error: 'Error en sincronización',
+      details: error.message 
+    })
   }
 }
