@@ -14,10 +14,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const formatted = entries.map(({ idsap, nombre, grupo }) => ({
+    const formatted = entries.map(({ idsap, nombre, grupo, descripcion, puesto }) => ({
       idsap: idsap?.trim(),
       nombre: nombre?.trim(),
-      grupo: grupo?.trim()
+      grupo: grupo?.trim(),
+      descripcion: descripcion?.trim(),
+      puesto: puesto?.trim()
     }));
 
     const { error } = await supabase

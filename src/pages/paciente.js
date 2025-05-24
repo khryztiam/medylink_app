@@ -7,7 +7,6 @@ import CitaForm from '../components/CitaForm'
 import ConsultaCita from '../components/ConsultaCita'
 import EstadoConsulta from '@/components/EstadoConsulta'
 import Modal from 'react-modal'
-import { supabase } from '@/lib/supabase'
 
 Modal.setAppElement('#__next')
 

@@ -16,6 +16,21 @@
 
     const [loading, setLoading] = useState(false);  // Estado de carga
 
+  // Efecto para sincronizar email con ID SAP
+  useEffect(() => {
+    if (newUser.idsap.trim() !== '') {
+      setNewUser(prev => ({
+        ...prev,
+        email: `${newUser.idsap.toLowerCase()}@yazaki.com`
+      }));
+    } else {
+      setNewUser(prev => ({
+        ...prev,
+        email: ''
+      }));
+    }
+  }, [newUser.idsap]);
+
   // Cargar usuarios
 
     const fetchUsers = async () => {
@@ -149,32 +164,14 @@
               <h2>Agregar Usuario</h2>
             </div>
             <div className="medl-add-modal-content">
-              <div className="medl-add-form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  className="medl-add-form-control"
-                  placeholder="usuario@ejemplo.com"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                />
-              </div>
+
+              <input
+                type="hidden"
+                value={newUser.email}
+              />
 
               <div className="medl-add-form-group">
-                <label htmlFor="password">Contraseña</label>
-                <input
-                  id="password"
-                  type="password"
-                  className="medl-add-form-control"
-                  placeholder="••••••••"
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                />
-              </div>
-
-              <div className="medl-add-form-group">
-                <label htmlFor="idsap">ID SAP</label>
+                <label htmlFor="idsap">SAP</label>
                 <input
                   id="idsap"
                   type="text"
@@ -182,6 +179,20 @@
                   placeholder="123456"
                   value={newUser.idsap}
                   onChange={(e) => setNewUser({ ...newUser, idsap: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="medl-add-form-group">
+                <label htmlFor="password">Contraseña</label>
+                <input
+                  id="password"
+                  type="text"
+                  className="medl-add-form-control"
+                  placeholder="••••••••"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  required
                 />
               </div>
 
