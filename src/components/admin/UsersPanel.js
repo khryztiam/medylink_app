@@ -42,22 +42,32 @@
     try {
       setLoading(true);
       const res = await fetch(
-        `/api/users?page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&field=${searchField}`
+        `/api/admin/users?page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&field=${searchField}`
       );
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.error || 'Error al cargar usuarios');
-      
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-      setCurrentPage(data.currentPage);
-    } catch (err) {
-      console.error('Error cargando usuarios:', err);
-      alert(err.message);
-    } finally {
-      setLoading(false);
+    // Verificar si la respuesta es JSON
+    const contentType = res.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await res.text();
+      throw new Error(`Respuesta inesperada: ${text.substring(0, 100)}...`);
     }
-  }, [currentPage, itemsPerPage, searchTerm, searchField]);
+    
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(data.message || data.error || 'Error al cargar usuarios');
+    }
+    
+    setUsers(data.users || []);
+    setTotalPages(data.totalPages || 1);
+  } catch (err) {
+    console.error('Error cargando usuarios:', err);
+    alert(`Error al cargar usuarios: ${err.message}`);
+    setUsers([]);
+    setTotalPages(1);
+  } finally {
+    setLoading(false);
+  }
+}, [currentPage, itemsPerPage, searchTerm, searchField]);
 
     useEffect(() => {
       fetchUsers();

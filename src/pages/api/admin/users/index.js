@@ -1,5 +1,4 @@
 // Archivo: /pages/api/users/index.js
-
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export default async function handler(req, res) {
@@ -45,35 +44,58 @@ export default async function handler(req, res) {
       const limitInt = parseInt(limit);
       
       // Validar parámetros
-      if (isNaN(pageInt)) return res.status(400).json({ error: 'Parámetro page inválido' });
-      if (isNaN(limitInt)) return res.status(400).json({ error: 'Parámetro limit inválido' });
-      if (limitInt > 100) return res.status(400).json({ error: 'El límite máximo es 100' });
+    if (isNaN(pageInt) || pageInt < 1) {
+      return res.status(400).json({ error: 'Parámetro page debe ser un número mayor a 0' });
+    }
+    if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
+      return res.status(400).json({ error: 'Parámetro limit debe ser un número entre 1 y 100' });
+    }
 
-      const offset = (pageInt - 1) * limitInt;
+    const offset = (pageInt - 1) * limitInt;
 
       // Construir consulta base con conteo exacto
       let query = supabase
         .from('app_users')
         .select('id, idsap, role, status, allowed_users(nombre)', { 
           count: 'exact',
-          head: false
         });
 
       // Aplicar filtro de búsqueda si existe
       if (search && search.trim() !== '') {
         if (field === 'idsap') {
-          query = query.ilike('app_users.idsap', `%${search.trim()}%`);
+          query = query.ilike('idsap', `%${search.trim()}%`);
         } else if (field === 'nombre') {
           query = query.ilike('allowed_users.nombre', `%${search.trim()}%`);
         }
       }
 
-      // Aplicar paginación y ejecutar consulta
-      const { data, error, count } = await query
-        .range(offset, offset + limitInt - 1);
+    // Ejecutar consulta con paginación
+    const { data, error, count } = await query.range(offset, offset + limitInt - 1);
 
-      if (error) throw error;
+    if (error) {
+      console.error('Detalles del error de Supabase:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      return res.status(400).json({ 
+        error: 'Error en la consulta a la base de datos',
+        supabase_error: error.message,
+        code: error.code
+      });
+    }
 
+        // Verificar si hay datos
+    if (!data) {
+      return res.status(200).json({
+        users: [],
+        currentPage: pageInt,
+        totalPages: 0,
+        totalUsers: 0
+      });
+    }
+    
       // Procesar resultados
       const users = data.map(user => ({
         id: user.id,
@@ -86,13 +108,17 @@ export default async function handler(req, res) {
       return res.status(200).json({
         users,
         currentPage: pageInt,
-        totalPages: Math.ceil(count / limitInt),
-        totalUsers: count
+        totalPages: Math.max(1, Math.ceil(count / limitInt)),
+        totalUsers: count || 0
       });
 
     } catch (error) {
-      console.error('Error en GET /api/users:', error);
-      return res.status(500).json({ error: error.message || 'Error al obtener usuarios' });
+      console.error('Error en GET /api/admin/users:', error);
+      return res.status(500).json({ 
+        error: 'Error interno del servidor',
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   }
 
