@@ -173,6 +173,15 @@
                   }}
                   className="admin-search-input"
                 />
+                  <button 
+                    className="admin-search-btn"
+                    onClick={() => {
+                      setCurrentPage(1); // Resetear a primera página
+                      fetchUsers();
+                    }}
+                  >
+                    Buscar
+                  </button>
               </div>
             </div>
 
