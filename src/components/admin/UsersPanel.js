@@ -1,4 +1,4 @@
-  import { useEffect, useState } from 'react';
+  import { useEffect, useState, useCallback } from 'react';
   import Modal from 'react-modal';
 
   Modal.setAppElement('#__next'); // o '#root' dependiendo de tu estructura
@@ -13,8 +13,13 @@
       role: 'paciente',
       idsap: '',
     });
-
     const [loading, setLoading] = useState(false);  // Estado de carga
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [itemsPerPage] = useState(100); // Puedes ajustar este valor
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchField, setSearchField] = useState('idsap'); // 'idsap' o 'nombre'
 
   // Efecto para sincronizar email con ID SAP
   useEffect(() => {
@@ -33,18 +38,26 @@
 
   // Cargar usuarios
 
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('/api/admin/users');
-        const data = await res.json();
-        setUsers(data);
-      } catch (err) {
-        console.error('Error cargando usuarios:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `/api/users?page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&field=${searchField}`
+      );
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || 'Error al cargar usuarios');
+      
+      setUsers(data.users);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
+    } catch (err) {
+      console.error('Error cargando usuarios:', err);
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, itemsPerPage, searchTerm, searchField]);
 
     useEffect(() => {
       fetchUsers();
@@ -126,8 +139,37 @@
 
     return (
       <div className="admin-users">
-        <button className="admin-add-btn" onClick={() => setShowModal(true)}>+ Agregar Usuario</button>
-        
+        <div className="admin-controls">
+          <button className="admin-add-btn" onClick={() => setShowModal(true)}>
+            + Agregar Usuario
+          </button>
+              <div className="admin-search">
+                <select 
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  className="admin-search-select"
+                >
+                  <option value="idsap">Buscar por ID SAP</option>
+                  <option value="nombre">Buscar por Nombre</option>
+                </select>
+                
+                <input
+                  type="text"
+                  placeholder={`Buscar por ${searchField === 'idsap' ? 'ID SAP' : 'Nombre'}...`}
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1); // Resetear a primera página al buscar
+                  }}
+                  className="admin-search-input"
+                />
+              </div>
+            </div>
+
+        {loading ? (
+          <div className="loading-indicator">Cargando...</div>
+        ) : (
+          <>    
         <table className="admin-table">
           <thead>
             <tr>
@@ -151,6 +193,26 @@
             ))}
           </tbody>
         </table>
+
+        <div className="admin-pagination">
+          <button
+            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          
+          <span>Página {currentPage} de {totalPages}</span>
+          
+          <button
+            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Siguiente
+          </button>
+        </div>
+      </>
+    )}
 
         <Modal
             isOpen={showModal}
