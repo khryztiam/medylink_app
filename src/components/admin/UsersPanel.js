@@ -1,5 +1,6 @@
   import { useEffect, useState, useCallback } from 'react';
   import Modal from 'react-modal';
+  import { FaUserShield, FaUserInjured, FaUserMd, FaUserNurse, FaCalendarAlt, FaUserCog } from 'react-icons/fa';
 
   Modal.setAppElement('#__next'); // o '#root' dependiendo de tu estructura
 
@@ -147,6 +148,15 @@
       });
     };
 
+    const roleIcons = {
+      paciente: <FaUserInjured />,
+      medico: <FaUserMd />,
+      enfermeria: <FaUserNurse />,
+      supervisor: <FaUserShield />,
+      turno: <FaCalendarAlt />,
+      admin: <FaUserCog />
+    };
+
     return (
       <div className="admin-users">
         <div className="admin-controls">
@@ -192,6 +202,7 @@
         <table className="admin-table">
           <thead>
             <tr>
+              <th></th>
               <th>Nombre</th>
               <th>ID SAP</th>
               <th>Rol</th>
@@ -203,8 +214,11 @@
                 key={user.id} 
                 onClick={() => setSelectedUser(user)} 
                 style={{ cursor: 'pointer' }}
-                className="admin-clickable-row"
+                className="admin-clickable-row rol-tag"
                 >
+                <td className={`rol-${user.role}`}>
+                  <span>{roleIcons[user.role]}</span>
+                </td>  
                 <td>{user.nombre}</td>
                 <td>{user.idsap}</td>
                 <td>{user.role}</td>

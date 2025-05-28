@@ -1,4 +1,4 @@
-// Archivo: /pages/api/users/index.js
+// Archivo: /pages/api/admin/users/index.js
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export default async function handler(req, res) {

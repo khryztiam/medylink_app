@@ -579,3 +579,42 @@
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
+  /* Variantes de color para los íconos */
+.rol-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.9em;
+}
+
+  .rol-paciente {
+    color: #3182ce;
+    background: linear-gradient(135deg, rgba(49, 130, 206, 0.1) 0%, rgba(49, 130, 206, 0.2) 100%);
+  }
+  
+  .rol-medico {
+    color: #38a169;
+    background: linear-gradient(135deg, rgba(56, 161, 105, 0.1) 0%, rgba(56, 161, 105, 0.2) 100%);
+  }
+  
+  .rol-enfermeria {
+    color: #9f7aea;
+    background: linear-gradient(135deg, rgba(159, 122, 234, 0.1) 0%, rgba(159, 122, 234, 0.2) 100%);
+  }
+  
+  .rol-supervisor {
+    color: #dd6b20;
+    background: linear-gradient(135deg, rgba(221, 107, 32, 0.1) 0%, rgba(221, 107, 32, 0.2) 100%);
+  }
+  .rol-turno {
+    color: #dd2020;
+    background: linear-gradient(135deg, rgba(221, 54, 32, 0.1) 0%, rgba(221, 54, 32, 0.2) 100%);
+  }
+  .rol-admin {
+    color:rgb(45, 32, 221);
+    background: linear-gradient(135deg, rgba(42, 81, 187, 0.1) 0%, rgba(42, 81, 187, 0.2) 100%);
+  }
