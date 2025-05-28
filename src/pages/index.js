@@ -71,7 +71,7 @@ export default function MenuPage() {
       role: 'enfermeria'
     },
     {
-      title: 'Supervisor',
+      title: 'Coordinador',
       icon: <FaUserShield size={48} className="text-purple-600" />,
       description: 'Area de Produccion',
       role: 'supervisor'

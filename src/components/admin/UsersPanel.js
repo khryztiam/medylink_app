@@ -288,6 +288,7 @@
                   <option value="paciente">Paciente</option>
                   <option value="enfermeria">Enfermería</option>
                   <option value="medico">Medico</option>
+                  <option value="supervisor">Coordinador</option>
                   <option value="admin">Administrador</option>
                 </select>
               </div>
@@ -334,6 +335,7 @@
                     <option value="paciente">Paciente</option>
                     <option value="enfermeria">Enfermería</option>
                     <option value="medico">Medico</option>
+                    <option value="supervisor">Coordinador</option>
                     <option value="admin">Administrador</option>
                     <option value="turno">Turno</option>
                   </select>
