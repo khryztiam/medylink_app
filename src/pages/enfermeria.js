@@ -272,7 +272,7 @@ export default function Enfermeria() {
 
   return (
     <div className="enfermeria-container">
-      <h1 className="enfermeria-title">Gestión de Citas</h1>
+      <h1 className="enfermeria-title">Panel de Gestión de Citas</h1>
       <div className="enf-card">
           {/* eslint-disable @next/next/no-img-element */}
           <img src="/banner_enfermeria.png" alt="banner" className='enf-card-banner' loading='eager' decoding='sync'/>

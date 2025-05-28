@@ -154,7 +154,7 @@ const Supervisor = () => {
 
   return (
     <div className="supervisor-container">
-      <h1 className="title">Control de Supervisor</h1>
+      <h1 className="title">Panel de Control del Coordinador</h1>
       <div className="enf-card">
           {/* eslint-disable @next/next/no-img-element */}
           <img src="/produccion.png" alt="banner" className='enf-card-banner' loading='eager' decoding='sync'/>

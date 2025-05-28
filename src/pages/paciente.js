@@ -80,7 +80,7 @@ export default function Home() {
 
   return (
     <div className="paciente-container">
-      <h1 className="paciente-title">Solicitud de Cita Médica</h1>
+      <h1 className="paciente-title">Panel de Paciente</h1>
 
       <div className="pac-card">
           {/* eslint-disable @next/next/no-img-element */}

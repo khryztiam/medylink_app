@@ -69,7 +69,7 @@ export default function Doctor() {
 
   return (
     <div className="doctor-container">
-      <h1 className='title'>Control de Citas</h1>
+      <h1 className='title'>Panel de Control de Citas</h1>
       <DoctorPanel
         citas={citasProgramadas}
         onAtender={atender}
