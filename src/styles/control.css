@@ -256,15 +256,6 @@
       margin-left: 0;
       width: 100%;
       }
-
-    .admin-table thead {
-      display: none;
-    }
-  
-    .admin-table, .admin-table tbody, .admin-table tr, .admin-table td {
-      display: block;
-      width: 100%;
-    }
   
     .admin-table tr {
       margin-bottom: 1rem;
@@ -284,6 +275,52 @@
       font-weight: bold;
       display: block;
     }
+
+      .admin-table tr {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .admin-table td:first-child {
+    grid-row: span 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+  }
+
+  .admin-table td:first-child .rol-tag {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    border-radius: 50%;
+  }
+
+  .admin-table td:not(:first-child) {
+    display: block;
+    padding: 4px 0;
+    text-align: left;
+  }
+
+  .admin-table td:not(:first-child)::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+  
   }
   
   @media (max-width: 480px) {
@@ -584,11 +621,15 @@
 .rol-tag {
   display: inline-flex;
   align-items: center;
+  justify-content:center;
   gap: 0.4em;
   font-weight: 500;
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 0.9em;
+  margin: 2px auto; /* Pequeño margen y centrado automático */
+  min-width: fit-content; /* Asegura que no se encoja demasiado */
+  box-sizing: border-box; /* Incluye padding en el ancho total */
 }
 
   .rol-paciente {
