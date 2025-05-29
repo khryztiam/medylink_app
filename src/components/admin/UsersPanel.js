@@ -216,7 +216,7 @@
                 style={{ cursor: 'pointer' }}
                 className="admin-clickable-row"
                 >
-                <td className={`rol-tag rol-${user.role}`}>
+                <td className={`rol-${user.role}`}>
                   <span className='rol-tag'>{roleIcons[user.role]}</span>
                 </td>  
                 <td>{user.nombre}</td>
