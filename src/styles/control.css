@@ -297,10 +297,14 @@
   }
 
   .admin-table td:first-child .rol-tag {
-    width: 48px;
-    height: 48px;
-    font-size: 24px;
-    border-radius: 50%;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 64px; /* puedes ajustar este valor */
+  font-size: 32px;  /* aumenta el tamaño para móvil */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   }
 
   .admin-table td:not(:first-child) {
@@ -320,7 +324,7 @@
   .admin-table thead {
     display: none;
   }
-  
+
   }
   
   @media (max-width: 480px) {
@@ -551,6 +555,7 @@
   margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 15px;
+  width: 100%; /* ✅ Asegura que no se salga */
 }
 
 .admin-search {
@@ -659,3 +664,21 @@
     color:rgb(45, 32, 221);
     background: linear-gradient(135deg, rgba(42, 81, 187, 0.1) 0%, rgba(42, 81, 187, 0.2) 100%);
   }
+
+  @media (max-width: 768px) {
+  .admin-search {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .admin-search-select,
+  .admin-search-input,
+  .admin-search-btn {
+    width: 100%;
+  }
+
+  .admin-search-input {
+    min-width: 0; /* ✅ Evita que se imponga el mínimo de 250px en pantallas pequeñas */
+  }
+}
