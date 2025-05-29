@@ -25,7 +25,7 @@ export default function CitaForm({ onSubmit }) {
     // Si es ENFERMERÍA, y cambia el SAP, busca el nombre
     useEffect(() => {
       const buscarNombre = async () => {
-        if ((role === 'enfermeria' || role === 'admin') && idSAP.trim().length > 7) {
+        if ((role === 'enfermeria' || role === 'admin' || role === 'supervisor') && idSAP.trim().length > 7) {
           setBuscando(true)
     
           const { data, error } = await supabase

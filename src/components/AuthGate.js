@@ -47,6 +47,9 @@ export default function AuthGate({ children }) {
           break;
         case 'turno':
             router.replace('/turno');
+            break; 
+        case 'supervisor':
+            router.replace('/supervisor');
             break;  
         case 'admin':
           router.replace('/admin/control');
