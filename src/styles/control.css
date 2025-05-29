@@ -624,15 +624,13 @@
 
   /* Variantes de color para los íconos */
 .rol-tag {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content:center;
-  gap: 0.4em;
-  font-weight: 500;
-  padding: 6px 10px;
+  padding: 4px 4px;
   border-radius: 8px;
-  font-size: 0.9em;
-  margin: 2px auto; /* Pequeño margen y centrado automático */
+  font-size: 28px;
+  margin: 0 auto; /* Pequeño margen y centrado automático */
   min-width: fit-content; /* Asegura que no se encoja demasiado */
   box-sizing: border-box; /* Incluye padding en el ancho total */
 }

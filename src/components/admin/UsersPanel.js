@@ -214,7 +214,7 @@
                 key={user.id} 
                 onClick={() => setSelectedUser(user)} 
                 style={{ cursor: 'pointer' }}
-                className="admin-clickable-row"
+                className={`admin-clickable-row rol-${user.role}`}
                 >
                 <td className={`rol-${user.role}`}>
                   <span className='rol-tag'>{roleIcons[user.role]}</span>
