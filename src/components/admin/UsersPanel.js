@@ -217,7 +217,7 @@
                 className="admin-clickable-row"
                 >
                 <td className={`rol-tag rol-${user.role}`}>
-                  <span>{roleIcons[user.role]}</span>
+                  <span className='rol-tag'>{roleIcons[user.role]}</span>
                 </td>  
                 <td>{user.nombre}</td>
                 <td>{user.idsap}</td>
