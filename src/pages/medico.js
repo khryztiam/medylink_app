@@ -6,6 +6,16 @@ import DoctorPanel from '../components/DoctorPanel'
 
 export default function Doctor() {
   const [citasProgramadas, setCitasProgramadas] = useState([])
+  const [ultimasProgramadas, setUltimasProgramadas] = useState([])
+
+  const obtenerUltimasProgramadas = async () => {
+    const todas = await getCitas()
+    const programadas = todas
+      .filter(c => c.estado === 'programado')
+      .sort((a, b) => new Date(b.programmer_at) - new Date(a.programmer_at))
+      .slice(0, 25)
+    setUltimasProgramadas(programadas)
+  }
 
   const obtenerCitasProgramadas = async () => {
     const todas = await getCitas()
@@ -15,45 +25,46 @@ export default function Doctor() {
     setCitasProgramadas(programadas)
   }
 
-useEffect(() => {
-  obtenerCitasProgramadas()
+  useEffect(() => {
+    obtenerCitasProgramadas()
+    obtenerUltimasProgramadas()
 
-  const canal = supabase
-    .channel('supabase_realtime')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'citas' },
-      async (payload) => {
-        console.log('Cambio detectado:', payload)
+    const canal = supabase
+      .channel('supabase_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'citas' },
+        async (payload) => {
+          console.log('Cambio detectado:', payload)
 
-        // Detectar si el cambio fue a "en espera"
-        const nuevoEstado = payload.new?.estado
-        const estadoAnterior = payload.old?.estado
+          const nuevoEstado = payload.new?.estado
+          const estadoAnterior = payload.old?.estado
 
-        const cambioAEspera =
-          (payload.eventType === 'UPDATE' &&
-            estadoAnterior !== 'en espera' &&
-            nuevoEstado === 'en espera') ||
-          (payload.eventType === 'INSERT' &&
-            nuevoEstado === 'en espera')
+          const cambioAEspera =
+            (payload.eventType === 'UPDATE' &&
+              estadoAnterior !== 'en espera' &&
+              nuevoEstado === 'en espera') ||
+            (payload.eventType === 'INSERT' &&
+              nuevoEstado === 'en espera')
 
-        if (cambioAEspera) {
-          const sonido = new Audio('/doorbell.mp3')
-          sonido.play().catch(err => {
-            console.warn('Error al reproducir sonido:', err)
-          })
+          if (cambioAEspera) {
+            const sonido = new Audio('/doorbell.mp3')
+            sonido.play().catch(err => {
+              console.warn('Error al reproducir sonido:', err)
+            })
+          }
+
+          await obtenerCitasProgramadas()
+          await obtenerUltimasProgramadas()
         }
+      )
+      .subscribe()
 
-        // Actualizamos la lista de citas luego del sonido
-        await obtenerCitasProgramadas()
-      }
-    )
-    .subscribe()
+    return () => {
+      supabase.removeChannel(canal)
+    }
+  }, [])
 
-  return () => {
-    supabase.removeChannel(canal)
-  }
-}, [])
 
 
   const atender = async (id, doctor) => {
@@ -69,18 +80,18 @@ useEffect(() => {
         .select('check_in, estado')
         .eq('id', id)
         .single();
-      
+
       if (!cita) throw new Error('Cita no encontrada');
       if (cita.estado !== 'en consulta') {
         throw new Error('Solo se pueden finalizar citas en estado "en consulta"');
       }
-      
+
       // Actualizamos con check_out
-      await actualizarCita(id, { 
+      await actualizarCita(id, {
         estado: 'atendido',
         check_out: new Date().toISOString()
       });
-      
+
     } catch (error) {
       console.error('Error al finalizar cita:', error.message);
       // Puedes mostrar una notificación al usuario aquí
@@ -91,11 +102,34 @@ useEffect(() => {
   return (
     <div className="doctor-container">
       <h1 className='title'>Panel de Control de Citas</h1>
-      <DoctorPanel
-        citas={citasProgramadas}
-        onAtender={atender}
-        onFinalizar={finalizar}
-      />
+      <div className='doctor-layout'>
+        <DoctorPanel
+          citas={citasProgramadas}
+          onAtender={atender}
+          onFinalizar={finalizar}
+        />
+        <aside className="sidebar-programadas">
+          <h2 className="sidebar-title">📋 Últimas Citas Programadas</h2>
+          <div className="card-list">
+            {ultimasProgramadas.map((cita) => (
+              <div key={cita.id} className="cita-card">
+                <p className="nombre">
+                  {cita.emergency && <span className="emergency">🚨</span>}
+                  {cita.nombre}
+                </p>
+                <p className="motivo">{cita.motivo}</p>
+                <p className="fecha">
+                  {new Date(cita.programmer_at).toLocaleDateString()} — {new Date(cita.programmer_at).toLocaleTimeString('es-MX', {
+                    hour12: true,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </aside>
+      </div>
     </div>
   )
 }
