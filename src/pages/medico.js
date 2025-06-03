@@ -15,25 +15,46 @@ export default function Doctor() {
     setCitasProgramadas(programadas)
   }
 
-  useEffect(() => {
-    obtenerCitasProgramadas()
+useEffect(() => {
+  obtenerCitasProgramadas()
 
-    const canal = supabase
-      .channel('supabase_realtime')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'citas' },
-        payload => {
-          console.log('Cambio detectado:', payload)
-          obtenerCitasProgramadas()
+  const canal = supabase
+    .channel('supabase_realtime')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'citas' },
+      async (payload) => {
+        console.log('Cambio detectado:', payload)
+
+        // Detectar si el cambio fue a "en espera"
+        const nuevoEstado = payload.new?.estado
+        const estadoAnterior = payload.old?.estado
+
+        const cambioAEspera =
+          (payload.eventType === 'UPDATE' &&
+            estadoAnterior !== 'en espera' &&
+            nuevoEstado === 'en espera') ||
+          (payload.eventType === 'INSERT' &&
+            nuevoEstado === 'en espera')
+
+        if (cambioAEspera) {
+          const sonido = new Audio('/doorbell.mp3')
+          sonido.play().catch(err => {
+            console.warn('Error al reproducir sonido:', err)
+          })
         }
-      )
-      .subscribe()
 
-    return () => {
-      supabase.removeChannel(canal)
-    }
-  }, [])
+        // Actualizamos la lista de citas luego del sonido
+        await obtenerCitasProgramadas()
+      }
+    )
+    .subscribe()
+
+  return () => {
+    supabase.removeChannel(canal)
+  }
+}, [])
+
 
   const atender = async (id, doctor) => {
     if (!doctor) return; // Validación adicional
