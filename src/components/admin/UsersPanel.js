@@ -160,7 +160,7 @@
     return (
       <div className="admin-users">
         <div className="admin-controls">
-          <button className="admin-add-btn" onClick={() => setShowModal(true)}>
+          <button className="ok" onClick={() => setShowModal(true)}>
             + Agregar Usuario
           </button>
               <div className="admin-search">

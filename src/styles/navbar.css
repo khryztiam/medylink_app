@@ -3,20 +3,19 @@
   background-color: #3f91e8;
   color: white;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  height: 100vh;
-  width: 20%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 10px;
+  height: 70px;
+  width: 100%;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
 }
 
 .navbar-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 20px;
 }
 
 .brand {
@@ -29,8 +28,8 @@
 }
 
 .brand-logo {
-  max-width: 80%;
-  height: auto;
+  height: 40px;
+  width: auto;
   object-fit: contain;
 }
 
@@ -44,12 +43,16 @@
 }
 
 .navbar-links {
+  display: flex;
+  align-items: center;
   list-style: none;
+  gap: 20px;
+  margin: 0;
   padding: 0;
 }
 
 .navbar-links li {
-  margin: 10px 0;
+  margin: 0;
 }
 
 .navbar-links a {
@@ -57,8 +60,8 @@
   align-items: center;
   text-decoration: none;
   color: white;
-  font-size: 18px;
-  padding: 10px;
+  font-size: 20px;
+  padding: 8px 12px;
   border-radius: 5px;
   transition: background-color 0.3s;
 }
@@ -73,42 +76,40 @@
 
 .navbar-user {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: auto;
+  align-items: center;
+  gap: 15px;
 }
 
 button.logout-btn {
   background-color: rgb(160, 52, 52);
-  border: none;
+  border: 1px solid white;
   color: white;
-  cursor: pointer;
-  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 button.logout-btn:hover {
-  text-decoration: underline;
+  background-color: rgba(93, 12, 12, 0.97);
 }
 
 .user-info {
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 
 /* --- Mobile --- */
 @media (max-width: 768px) {
   .navbar {
-    position: fixed;
-    height: 60px;
-    width: 100%;
     flex-direction: row;
-    align-items: center;
+    height: 60px;
     justify-content: space-between;
     padding: 0;
-    z-index: 1000;
   }
 
   .navbar-header {
@@ -116,7 +117,6 @@ button.logout-btn:hover {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding-left: 20px;
   }
 
   .brand {
@@ -143,9 +143,7 @@ button.logout-btn:hover {
     color: white;
     font-size: 2rem;
     cursor: pointer;
-    display: block;
-    margin-left: auto;
-    
+    display: block;    
   }
 
   /* Menú móvil deslizante */
@@ -173,18 +171,18 @@ button.logout-btn:hover {
 
   .mobile-menu ul {
     list-style: none;
-    padding: 0;
-    margin-top: 40px;
+    padding: 10px;
+    margin-top: 60px;
   }
 
   .mobile-menu li {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
 
   .mobile-menu a {
     color: white;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 22px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -201,6 +199,7 @@ button.logout-btn:hover {
 
   .logout-btn {
     margin-top: auto;
-    font-size: 18px;
+    margin-bottom: 30px;
+    font-size: 24px;
   }
 }

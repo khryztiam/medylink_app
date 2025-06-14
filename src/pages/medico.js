@@ -1,114 +1,142 @@
 // doctor.js
-import { useEffect, useState } from 'react'
-import { getCitas, actualizarCita } from '../lib/citasData'
-import { supabase } from '@/lib/supabase';
-import DoctorPanel from '../components/DoctorPanel'
+import { useEffect, useState } from "react";
+import { getCitas, actualizarCita } from "../lib/citasData";
+import { supabase } from "@/lib/supabase";
+import DoctorPanel from "../components/DoctorPanel";
 
 export default function Doctor() {
-  const [citasProgramadas, setCitasProgramadas] = useState([])
-  const [ultimasProgramadas, setUltimasProgramadas] = useState([])
+  const [citasProgramadas, setCitasProgramadas] = useState([]);
+  const [ultimasProgramadas, setUltimasProgramadas] = useState([]);
 
   const obtenerUltimasProgramadas = async () => {
-    const todas = await getCitas()
+    const todas = await getCitas();
     const programadas = todas
-      .filter(c => c.estado === 'programado')
+      .filter((c) => c.estado === "programado")
       .sort((a, b) => new Date(b.programmer_at) - new Date(a.programmer_at))
-      .slice(0, 25)
-    setUltimasProgramadas(programadas)
-  }
+      .slice(0, 25);
+    setUltimasProgramadas(programadas);
+  };
 
   const obtenerCitasProgramadas = async () => {
-    const todas = await getCitas()
+    const todas = await getCitas();
     const programadas = todas
-      .filter(c => c.estado === 'en espera' || c.estado === 'en consulta')
-      .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at))
-    setCitasProgramadas(programadas)
-  }
+      .filter((c) => c.estado === "en espera" || c.estado === "en consulta")
+      .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at));
+    setCitasProgramadas(programadas);
+  };
 
   useEffect(() => {
-    obtenerCitasProgramadas()
-    obtenerUltimasProgramadas()
+    obtenerCitasProgramadas();
+    obtenerUltimasProgramadas();
 
     const canal = supabase
-      .channel('supabase_realtime')
+      .channel("supabase_realtime")
       .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'citas' },
+        "postgres_changes",
+        { event: "*", schema: "public", table: "citas" },
         async (payload) => {
-          console.log('Cambio detectado:', payload)
+          console.log("Cambio detectado:", payload);
 
-          const nuevoEstado = payload.new?.estado
-          const estadoAnterior = payload.old?.estado
+          const nuevoEstado = payload.new?.estado;
+          const estadoAnterior = payload.old?.estado;
 
           const cambioAEspera =
-            (payload.eventType === 'UPDATE' &&
-              estadoAnterior !== 'en espera' &&
-              nuevoEstado === 'en espera') ||
-            (payload.eventType === 'INSERT' &&
-              nuevoEstado === 'en espera')
+            (payload.eventType === "UPDATE" &&
+              estadoAnterior !== "en espera" &&
+              nuevoEstado === "en espera") ||
+            (payload.eventType === "INSERT" && nuevoEstado === "en espera");
 
           if (cambioAEspera) {
-            const sonido = new Audio('/doorbell.mp3')
-            sonido.play().catch(err => {
-              console.warn('Error al reproducir sonido:', err)
-            })
+            const sonido = new Audio("/doorbell.mp3");
+            sonido.play().catch((err) => {
+              console.warn("Error al reproducir sonido:", err);
+            });
           }
 
-          await obtenerCitasProgramadas()
-          await obtenerUltimasProgramadas()
+          await obtenerCitasProgramadas();
+          await obtenerUltimasProgramadas();
         }
       )
-      .subscribe()
+      .subscribe();
 
     return () => {
-      supabase.removeChannel(canal)
-    }
-  }, [])
-
-
+      supabase.removeChannel(canal);
+    };
+  }, []);
 
   const atender = async (id, doctor) => {
     if (!doctor) return; // Validación adicional
-    await actualizarCita(id, { estado: 'en consulta', doctor_name: doctor })
-  }
+    await actualizarCita(id, { estado: "en consulta", doctor_name: doctor });
+  };
 
   const finalizar = async (id) => {
     try {
       // Verificamos que la cita esté en estado "en consulta"
       const { data: cita } = await supabase
-        .from('citas')
-        .select('check_in, estado')
-        .eq('id', id)
+        .from("citas")
+        .select("check_in, estado")
+        .eq("id", id)
         .single();
 
-      if (!cita) throw new Error('Cita no encontrada');
-      if (cita.estado !== 'en consulta') {
-        throw new Error('Solo se pueden finalizar citas en estado "en consulta"');
+      if (!cita) throw new Error("Cita no encontrada");
+      if (cita.estado !== "en consulta") {
+        throw new Error(
+          'Solo se pueden finalizar citas en estado "en consulta"'
+        );
       }
 
       // Actualizamos con check_out
       await actualizarCita(id, {
-        estado: 'atendido',
-        check_out: new Date().toISOString()
+        estado: "atendido",
+        check_out: new Date().toISOString(),
       });
-
     } catch (error) {
-      console.error('Error al finalizar cita:', error.message);
+      console.error("Error al finalizar cita:", error.message);
       // Puedes mostrar una notificación al usuario aquí
       alert(error.message);
     }
-  }
+  };
+
+  const sidebarContent = (
+    <>
+      <h2 className="sidebar-title">📋 Últimas Citas Programadas</h2>
+      <div className="card-list">
+        {ultimasProgramadas.map((cita) => (
+          <div key={cita.id} className="cita-card">
+            <p className="nombre">
+              {cita.emergency && <span className="emergency">🚨</span>}
+              {cita.nombre}
+            </p>
+            <p className="motivo">{cita.motivo}</p>
+            <p className="fecha">
+              {new Date(cita.programmer_at).toLocaleDateString()} —{" "}
+              {new Date(cita.programmer_at).toLocaleTimeString("es-MX", {
+                hour12: true,
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 
   return (
-    <div className="doctor-container">
-      <h1 className='title'>Panel de Control de Citas</h1>
-      <div className='doctor-layout'>
-        <DoctorPanel
-          citas={citasProgramadas}
-          onAtender={atender}
-          onFinalizar={finalizar}
-        />
-        <aside className="sidebar-programadas">
+    <div className="main-content">
+      <div className="main">
+        <div className="doctor-container">
+          <h1 className="doctor-title">Panel de Control de Citas</h1>
+          <div className="doctor-layout">
+            <DoctorPanel
+              citas={citasProgramadas}
+              onAtender={atender}
+              onFinalizar={finalizar}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar sidebar-programadas">
           <h2 className="sidebar-title">📋 Últimas Citas Programadas</h2>
           <div className="card-list">
             {ultimasProgramadas.map((cita) => (
@@ -119,17 +147,17 @@ export default function Doctor() {
                 </p>
                 <p className="motivo">{cita.motivo}</p>
                 <p className="fecha">
-                  {new Date(cita.programmer_at).toLocaleDateString()} — {new Date(cita.programmer_at).toLocaleTimeString('es-MX', {
+                  {new Date(cita.programmer_at).toLocaleDateString()} —{" "}
+                  {new Date(cita.programmer_at).toLocaleTimeString("es-MX", {
                     hour12: true,
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
                 </p>
               </div>
             ))}
           </div>
-        </aside>
       </div>
     </div>
-  )
+  );
 }
