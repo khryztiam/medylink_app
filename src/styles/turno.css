@@ -221,3 +221,29 @@
   cursor: pointer; /* Cambia el cursor para indicar que es interactivo */
   transition: background 0.3s ease, transform 0.3s ease;
 }
+
+.side2{
+  width: 300px !important; /* ya tienes ese ancho */
+  box-sizing: border-box; /* para que padding no aumente el ancho total */
+  overflow: hidden; /* opcional para recortar si hay overflow */
+  padding: 5px;
+}
+
+.lista2{
+  width: 100%;
+  border-left: 0 !important;
+  box-sizing: border-box; /* importante para que padding/margin no agranden la caja */
+  word-wrap: break-word; /* para que textos largos no desborden */
+  overflow-wrap: break-word; /* soporte adicional */
+  overflow: hidden; /* corta cualquier contenido extra */
+}
+
+.pchec {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.list2{
+  display: flex !important;
+  flex-direction: column;
+}

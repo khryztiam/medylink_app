@@ -152,7 +152,7 @@ button.cancel {
   margin:5px;
 }
 
-button:hover {
+button.ok:hover {
   background-color: #218838; /* Verde oscuro */
 }
 
