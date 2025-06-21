@@ -34,16 +34,14 @@ export default async function handler(req, res) {
     if (appUserError)
       return res.status(400).json({ error: appUserError.message });
 
-    return res
-      .status(201)
-      .json({
-        id: userId,
-        email,
-        idsap,
-        role,
-        status,
-        nombre: allowed?.nombre || null,
-      });
+    return res.status(201).json({
+      id: userId,
+      email,
+      idsap,
+      role,
+      status,
+      nombre: allowed?.nombre || null,
+    });
   }
 
   if (req.method === "GET") {
@@ -74,7 +72,7 @@ export default async function handler(req, res) {
           count: "exact",
         });
 
-      // Aplicar filtro de búsqueda si existe
+      // Filtros
       if (search && search.trim() !== "") {
         if (field === "idsap") {
           query = query.ilike("idsap", `%${search.trim()}%`);
@@ -83,7 +81,10 @@ export default async function handler(req, res) {
         }
       }
 
-      // Ejecutar consulta con paginación
+      // Ordenar antes de paginar
+      query = query.order("allowed_users.nombre", { ascending: true });
+
+      // Paginación
       const { data, error, count } = await query.range(
         offset,
         offset + limitInt - 1
