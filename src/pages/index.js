@@ -1,93 +1,41 @@
 import Link from "next/link";
-import {
-  FaUserShield,
-  FaUserInjured,
-  FaUserMd,
-  FaUserNurse,
-  FaCalendarAlt,
-  FaUserCog,
-} from "react-icons/fa";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 import Modal from "react-modal";
 
-Modal.setAppElement("#__next"); // Es correcto.
+Modal.setAppElement("#__next");
 
 export default function MenuPage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const { login, user, role, status, loading } = useAuth();
+  const { login, role } = useAuth();
   const router = useRouter();
   const [sapidInput, setSapidInput] = useState("");
   const [userInput, setUserInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
-  const openLoginModal = (role) => {
-    setSelectedRole(role);
-    setIsLoginModalOpen(true);
-  };
 
   const closeLoginModal = () => setIsLoginModalOpen(false);
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    await login(userInput, passwordInput);
+    try {
+      await login(userInput, passwordInput);
 
-    const redirectPath = role === "admin" ? "/admin/control" : `/${role}`;
-    router.push(redirectPath);
-  } catch (error) {
-    alert("Error de login: " + error.message);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      const redirectPath = role === "admin" ? "/admin/control" : `/${role}`;
+      router.push(redirectPath);
+    } catch (error) {
+      setError(error.message || "Credenciales incorrectas");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  const menuItems = [
-    {
-      title: "Paciente",
-      icon: <FaUserInjured size={48} className="text-teal-600" />,
-      description: "Solicitud de consulta",
-      role: "paciente",
-    },
-    {
-      title: "Medico",
-      icon: <FaUserMd size={48} className="text-blue-600" />,
-      description: "Panel médico",
-      role: "medico",
-    },
-    {
-      title: "Enfermería",
-      icon: <FaUserNurse size={48} className="text-green-600" />,
-      description: "Control de solicitudes",
-      role: "enfermeria",
-    },
-    {
-      title: "Coordinador",
-      icon: <FaUserShield size={48} className="text-purple-600" />,
-      description: "Area de Produccion",
-      role: "supervisor",
-    },
-    {
-      title: "Turno",
-      icon: <FaCalendarAlt size={48} className="text-purple-600" />,
-      description: "Visor de turnos",
-      role: "turno",
-    },
-    {
-      title: "Administrador",
-      icon: <FaUserCog size={48} className="text-purple-600" />,
-      description: "Control de la app",
-      role: "admin",
-    },
-  ];
-
-  // NUEVA PARTE DEL RENDER (dentro de tu componente, reemplaza el layout anterior)
   return (
     <>
       <Head>
@@ -126,12 +74,31 @@ const handleLogin = async (e) => {
                 />
               </div>
 
+              {error && (
+                <div className="login-error">
+                  <svg className="error-icon" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"
+                    />
+                  </svg>
+                  {error}
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className={`login-btn ${isSubmitting ? "loading" : ""}`}
               >
-                {isSubmitting ? "Validando..." : "Ingresar"}
+                {isSubmitting ? (
+                  <span className="spinner-container">
+                    <span className="spinner"></span>
+                    <span className="spinner-text">Validando...</span>
+                  </span>
+                ) : (
+                  "Ingresar"
+                )}
               </button>
             </form>
 

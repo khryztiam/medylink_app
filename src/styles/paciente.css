@@ -22,22 +22,22 @@
   width: 100%;
 }
 
-  /* MODAL cita */
-  .pac-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-    animation: pac-fadeIn 0.3s ease-out;
-  }
-  
+/* MODAL cita */
+.pac-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: pac-fadeIn 0.3s ease-out;
+}
+
 /* Contenedor del modal */
 .pac-modal {
   background: white;
@@ -52,13 +52,21 @@
 
 /* Animaciones */
 @keyframes pac-fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes pac-slideUp {
-  from { transform: translateY(20px); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Encabezado */
@@ -149,100 +157,233 @@
 .pac-btn-primary:hover {
   background-color: #1565c0;
 }
- 
-  .pac-form-control input:focus + label,
-  .pac-form-control input:not(:placeholder-shown) + label,
-  .pac-form-control textarea:focus + label,
-  .pac-form-control textarea:not(:placeholder-shown) + label {
-    top: -10px;
-    left: 10px;
-    font-size: 12px;
-    color: #3f91e8;
-    background-color: white;
-  }
-   
-  /* Estilos para la sección de consulta de citas */
-  .consulta-cita {
-    margin-top: 10px;
-    background-color: #f8fafc;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  .consulta-cita h2 {
-    color: #2c5282;
-    margin-bottom: 20px;
-  }
-  
-  /* Estilos para la tabla de citas */
-  .table-container {
-    margin-top: 20px;
-    overflow-x: auto;
-    background-color: white;
-  }
-  
-  .table-material {
+
+.pac-form-control input:focus + label,
+.pac-form-control input:not(:placeholder-shown) + label,
+.pac-form-control textarea:focus + label,
+.pac-form-control textarea:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  color: #3f91e8;
+  background-color: white;
+}
+
+/* Estilos para la sección de consulta de citas */
+.consulta-cita {
+  margin-top: 10px;
+  background-color: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.consulta-cita h2 {
+  color: #2c5282;
+  margin-bottom: 20px;
+}
+
+/* Estilos para la tabla de citas */
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+  background-color: white;
+}
+
+.table-material {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.table-material th,
+.table-material td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-material th {
+  background-color: #3f91e8;
+  color: white;
+  font-weight: 500;
+}
+
+.table-material tr:hover {
+  background-color: #ebf8ff;
+}
+
+.cards-container {
+  display: none;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .paciente-container {
+    margin-left: 0;
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+    align-items: stretch; /* o center según prefieras */
   }
-  
-  .table-material th,
-  .table-material td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  
-  .table-material th {
-    background-color: #3f91e8;
-    color: white;
-    font-weight: 500;
-  }
-  
-  .table-material tr:nth-child(even) {
-    background-color: #f8fafc !important;
-  }
-  
-  .table-material tr:hover {
-    background-color: #ebf8ff;
-  }
-  
 
-  /* Estilos responsivos */
-  @media (max-width: 768px) {
-    .paciente-container {
-      margin-left: 0;
-      width: 100%;
-      align-items: stretch; /* o center según prefieras */
-    }
+  .table-material {
+    display: none;
+  }
 
-    .table-material th,
-    .table-material td {
-      padding: 8px 10px;
-      font-size: 14px;
-    }
-    
+  .cards-container {
+    display: block;
   }
-  
-  /* Animaciones */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* Ajustes para cards reponsive*/
+
+  .cita-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    margin-bottom: 16px;
+    border-left: 4px solid #3f91e8; /* fallback */
   }
-  
-  .consulta-cita,
-  .ReactModal__Content {
-    animation: fadeIn 0.3s ease-out;
+
+  /* Bordes por estado */
+  .cita-card.pendiente {
+    border-left-color: #fa8c16;
   }
-  
-  @media (max-width: 480px) {
-    .paciente-container {
-      padding: 0.5rem;
-    }
-  
+
+  .cita-card.programado {
+    border-left-color: #1890ff;
   }
+
+  .cita-card.atendido {
+    border-left-color: #52c41a;
+  }
+
+  .cita-card.cancelado {
+    border-left-color: #ff4d4f;
+  }
+
+  .cita-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  /* Motivo y estado */
+  .cita-motivo-estado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .cita-motivo-estado .motivo {
+    flex: 4;
+    font-size: 0.95rem;
+    color: #4a5568;
+  }
+
+  .cita-motivo-estado .estado-icon {
+    flex: 1;
+    text-align: right;
+    font-size: 1.3rem;
+  }
+
+  /* Colores del ícono por estado */
+
+  .estado-icon.pendiente {
+    color: #d69e2e;
+  }
+
+  .estado-icon.programado {
+    color: #3182ce;
+  }
+
+  .estado-icon.atendido {
+    color: #38a169;
+  }
+
+  /* Fechas */
+  .cita-fechas {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #718096;
+    gap: 6px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 8px;
+  }
+
+  .cita-fechas div {
+    text-align: center;
+    flex: 1;
+  }
+
+  .cita-fechas span {
+    display: block;
+    font-size: 1.2rem;
+  }
+
+  .sin-citas {
+    text-align: center;
+    font-style: italic;
+    margin-top: 1rem;
+    color: #555;
+  }
+
+  .fa-user {
+    color: #2d3748;
+  }
+  .fa-pendiente {
+    color: #d69e2e;
+  }
+  .fa-programado {
+    color: #3182ce;
+  }
+  .fa-atendido {
+    color: #38a169;
+  }
+  .fa-cancelado {
+    color: #e53e3e;
+  }
+
+  .fa-creacion {
+    color: #6f1f97;
+    font-size: 20px;
+  }
+  .fa-cita {
+    color: #3182ce;
+    font-size: 20px;
+  }
+  .fa-salida {
+    color: #a13838;
+    font-size: 20px;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.consulta-cita,
+.ReactModal__Content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@media (max-width: 480px) {
+  .paciente-container {
+    padding: 0.5rem;
+  }
+}
 
 .concita-form-group {
   display: flex;
@@ -278,7 +419,7 @@
 }
 
 .concita-form-group button:hover {
-  background-color:rgb(19, 45, 163);
+  background-color: rgb(19, 45, 163);
 }
 
 /* Responsive para móviles */
@@ -297,10 +438,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content:space-between;
+  justify-content: space-between;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   gap: 20px;
 }
@@ -454,10 +595,9 @@
     bottom: 20px;
     right: 20px;
   }
-  
+
   .floating-status-paciente .estado-consultorio {
     padding: 0.6rem 1rem;
     font-size: 0.9rem;
   }
 }
-
