@@ -68,6 +68,7 @@ export default async function handler(req, res) {
           query = query.ilike('allowed_users.nombre', `%${search.trim()}%`);
         }
       }
+      query = query.order('allowed_users.nombre', { ascending: true });
 
     // Ejecutar consulta con paginación
     const { data, error, count } = await query.range(offset, offset + limitInt - 1);
