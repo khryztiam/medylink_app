@@ -81,9 +81,6 @@ export default async function handler(req, res) {
         }
       }
 
-      // Ordenar antes de paginar
-      query = query.order("allowed_users.nombre", { ascending: true });
-
       // Paginación
       const { data, error, count } = await query.range(
         offset,
