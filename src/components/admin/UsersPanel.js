@@ -184,21 +184,6 @@ export default function PanelUsuarios() {
             <option value="idsap">Buscar por ID SAP</option>
             <option value="nombre">Buscar por Nombre</option>
           </select>
-          <select
-            value={searchRole}
-            onChange={(e) => {
-              setSearchRole(e.target.value);
-              setCurrentPage(1);
-              fetchUsers();
-            }}
-          >
-            <option value="">Todos los roles</option>
-            <option value="paciente">Paciente</option>
-            <option value="medico">Médico</option>
-            <option value="enfermeria">Enfermería</option>
-            <option value="supervisor">Coordinador</option>
-            <option value="admin">Administrador</option>
-          </select>
           <input
             type="text"
             placeholder={`Buscar por ${
