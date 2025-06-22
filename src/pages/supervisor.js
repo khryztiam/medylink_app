@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import CitaForm from "@/components/CitaForm"; // 👈 Asegúrate de que el path esté correcto
 import { v4 as uuidv4 } from "uuid";
 import { agregarCita, getCitas } from "../lib/citasData";
+import { FaUserShield, FaTachometerAlt } from "react-icons/fa";
 import EstadoConsulta from "@/components/EstadoConsulta";
 
 const Supervisor = () => {
@@ -157,83 +158,87 @@ const Supervisor = () => {
 
   return (
     <div className="main-content">
-      <div className="main">
-        <div className="supervisor-container">
-          <h1 className="supervisor-title">Panel de Control del Coordinador</h1>
-          <div className="enf-card">
-            {/* eslint-disable @next/next/no-img-element */}
-            <img
-              src="/produccion.png"
-              alt="banner"
-              className="enf-card-banner"
-              loading="eager"
-              decoding="sync"
-            />
-          </div>
-          <div className="panels-container">
-            {/* Panel principal */}
-            <div className="panel-main">
-              <h2 className="panel-title">Resumen de Citas</h2>
+      <div className="title-bar">
+        <h1 className="supervisor-title">
+          <FaUserShield className="title-icon" />
+          Coordinador
+          <span className="title-extra">
+            <FaTachometerAlt className="extra-icon" />
+            Panel de Gestión de Linea
+          </span>
+        </h1>
+      </div>
+      <div className="content-wrapper">
+        <div className="main">
+          <div className="supervisor-container">
+            <div className="panels-container">
+              {/* Panel principal */}
+              <div className="panel-main">
+                <h2 className="panel-title">Resumen de Citas</h2>
 
-              {/* Lista de citas programadas */}
-              <div className="panel-content">
-                {citasProgramadas.length > 0 ? (
-                  <ul className="citas-list">
-                    {citasProgramadas.map((cita) => (
-                      <li key={cita.id}>
-                        <strong>{cita.nombre}</strong> -{" "}
-                        {new Date(cita.programmer_at).toLocaleString("es-MX", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No hay citas programadas actualmente.</p>
-                )}
+                {/* Lista de citas programadas */}
+                <div className="panel-content">
+                  {citasProgramadas.length > 0 ? (
+                    <ul className="citas-list">
+                      {citasProgramadas.map((cita) => (
+                        <li key={cita.id}>
+                          <strong>{cita.nombre}</strong> -{" "}
+                          {new Date(cita.programmer_at).toLocaleString(
+                            "es-MX",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No hay citas programadas actualmente.</p>
+                  )}
+                </div>
               </div>
+
+              {/* Panel secundario */}
+            </div>
+          </div>
+        </div>
+        <div className="sidebar">
+          <div className="summary-cards">
+            {/* Programados */}
+            <div className="summary-card">
+              <span className="summary-icon">📅</span>
+              <div className="divider" />
+              <h3>Programaciones</h3>
+              <p>{cuposProgramados}</p>
+            </div>
+            {/* En espera */}
+            <div className="summary-card">
+              <span className="summary-icon">⏳</span>
+              <div className="divider" />
+              <h3>En espera</h3>
+              <p>{cuposEnEspera}</p>
             </div>
 
-            {/* Panel secundario */}
+            {/* Tiempo Promedio */}
+            <div className="summary-card">
+              <span className="summary-icon">⏱️</span>
+              <div className="divider" />
+              <h3>Tiempo Promedio</h3>
+              <p>{tiempoPromedio ? `${tiempoPromedio} min` : "N/A"}</p>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="sidebar">
-        <div className="summary-cards">
-          {/* Programados */}
-          <div className="summary-card">
-            <span className="summary-icon">📅</span>
-            <div className="divider" />
-            <h3>Programaciones</h3>
-            <p>{cuposProgramados}</p>
-          </div>
-          {/* En espera */}
-          <div className="summary-card">
-            <span className="summary-icon">⏳</span>
-            <div className="divider" />
-            <h3>En espera</h3>
-            <p>{cuposEnEspera}</p>
-          </div>
-
-          {/* Tiempo Promedio */}
-          <div className="summary-card">
-            <span className="summary-icon">⏱️</span>
-            <div className="divider" />
-            <h3>Tiempo Promedio</h3>
-            <p>{tiempoPromedio ? `${tiempoPromedio} min` : "N/A"}</p>
-          </div>
-        </div>
-        <div className="panel-side">
-          <div className="panel-content">
-            <CitaForm onSubmit={handleNuevaCita} />
-            {mensaje && (
-              <div className={`mensaje-alerta ${tipoMensaje}`}>{mensaje}</div>
-            )}
+          <div className="panel-side">
+            <div className="panel-content">
+              <CitaForm onSubmit={handleNuevaCita} />
+              {mensaje && (
+                <div className={`mensaje-alerta ${tipoMensaje}`}>{mensaje}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

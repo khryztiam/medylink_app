@@ -1,20 +1,32 @@
 import { useState } from "react";
 import PanelUsuarios from "@/components/admin/UsersPanel";
 import PanelImportarCSV from "@/components/admin/CSVImportPanel";
+import { FaUserCog, FaTachometerAlt } from "react-icons/fa";
 
 export default function ControlAdmin() {
   const [tab, setTab] = useState("usuarios");
 
   return (
     <div className="main-content">
-      <div className="main">
-        <div className="admin-container">
-          <h1 className="title">Panel de Administración</h1>
-          <PanelUsuarios />
-        </div>
+      <div className="title-bar">
+        <h1 className="control-title">
+          <FaUserCog className="title-icon" />
+          Administrador
+          <span className="title-extra">
+            <FaTachometerAlt className="extra-icon" />
+            Panel de Control
+          </span>
+        </h1>
       </div>
-      <div className="sidebar">
-        <PanelImportarCSV />
+      <div className="content-wrapper">
+        <div className="main">
+          <div className="admin-container">
+            <PanelUsuarios />
+          </div>
+        </div>
+        <div className="sidebar">
+          <PanelImportarCSV />
+        </div>
       </div>
     </div>
   );

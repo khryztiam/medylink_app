@@ -6,7 +6,7 @@ import FechaHoraInput from "../components/FechaHoraInput";
 import ConsultaCita from "../components/ConsultaCita";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/lib/supabase";
-
+import { FaUserNurse, FaCalendarAlt } from "react-icons/fa";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Modal from "react-modal";
 import MedicoActivo from "@/components/MedicoActivo";
@@ -270,6 +270,17 @@ export default function Enfermeria() {
   //Html renderizado
   return (
     <div className="main-content">
+      <div className="title-bar">
+        <h1 className="enfermeria-title">
+          <FaUserNurse className="title-icon" />
+          Enfermería
+          <span className="title-extra">
+            <FaCalendarAlt className="extra-icon" />
+            Panel de Gestión de Citas
+          </span>
+        </h1>
+      </div>
+      <div className="content-wrapper">
       <div className="sidebar">
         <div className="panel-pendientes">
           <h2>🚩 Citas Pendientes</h2>
@@ -321,17 +332,6 @@ export default function Enfermeria() {
       </div>
       <div className="main">
         <div className="enfermeria-container">
-          <h1 className="enfermeria-title">Panel de Gestión de Citas</h1>
-          <div className="enf-card">
-            {/* eslint-disable @next/next/no-img-element */}
-            <img
-              src="/banner_enfermeria.png"
-              alt="banner"
-              className="enf-card-banner"
-              loading="eager"
-              decoding="sync"
-            />
-          </div>
           {/* Tabs con React */}
           <Tabs className={`custom-tabs ${isMobile ? "mobile-view" : ""}`}>
             <TabList className="tab-list">
@@ -601,6 +601,7 @@ export default function Enfermeria() {
           </Modal>
           <MedicoActivo />
         </div>
+      </div>
       </div>
     </div>
   );

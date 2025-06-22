@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getCitas, actualizarCita } from "../lib/citasData";
 import { supabase } from "@/lib/supabase";
 import DoctorPanel from "../components/DoctorPanel";
+import { FaUserMd, FaCalendarAlt } from "react-icons/fa";
 
 export default function Doctor() {
   const [citasProgramadas, setCitasProgramadas] = useState([]);
@@ -124,19 +125,29 @@ export default function Doctor() {
 
   return (
     <div className="main-content">
-      <div className="main">
-        <div className="doctor-container">
-          <h1 className="doctor-title">Panel de Control de Citas</h1>
-          <div className="doctor-layout">
-            <DoctorPanel
-              citas={citasProgramadas}
-              onAtender={atender}
-              onFinalizar={finalizar}
-            />
+      <div className="title-bar">
+        <h1 className="doctor-title">
+          <FaUserMd className="title-icon" />
+          Medico
+          <span className="title-extra">
+            <FaCalendarAlt className="extra-icon" />
+            Panel de Gestión de Consultas
+          </span>
+        </h1>
+      </div>
+      <div className="content-wrapper">
+        <div className="main">
+          <div className="doctor-container">
+            <div className="doctor-layout">
+              <DoctorPanel
+                citas={citasProgramadas}
+                onAtender={atender}
+                onFinalizar={finalizar}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="sidebar sidebar-programadas">
+        <div className="sidebar sidebar-programadas">
           <h2 className="sidebar-title">📋 Últimas Citas Programadas</h2>
           <div className="card-list">
             {ultimasProgramadas.map((cita) => (
@@ -157,6 +168,7 @@ export default function Doctor() {
               </div>
             ))}
           </div>
+        </div>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@
 .header {
   background-color: #3f91e8;
   padding: 0.6rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 100;
   position: sticky;
   top: 0;
@@ -16,8 +16,14 @@
 
 .main-content {
   display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  display: flex;
   flex: 1;
-overflow: hidden;
+  overflow: hidden;
 }
 
 .main {
@@ -40,7 +46,8 @@ overflow: hidden;
     flex-direction: column;
   }
 
-  .main-content {
+  .main-content
+  .content-wrapper {
     flex-direction: column; /* ← esto es lo que te falta */
   }
 
@@ -60,7 +67,6 @@ overflow: hidden;
   }
 }
 
-
 .ReactModal__Overlay {
   /* Fondo semitransparente */
   background-color: rgba(0, 0, 0, 0.5) !important;
@@ -78,7 +84,6 @@ overflow: hidden;
 }
 
 .ReactModal__Content {
-
   /* Anular posicionamiento inline de react-modal */
   position: relative !important;
   inset: auto !important;
@@ -110,12 +115,11 @@ overflow: hidden;
   box-sizing: border-box;
 }
 
-
 /* Globales para botones, y colores, titulos y forms*/
 
 body {
   margin: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   background: linear-gradient(90deg, #3182ce 0%, #4fd1c5 100%);
   height: 100%;
   padding: 0;
@@ -127,7 +131,7 @@ a {
 }
 
 button.ok {
-  background-color: #28a745;  /* Verde para los botones */
+  background-color: #28a745; /* Verde para los botones */
   color: white;
   font-weight: 600;
   padding: 0.8rem 1.6rem;
@@ -136,11 +140,11 @@ button.ok {
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s;
-  margin:5px;
+  margin: 5px;
 }
 
 button.cancel {
-  background-color: #a72828; 
+  background-color: #a72828;
   color: white;
   font-weight: 600;
   padding: 0.8rem 1.6rem;
@@ -149,7 +153,7 @@ button.cancel {
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s;
-  margin:5px;
+  margin: 5px;
 }
 
 button.ok:hover {
@@ -233,8 +237,9 @@ button.cancel:hover {
   background-color: #f4f7fa; /* Fondo claro */
 }
 
-h2, h3 {
-  font-family: 'Roboto', sans-serif;
+h2,
+h3 {
+  font-family: "Roboto", sans-serif;
   font-weight: 500; /* Peso de fuente según Material Design */
   margin-bottom: 16px; /* Espacio debajo de los títulos */
   color: #2c80c3; /* Azul oscuro */
@@ -258,14 +263,14 @@ strong {
   background-color: #fff;
   border-radius: 12px;
   padding: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin: 0.8rem 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   transition: box-shadow 0.3s ease;
 }
 
 .card-material:hover {
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .card-material p {
@@ -284,9 +289,9 @@ strong {
 .table-material {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -397,11 +402,11 @@ strong {
 }
 
 /* Titulares genéricos */
-h2, h3 {
+h2,
+h3 {
   text-align: center;
   margin-bottom: 1rem;
 }
-
 
 @media (max-width: 768px) {
   .title {
@@ -413,6 +418,4 @@ h2, h3 {
   .container {
     padding: 0.5rem;
   }
-
 }
-

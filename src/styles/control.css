@@ -8,6 +8,29 @@
   box-sizing: border-box;
   }
   
+  .control-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.8rem;
+  color: white; /* Texto blanco para contraste */
+  margin: 0;
+  padding: 16px 20px;
+
+    /* Sombras para profundidad */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+    background: linear-gradient(
+    90deg,
+    rgb(45, 32, 221) 0%,           /* Color sólido al inicio */
+    rgb(45, 32, 221) 15%,          /* Mantiene el color 15% del ancho */
+    rgba(45, 32, 221, 0.7) 50%,
+    rgba(45, 32, 221, 0.3) 80%,
+    transparent 100%                /* Transparencia total al final */
+  );
+}
+
   .admin-title {
     font-size: 2rem;
     margin-bottom: 20px;

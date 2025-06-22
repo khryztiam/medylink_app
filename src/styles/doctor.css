@@ -14,16 +14,27 @@
 }
 
 .doctor-title {
-  background-color: #e2e8f0; /* gris claro suave */
-  color: #2c5282;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.8rem;
+  color: white; /* Texto blanco para contraste */
+  margin: 0;
+  padding: 16px 20px;
+  
+  /* Degradado verde → transparente */
+  background: linear-gradient(
+    90deg,
+    #38a169 0%,           /* Color sólido al inicio */
+    #38a169 15%,          /* Mantiene el color 15% del ancho */
+    rgba(56, 161, 105, 0.6) 50%,
+    rgba(56, 161, 105, 0.2) 80%,
+    transparent 100%      /* Transparencia total al final */
+  );
+  
+  /* Sombras para profundidad */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 /* Grid específico para el panel de doctor */
