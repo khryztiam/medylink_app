@@ -694,3 +694,18 @@
     border-radius: 50%;
   }
 }
+
+.close-icon {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  cursor: pointer;
+  color: #ffffff;
+  transition: color 0.2s ease;
+}
+.close-icon:hover {
+  color: #2d3748;
+}

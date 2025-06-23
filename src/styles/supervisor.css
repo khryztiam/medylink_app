@@ -243,3 +243,105 @@
   border-left: 4px solid #2e7d32;
   color: #2e7d32; /* Color de texto coherente */
 }
+
+.estado-icon {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  background-color: #3182ce;
+  border-radius: 6px;
+}
+
+.section-header2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  background-color: #df741d;
+  border-radius: 6px;
+}
+
+.section-header3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  background-color: #38a169;
+  border-radius: 6px;
+}
+
+/* Colores por estado (ya los usaste antes) */
+
+.estado-programado2 {
+  color: #ffffff; /* azul */
+}
+
+.estado-consulta2 {
+  color: #ffffff !important; /* naranja */
+}
+
+.estado-atendido {
+  color: #ffffff; /* verde */
+}
+
+.citas-list .cita-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.cita-detalle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.cita-nombre {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #2d3748; /* gris oscuro */
+}
+
+.cita-fecha {
+  font-size: 0.9rem;
+  color: #718096; /* gris más claro */
+}
+
+.btn-cancelc {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-cancelc:hover {
+  background-color: #c53030;
+}

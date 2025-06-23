@@ -18,7 +18,8 @@ import {
   FaRegClock,
   FaCalendarCheck,
   FaSignOutAlt,
-  FaUserNurse
+  FaUserNurse,
+  FaTimes
 } from "react-icons/fa";
 
 Modal.setAppElement("#__next");
@@ -297,51 +298,51 @@ export default function Enfermeria() {
           <div className="panel-pendientes">
             <h2>🚩 Citas Pendientes</h2>
             <div class="panel-pendientes-content">
-            {pendientes.length === 0 ? (
-              <p>No hay citas pendientes.</p>
-            ) : (
-              pendientes.map((cita) => (
-                <div
-                  key={cita.id}
-                  className={`item-cita 
+              {pendientes.length === 0 ? (
+                <p>No hay citas pendientes.</p>
+              ) : (
+                pendientes.map((cita) => (
+                  <div
+                    key={cita.id}
+                    className={`item-cita 
                   ${cita.emergency ? "emergency-card" : ""} 
                   ${cita.isss ? "isss-card" : ""}`}
-                >
-                  <div className="cita-header">
-                    <p className="cita-nombre">
-                      <strong>{cita.nombre}</strong>
+                  >
+                    <div className="cita-header">
+                      <p className="cita-nombre">
+                        <strong>{cita.nombre}</strong>
+                      </p>
+                      {cita.emergency && (
+                        <span className="emergency-tag">🚨 EMERGENCIA</span>
+                      )}
+                    </div>
+                    <p>
+                      {cita.motivo} -{" "}
+                      {new Date(cita.created_at).toLocaleString("es-MX", {
+                        hour12: true,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
                     </p>
-                    {cita.emergency && (
-                      <span className="emergency-tag">🚨 EMERGENCIA</span>
-                    )}
+                    <FechaHoraInput
+                      value={fechasProgramadas[cita.id] || ""}
+                      onChange={(value) =>
+                        setFechasProgramadas((prev) => ({
+                          ...prev,
+                          [cita.id]: value,
+                        }))
+                      }
+                    />
+                    <button onClick={() => programarCita(cita.id)}>
+                      Programar
+                    </button>
                   </div>
-                  <p>
-                    {cita.motivo} -{" "}
-                    {new Date(cita.created_at).toLocaleString("es-MX", {
-                      hour12: true,
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}
-                  </p>
-                  <FechaHoraInput
-                    value={fechasProgramadas[cita.id] || ""}
-                    onChange={(value) =>
-                      setFechasProgramadas((prev) => ({
-                        ...prev,
-                        [cita.id]: value,
-                      }))
-                    }
-                  />
-                  <button onClick={() => programarCita(cita.id)}>
-                    Programar
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
         <div className="main">
@@ -585,7 +586,9 @@ export default function Enfermeria() {
                   </div>
                 </form>
               )}
-              <button onClick={closeModal}>Cerrar</button>
+              <button className="close-icon" onClick={closeModal}>
+                <FaTimes />
+              </button>
             </Modal>
             <Modal
               isOpen={isNuevaCitaModalOpen}
