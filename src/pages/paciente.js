@@ -7,11 +7,12 @@ import CitaForm from "../components/CitaForm";
 import ConsultaCita from "../components/ConsultaCita";
 import EstadoConsulta from "@/components/EstadoConsulta";
 import Modal from "react-modal";
+import { FaUserInjured, FaUserAlt } from "react-icons/fa";
 
 Modal.setAppElement("#__next");
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, userName } = useAuth();
   const [citas, setCitas] = useState([]);
   const [miCita, setMiCita] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,49 +79,78 @@ export default function Home() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const hora = new Date().getHours();
+  let saludo = 'Hola';
+  let iconoSaludo = '👋';
+
+  if (hora >= 6 && hora < 12) {
+    saludo = 'Buenos días';
+    iconoSaludo = '☀️';
+  } else if (hora >= 12 && hora < 19) {
+    saludo = 'Buenas tardes';
+    iconoSaludo = '🌤️';
+  } else {
+    saludo = 'Buenas noches';
+    iconoSaludo = '🌙';
+  }
+
+  const nombre = userName || 'Paciente';
+
   return (
-    <div className="main">
-      <div className="paciente-container">
-        <h1 className="paciente-title">Panel de Paciente</h1>
+    <div className="main-content">
+      <div className="title-bar">
+        <h1 className="paciente-title">
+          <FaUserInjured className="title-icon" />
+          Paciente
+          <span className="title-extra">
+            <FaUserAlt className="extra-icon" />
+            Panel de Usuario
+          </span>
+        </h1>
+      </div>
+      <div className="content-wrapper">
+        <div className="main">
+          <div className="paciente-container">
+            <div className="saludo-card">
+              <div className="saludo-texto">
+                <h2>
+                  {iconoSaludo} {saludo}, {nombre}.
+                </h2>
+                <p className="saludo-frase">Esperamos que tengas un gran día 👨‍⚕️</p>
+              </div>
 
-        <div className="pac-card">
-          {/* eslint-disable @next/next/no-img-element */}
-          <img
-            src="/banner01.jpg"
-            alt="banner"
-            className="pac-card-banner"
-            loading="eager"
-            decoding="sync"
-          />
-          <div className="floating-status-paciente">
-            <EstadoConsulta />
+              <div className="saludo-boton">
+                <button onClick={openModal} className="pac-card-button">
+                  Solicitar Cita
+                </button>
+              </div>
+            </div>
+            <div className="floating-status-paciente">
+              <EstadoConsulta />
+            </div>
+            {/* Aviso visual */}
+            {mensaje && (
+              <div className={`mensaje-alerta ${tipoMensaje}`}>{mensaje}</div>
+            )}
+
+            <Modal
+              isOpen={isModalOpen}
+              onRequestClose={closeModal}
+              contentLabel="Formulario de cita"
+              className="pac-modal"
+              overlayClassName="pac-modal-overlay"
+            >
+              <CitaForm onSubmit={handleNuevaCita} user={user} />
+            </Modal>
+
+            <ConsultaCita
+              citas={citas}
+              miCita={miCita}
+              setMiCita={setMiCita}
+              user={user}
+            />
           </div>
-          <button onClick={openModal} className="pac-card-button">
-            Solicitar Cita
-          </button>
         </div>
-
-        {/* Aviso visual */}
-        {mensaje && (
-          <div className={`mensaje-alerta ${tipoMensaje}`}>{mensaje}</div>
-        )}
-
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Formulario de cita"
-          className="pac-modal"
-          overlayClassName="pac-modal-overlay"
-        >
-          <CitaForm onSubmit={handleNuevaCita} user={user} />
-        </Modal>
-
-        <ConsultaCita
-          citas={citas}
-          miCita={miCita}
-          setMiCita={setMiCita}
-          user={user}
-        />
       </div>
     </div>
   );

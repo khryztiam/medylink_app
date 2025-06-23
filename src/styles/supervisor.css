@@ -1,8 +1,8 @@
 /* Estilos generales */
 .supervisor-container {
   width: 100%;
-  padding: 20px 30px 30px 30px;
-  height: 100%;
+  padding: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: rgb(187, 218, 236);
@@ -38,8 +38,7 @@
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
-  margin:20px 0;
-  flex: 1; /* Ocupa todo el espacio disponible */
+  margin: 0;
 }
 
 /* Panel principal (70%) */
@@ -49,20 +48,18 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  min-height: 300px; /* Altura mínima razonable */
-  max-height: calc(100vh - 200px); /* Altura máxima basada en viewport */
   display: flex;
   flex-direction: column;
 }
 
 /* Panel secundario (30%) */
 .panel-side {
-  flex: 1 1 30%;
+  align-items: center;
+  padding: 10px;
+  margin: 0;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-height: 300px;
-  max-height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
 }
@@ -79,8 +76,6 @@
 /* Contenido de los paneles */
 .panel-content {
   flex: 1;
-  overflow-y: auto;
-  min-height: 0; /* Permite que el contenido haga scroll */
 }
 
 /* Cards de resumen */
@@ -194,8 +189,7 @@
     gap: 15px;
   }
 
-  .panel-main,
-  .panel-side {
+  .panel-main {
     flex: 1 1 auto; /* Altura flexible */
     width: 100%;
     max-height: none; /* Elimina límite máximo */

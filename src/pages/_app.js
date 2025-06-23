@@ -20,20 +20,21 @@ import '@/styles/supervisor.css'
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
-  const hideHeaderRoutes = ['/', '/register'];
-
-  const showHeader = !hideHeaderRoutes.includes(router.pathname);
+  const noNavbarRoutes = ['/', '/register', '/turno'];
+  const hideNavbar = noNavbarRoutes.includes(router.pathname);
 
   return (
     <AuthProvider>
       <Head>
         <title>Medylink</title>
         <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#005BAC" /> {/* Color de la PWA */}
       </Head>
 
       <div className="layout">
-        {showHeader && <header className="header"><Navbar /></header>}
+        {!hideNavbar && <Navbar />}
         <div className="main-content"> 
             <AuthGate>
               <Component {...pageProps} />

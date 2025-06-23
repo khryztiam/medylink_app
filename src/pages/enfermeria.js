@@ -6,10 +6,20 @@ import FechaHoraInput from "../components/FechaHoraInput";
 import ConsultaCita from "../components/ConsultaCita";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/lib/supabase";
-import { FaUserNurse, FaCalendarAlt } from "react-icons/fa";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Modal from "react-modal";
 import MedicoActivo from "@/components/MedicoActivo";
+import {
+  FaUser,
+  FaClock,
+  FaCalendarAlt,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaRegClock,
+  FaCalendarCheck,
+  FaSignOutAlt,
+  FaUserNurse
+} from "react-icons/fa";
 
 Modal.setAppElement("#__next");
 
@@ -28,6 +38,8 @@ export default function Enfermeria() {
   const [miCita, setMiCita] = useState(null);
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState("");
+  const [tabIndex, setTabIndex] = useState(0);
+
 
   useEffect(() => {
     const fetchTodasCitas = async () => {
@@ -281,327 +293,314 @@ export default function Enfermeria() {
         </h1>
       </div>
       <div className="content-wrapper">
-      <div className="sidebar">
-        <div className="panel-pendientes">
-          <h2>🚩 Citas Pendientes</h2>
-          {pendientes.length === 0 ? (
-            <p>No hay citas pendientes.</p>
-          ) : (
-            pendientes.map((cita) => (
-              <div
-                key={cita.id}
-                className={`item-cita 
+        <div className="sidebar">
+          <div className="panel-pendientes">
+            <h2>🚩 Citas Pendientes</h2>
+            <div class="panel-pendientes-content">
+            {pendientes.length === 0 ? (
+              <p>No hay citas pendientes.</p>
+            ) : (
+              pendientes.map((cita) => (
+                <div
+                  key={cita.id}
+                  className={`item-cita 
                   ${cita.emergency ? "emergency-card" : ""} 
                   ${cita.isss ? "isss-card" : ""}`}
-              >
-                <div className="cita-header">
-                  <p className="cita-nombre">
-                    <strong>{cita.nombre}</strong>
+                >
+                  <div className="cita-header">
+                    <p className="cita-nombre">
+                      <strong>{cita.nombre}</strong>
+                    </p>
+                    {cita.emergency && (
+                      <span className="emergency-tag">🚨 EMERGENCIA</span>
+                    )}
+                  </div>
+                  <p>
+                    {cita.motivo} -{" "}
+                    {new Date(cita.created_at).toLocaleString("es-MX", {
+                      hour12: true,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
                   </p>
-                  {cita.emergency && (
-                    <span className="emergency-tag">🚨 EMERGENCIA</span>
-                  )}
+                  <FechaHoraInput
+                    value={fechasProgramadas[cita.id] || ""}
+                    onChange={(value) =>
+                      setFechasProgramadas((prev) => ({
+                        ...prev,
+                        [cita.id]: value,
+                      }))
+                    }
+                  />
+                  <button onClick={() => programarCita(cita.id)}>
+                    Programar
+                  </button>
                 </div>
-                <p>
-                  {cita.motivo} -{" "}
-                  {new Date(cita.created_at).toLocaleString("es-MX", {
-                    hour12: true,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
-                </p>
-                <FechaHoraInput
-                  value={fechasProgramadas[cita.id] || ""}
-                  onChange={(value) =>
-                    setFechasProgramadas((prev) => ({
-                      ...prev,
-                      [cita.id]: value,
-                    }))
-                  }
-                />
-                <button onClick={() => programarCita(cita.id)}>
-                  Programar
-                </button>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
+          </div>
         </div>
-      </div>
-      <div className="main">
-        <div className="enfermeria-container">
-          {/* Tabs con React */}
-          <Tabs className={`custom-tabs ${isMobile ? "mobile-view" : ""}`}>
-            <TabList className="tab-list">
-              {/*  <Tab className="tab-item" selectedClassName="tab-item--selected">
-                🚩 Pendientes
-              </Tab> */}
-              <Tab className="tab-item" selectedClassName="tab-item--selected">
-                🗓️ Programadas
-              </Tab>
-              <Tab className="tab-item" selectedClassName="tab-item--selected">
-                ✅ Check-in
-              </Tab>
-              <Tab className="tab-item" selectedClassName="tab-item--selected">
-                🔍 Consulta
-              </Tab>
-            </TabList>
+        <div className="main">
+          <div className="enfermeria-container">
+            {/* Tabs con React */}
+            <Tabs selectedIndex={tabIndex}
+              onSelect={(index) => setTabIndex(index)}
+              className={`custom-tabs ${isMobile ? "mobile-view" : ""}`}>
+              <TabList className="tab-list">
+                <Tab className="tab-item" selectedClassName="tab-item--selected">
+                  🗓️ Programadas
+                </Tab>
+                <Tab className="tab-item" selectedClassName="tab-item--selected">
+                  ✅ Check-in
+                </Tab>
+                <Tab className="tab-item" selectedClassName="tab-item--selected">
+                  🔍 Consulta
+                </Tab>
+              </TabList>
 
-            {/* Contenido dinámico según el tab */}
-            {/*  <TabPanel className="tab-panel">
-              <div className="panel-pendientes">
-                <h2>🚩 Citas Pendientes</h2>
-                {pendientes.length === 0 ? (
-                  <p>No hay citas pendientes.</p>
-                ) : (
-                  pendientes.map((cita) => (
-                    <div
-                      key={cita.id}
-                      className={`item-cita 
-                  ${cita.emergency ? "emergency-card" : ""} 
-                  ${cita.isss ? "isss-card" : ""}`}
-                    >
-                      <div className="cita-header">
-                        <p className="cita-nombre">
-                          <strong>{cita.nombre}</strong>
-                        </p>
-                        {cita.emergency && (
-                          <span className="emergency-tag">🚨 EMERGENCIA</span>
-                        )}
-                      </div>
-                      <p>
-                        {cita.motivo} -{" "}
-                        {new Date(cita.created_at).toLocaleString("es-MX", {
-                          hour12: true,
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })}
-                      </p>
-                      <FechaHoraInput
-                        value={fechasProgramadas[cita.id] || ""}
-                        onChange={(value) =>
-                          setFechasProgramadas((prev) => ({
-                            ...prev,
-                            [cita.id]: value,
-                          }))
-                        }
-                      />
-                      <button onClick={() => programarCita(cita.id)}>
-                        Programar
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </TabPanel> */}
+              {/* Contenido dinámico según el tab */}
 
-            <TabPanel className="tab-panel">
-              <div className="panel-programadas">
-                <h2>🗓️ Últimas 25 Citas Programadas</h2>
-                <div className="table-container">
-                  <table className="table-material">
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Motivo</th>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {programadas.map((cita) => (
-                        <tr
-                          key={cita.id}
-                          onClick={() => openModal(cita)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td>
-                            {" "}
-                            {cita.emergency && (
-                              <span
-                                style={{
-                                  color: "white",
-                                  fontSize: "15px",
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: "1px",
-                                }}
-                              >
-                                🚨
-                              </span>
-                            )}
-                            {cita.nombre}
-                          </td>
-                          <td>{cita.motivo}</td>
-                          <td>
-                            {new Date(cita.programmer_at).toLocaleDateString()}
-                          </td>
-                          <td>
-                            {new Date(cita.programmer_at).toLocaleTimeString(
-                              "es-MX",
-                              {
-                                hour12: true,
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
-                          </td>
+              <TabPanel className={`tab-panel tab-panel-transition ${tabIndex === 0 ? "active" : ""}`}>
+                <div className="panel-programadas">
+                  <h2>🗓️ Últimas 25 Citas Programadas</h2>
+                  <div className="table-container">
+                    <table className="table-material">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Motivo</th>
+                          <th>Fecha</th>
+                          <th>Hora</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </TabPanel>
-
-            <TabPanel className="tab-panel">
-              <div className="panel-checkin">
-                <h2>✅ Pacientes en espera</h2>
-                {enEspera.filter((c) => c.estado === "en espera").length ===
-                0 ? (
-                  <p>No hay pacientes en espera.</p>
-                ) : (
-                  <div className="lista-checkin">
-                    {enEspera
-                      .sort((a, b) => a.orden_llegada - b.orden_llegada)
-                      .map((cita) => (
-                        <div
-                          key={cita.id}
-                          className={`item-checkin ${
-                            cita.emergency ? "emergency-card" : ""
-                          }`}
-                          style={
-                            cita.emergency
-                              ? {
-                                  borderLeft: "5px solid #ff3d3d",
-                                  order: -1,
-                                }
-                              : {}
-                          }
-                        >
-                          <h3 className="card-nombre">
-                            {cita.emergency && (
-                              <span className="emergency-tag">
-                                🚨 EMERGENCIA
-                              </span>
-                            )}
-                            {cita.nombre}
-                          </h3>
-
-                          <p className="card-motivo">{cita.motivo}</p>
-                          <div className="card-turno">
-                            Turno: <span>#{cita.orden_llegada}</span>
-                          </div>
-
-                          {/* Mostrar hora de check-in si existe */}
-                          {cita.check_in && (
-                            <div className="checkin-time">
-                              <span>Check-in: </span>
-                              {new Date(cita.check_in).toLocaleTimeString(
+                      </thead>
+                      <tbody>
+                        {programadas.map((cita) => (
+                          <tr
+                            key={cita.id}
+                            onClick={() => openModal(cita)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <td>
+                              {" "}
+                              {cita.emergency && (
+                                <span
+                                  style={{
+                                    color: "white",
+                                    fontSize: "15px",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "1px",
+                                  }}
+                                >
+                                  🚨
+                                </span>
+                              )}
+                              {cita.nombre}
+                            </td>
+                            <td>{cita.motivo}</td>
+                            <td>
+                              {new Date(cita.programmer_at).toLocaleDateString()}
+                            </td>
+                            <td>
+                              {new Date(cita.programmer_at).toLocaleTimeString(
                                 "es-MX",
                                 {
+                                  hour12: true,
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mobile-cards">
+                    {programadas.length > 0 ? (
+                      programadas.map((cita) => (
+                        <div key={cita.id} className={`cita-card ${cita.estado?.toLowerCase()}`}>
+                          {/* Contenido de la card (usando tu estructura) */}
+                          <div className="cita-header">
+                            <FaUser style={{ marginRight: "6px" }} /> {cita.nombre}
+                          </div>
+                          <div className="cita-motivo-estado">
+                            <div className="motivo">{cita.motivo}</div>
+                          </div>
+                          <div className="cita-fechas">
+                            <div>
+                              <FaCalendarAlt className="fa-creacion" />
+                              <br />
+                              {new Date(cita.programmer_at).toLocaleDateString()}
+                            </div>
+                            <div>
+                              <FaRegClock className="fa-cita" />
+                              <br />
+                              {new Date(cita.programmer_at).toLocaleTimeString(
+                                "es-MX",
+                                {
+                                  hour12: true,
                                   hour: "2-digit",
                                   minute: "2-digit",
                                 }
                               )}
                             </div>
-                          )}
+                          </div>
                         </div>
-                      ))}
+                      ))
+                    ) : (
+                      <p className="sin-citas">No hay citas programadas</p>
+                    )}
                   </div>
-                )}
-              </div>
-            </TabPanel>
-
-            <TabPanel className="tab-panel">
-              <div className="panel-consulta">
-                <div className="material-group">
-                  <button onClick={openNuevaCitaModal} className="ok">
-                    Solicitar Cita
-                  </button>
                 </div>
-                <ConsultaCita citas={todasLasCitas} />
-                {mensaje && (
-                  <div className={`mensaje-alerta ${tipoMensaje}`}>
-                    {mensaje}
+              </TabPanel>
+
+              <TabPanel className={`tab-panel tab-panel-transition ${tabIndex === 1 ? "active" : ""}`}>
+                <div className="panel-checkin">
+                  <h2>✅ Pacientes en espera</h2>
+                  {enEspera.filter((c) => c.estado === "en espera").length ===
+                    0 ? (
+                    <p>No hay pacientes en espera.</p>
+                  ) : (
+                    <div className="lista-checkin">
+                      {enEspera
+                        .sort((a, b) => a.orden_llegada - b.orden_llegada)
+                        .map((cita) => (
+                          <div
+                            key={cita.id}
+                            className={`item-checkin ${cita.emergency ? "emergency-card" : ""
+                              }`}
+                            style={
+                              cita.emergency
+                                ? {
+                                  borderLeft: "5px solid #ff3d3d",
+                                  order: -1,
+                                }
+                                : {}
+                            }
+                          >
+                            <h3 className="card-nombre">
+                              {cita.emergency && (
+                                <span className="emergency-tag">
+                                  🚨 EMERGENCIA
+                                </span>
+                              )}
+                              {cita.nombre}
+                            </h3>
+
+                            <p className="card-motivo">{cita.motivo}</p>
+                            <div className="card-turno">
+                              Turno: <span>#{cita.orden_llegada}</span>
+                            </div>
+
+                            {/* Mostrar hora de check-in si existe */}
+                            {cita.check_in && (
+                              <div className="checkin-time">
+                                <span>Check-in: </span>
+                                {new Date(cita.check_in).toLocaleTimeString(
+                                  "es-MX",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </TabPanel>
+
+              <TabPanel className={`tab-panel tab-panel-transition ${tabIndex === 2 ? "active" : ""}`}>
+                <div className="panel-consulta">
+                  <div className="material-group">
+                    <button onClick={openNuevaCitaModal} className="ok">
+                      Solicitar Cita
+                    </button>
                   </div>
-                )}
-              </div>
-            </TabPanel>
-          </Tabs>
+                  <ConsultaCita citas={todasLasCitas} />
+                  {mensaje && (
+                    <div className={`mensaje-alerta ${tipoMensaje}`}>
+                      {mensaje}
+                    </div>
+                  )}
+                </div>
+              </TabPanel>
+            </Tabs>
 
-          {/* Modal de reprogramación */}
-          <Modal
-            isOpen={isModalOpen}
-            onRequestClose={closeModal}
-            contentLabel="Reprogramar o cancelar cita"
-            className="prog-modal"
-            overlayClassName="prog-modal-overlay"
-            closeTimeoutMS={300}
-          >
-            <div className="prog-modal-header">
-              <h2>Reprogramar / Cancelar</h2>
-            </div>
-            {selected && (
-              <form onSubmit={handleReprogram} className="prog-modal-content">
-                <div className="prog-from-group">
-                  <label htmlFor="nombre">
-                    Nombre: <strong>{selected.nombre}</strong>
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    Motivo: <strong>{selected.motivo}</strong>
-                  </label>
-                </div>
-                <div className="prog-form-group">
-                  <FechaHoraInput
-                    value={nuevaFechaHora}
-                    onChange={setNuevaFechaHora}
-                  />
-                </div>
-                <div className="prog-modal-actions">
-                  <button
-                    type="button"
-                    onClick={handleCheckIn}
-                    className="prog-btn prog-btn-primary"
-                  >
-                    Check-in (asignar turno)
-                  </button>
-                  <button type="submit" className="prog-btn prog-btn-secondary">
-                    Reprogramar cita
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="prog-btn prog-btn-danger"
-                  >
-                    Cancelar cita
-                  </button>
-                </div>
-              </form>
-            )}
-            <button onClick={closeModal}>Cerrar</button>
-          </Modal>
-          <Modal
-            isOpen={isNuevaCitaModalOpen}
-            onRequestClose={() => setIsNuevaCitaModalOpen(false)}
-            contentLabel="Formulario de cita"
-          >
-            <CitaForm
-              onSubmit={handleNuevaCita}
-              user={user}
-              onCancel={() => setIsNuevaCitaModalOpen(false)}
-            />
-          </Modal>
-          <MedicoActivo />
+            {/* Modal de reprogramación */}
+            <Modal
+              isOpen={isModalOpen}
+              onRequestClose={closeModal}
+              contentLabel="Reprogramar o cancelar cita"
+              className="prog-modal"
+              overlayClassName="prog-modal-overlay"
+              closeTimeoutMS={300}
+            >
+              <div className="prog-modal-header">
+                <h2>Reprogramar / Cancelar</h2>
+              </div>
+              {selected && (
+                <form onSubmit={handleReprogram} className="prog-modal-content">
+                  <div className="prog-from-group">
+                    <label htmlFor="nombre">
+                      Nombre: <strong>{selected.nombre}</strong>
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Motivo: <strong>{selected.motivo}</strong>
+                    </label>
+                  </div>
+                  <div className="prog-form-group">
+                    <FechaHoraInput
+                      value={nuevaFechaHora}
+                      onChange={setNuevaFechaHora}
+                    />
+                  </div>
+                  <div className="prog-modal-actions">
+                    <button
+                      type="button"
+                      onClick={handleCheckIn}
+                      className="prog-btn prog-btn-primary"
+                    >
+                      Check-in (asignar turno)
+                    </button>
+                    <button type="submit" className="prog-btn prog-btn-secondary">
+                      Reprogramar cita
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="prog-btn prog-btn-danger"
+                    >
+                      Cancelar cita
+                    </button>
+                  </div>
+                </form>
+              )}
+              <button onClick={closeModal}>Cerrar</button>
+            </Modal>
+            <Modal
+              isOpen={isNuevaCitaModalOpen}
+              onRequestClose={() => setIsNuevaCitaModalOpen(false)}
+              contentLabel="Formulario de cita"
+            >
+              <CitaForm
+                onSubmit={handleNuevaCita}
+                user={user}
+                onCancel={() => setIsNuevaCitaModalOpen(false)}
+              />
+            </Modal>
+            <MedicoActivo />
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

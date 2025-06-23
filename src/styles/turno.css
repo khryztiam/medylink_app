@@ -207,7 +207,7 @@
 .turno-salir{
   position: fixed; /* Hace que el botón se quede fijo en la pantalla */
   top: 1rem; /* Espacio desde el borde superior */
-  left: 1rem; /* Espacio desde el borde izquierdo */
+  right: 1rem; /* Espacio desde el borde izquierdo */
   background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
   color: white; /* Color de texto/icono */
   border: none; /* Sin bordes */
@@ -246,4 +246,13 @@
 .list2{
   display: flex !important;
   flex-direction: column;
+}
+
+.estado-consulta {
+  background-color: rgb(252, 152, 2);
+  font-size:1.2rem;
+  color: #ffffff;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  border-radius: 8px;
 }

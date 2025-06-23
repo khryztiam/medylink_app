@@ -1,26 +1,102 @@
 /* paciente.css - Estilos para la página de paciente */
 .paciente-container {
   width: 100%;
-  padding: 20px 30px 30px 30px;
+  padding: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
   background-color: rgb(187, 218, 236);
   box-sizing: border-box;
+  border-radius: 20px;
 }
 
 .paciente-title {
-  background-color: #e2e8f0; /* gris claro suave */
-  color: #2c5282;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.8rem;
+  color: white;
+  /* Texto blanco para contraste */
+  margin: 0;
+  padding: 16px 20px;
+
+  /* Degradado azul → transparente */
+  background: linear-gradient(90deg,
+      #3182ce 0%,
+      /* Color sólido */
+      #3182ce 15%,
+      /* Mantiene intensidad */
+      rgba(49, 130, 206, 0.7) 50%,
+      rgba(49, 130, 206, 0.3) 80%,
+      transparent 100%
+      /* Desvanecimiento total */
+    );
+
+  /* Sombras para profundidad */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
+
+.saludo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f8ff;
+  border: 1px solid #cce;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.saludo-texto {
+  flex: 1 1 auto;
+  min-width: 250px;
+}
+
+.saludo-texto h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.saludo-frase {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.saludo-boton {
+  flex: 0 0 auto;
+  margin-top: 0.5rem;
+}
+
+.pac-card-button {
+  background-color: #3f91e8;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .saludo-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .saludo-boton {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .pac-card-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 
 /* MODAL cita */
 .pac-modal-overlay {
@@ -55,6 +131,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -64,6 +141,7 @@
   from {
     transform: translateY(20px);
   }
+
   to {
     transform: translateY(0);
   }
@@ -158,10 +236,10 @@
   background-color: #1565c0;
 }
 
-.pac-form-control input:focus + label,
-.pac-form-control input:not(:placeholder-shown) + label,
-.pac-form-control textarea:focus + label,
-.pac-form-control textarea:not(:placeholder-shown) + label {
+.pac-form-control input:focus+label,
+.pac-form-control input:not(:placeholder-shown)+label,
+.pac-form-control textarea:focus+label,
+.pac-form-control textarea:not(:placeholder-shown)+label {
   top: -10px;
   left: 10px;
   font-size: 12px;
@@ -222,7 +300,8 @@
   .paciente-container {
     margin-left: 0;
     width: 100%;
-    align-items: stretch; /* o center según prefieras */
+    align-items: stretch;
+    /* o center según prefieras */
   }
 
   .table-material {
@@ -232,6 +311,7 @@
   .cards-container {
     display: block;
   }
+
   /* Ajustes para cards reponsive*/
 
   .cita-card {
@@ -240,7 +320,8 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     padding: 12px;
     margin-bottom: 16px;
-    border-left: 4px solid #3f91e8; /* fallback */
+    border-left: 4px solid #3f91e8;
+    /* fallback */
   }
 
   /* Bordes por estado */
@@ -335,15 +416,19 @@
   .fa-user {
     color: #2d3748;
   }
+
   .fa-pendiente {
     color: #d69e2e;
   }
+
   .fa-programado {
     color: #3182ce;
   }
+
   .fa-atendido {
     color: #38a169;
   }
+
   .fa-cancelado {
     color: #e53e3e;
   }
@@ -352,10 +437,12 @@
     color: #6f1f97;
     font-size: 20px;
   }
+
   .fa-cita {
     color: #3182ce;
     font-size: 20px;
   }
+
   .fa-salida {
     color: #a13838;
     font-size: 20px;
@@ -368,6 +455,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -390,7 +478,8 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  flex-wrap: wrap; /* Para que en mobile se acomoden en columna */
+  flex-wrap: wrap;
+  /* Para que en mobile se acomoden en columna */
 }
 
 .concita-form-control {
@@ -404,7 +493,8 @@
 }
 
 .concita-form-control:focus {
-  border-color: #3f91e8; /* Color tipo material */
+  border-color: #3f91e8;
+  /* Color tipo material */
 }
 
 .concita-form-group button {
@@ -434,60 +524,7 @@
   }
 }
 
-.pac-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  gap: 20px;
-}
 
-/* Imagen */
-.pac-card-banner {
-  width: 80%;
-  max-width: 400px;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-/* Botón */
-.pac-card-button {
-  padding: 12px 20px;
-  font-size: 16px;
-  background-color: #6200ea;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pac-card-button:hover {
-  background-color: #3700b3;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .pac-card {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .pac-card-banner {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .pac-card-button {
-    margin-top: 10px;
-    width: 100%;
-  }
-}
 .pac-toggle-container {
   display: flex;
   align-items: center;
@@ -539,15 +576,16 @@
   border-radius: 50%;
 }
 
-.pac-toggle-switch input:checked + .pac-toggle-slider {
+.pac-toggle-switch input:checked+.pac-toggle-slider {
   background-color: #1976d2;
 }
 
-.pac-toggle-switch input:checked + .pac-toggle-slider.toggle-rojo {
-  background-color: #e94646; /* rojo suave */
+.pac-toggle-switch input:checked+.pac-toggle-slider.toggle-rojo {
+  background-color: #e94646;
+  /* rojo suave */
 }
 
-.pac-toggle-switch input:checked + .pac-toggle-slider::before {
+.pac-toggle-switch input:checked+.pac-toggle-slider::before {
   transform: translateX(24px);
 }
 

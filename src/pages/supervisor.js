@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import CitaForm from "@/components/CitaForm"; // 👈 Asegúrate de que el path esté correcto
 import { v4 as uuidv4 } from "uuid";
 import { agregarCita, getCitas } from "../lib/citasData";
 import { FaUserShield, FaTachometerAlt } from "react-icons/fa";
 import EstadoConsulta from "@/components/EstadoConsulta";
+import Modal from "react-modal";
+
+Modal.setAppElement("#__next");
 
 const Supervisor = () => {
+  const { user } = useAuth();
   const [citasProgramadas, setCitasProgramadas] = useState([]);
   const [cuposTotales] = useState(50); // 👈 Número mockup de cupos diarios
   const [tiempoPromedio, setTiempoPromedio] = useState(null);
@@ -14,6 +19,7 @@ const Supervisor = () => {
   const [tipoMensaje, setTipoMensaje] = useState(""); // exito / error
   const [cuposProgramados, setCuposProgramados] = useState(0);
   const [cuposEnEspera, setCuposEnEspera] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const hoyInicio = new Date();
   hoyInicio.setHours(0, 0, 0, 0);
@@ -143,6 +149,7 @@ const Supervisor = () => {
       // Mensaje de éxito
       setTipoMensaje("exito");
       setMensaje("✅ Cita creada exitosamente.");
+      closeModal();
     } catch (error) {
       console.error("Error al crear la cita:", error);
       setTipoMensaje("error");
@@ -155,6 +162,9 @@ const Supervisor = () => {
       setTipoMensaje("");
     }, 3000);
   };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="main-content">
@@ -203,11 +213,14 @@ const Supervisor = () => {
                 </div>
               </div>
 
-              {/* Panel secundario */}
+              <div className="floating-status-paciente">
+                <EstadoConsulta />
+              </div>
             </div>
           </div>
         </div>
         <div className="sidebar">
+          <h3>Datos del Dia</h3>
           <div className="summary-cards">
             {/* Programados */}
             <div className="summary-card">
@@ -233,12 +246,24 @@ const Supervisor = () => {
             </div>
           </div>
           <div className="panel-side">
-            <div className="panel-content">
-              <CitaForm onSubmit={handleNuevaCita} />
+             <div className="saludo-boton">
+                <button onClick={openModal} className="pac-card-button">
+                  Solicitar Cita
+                </button>
+              </div>
+              
+              <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="Formulario de cita"
+                className="pac-modal"
+                overlayClassName="pac-modal-overlay"
+              >
+                <CitaForm onSubmit={handleNuevaCita} user={user} />
+              </Modal>
               {mensaje && (
                 <div className={`mensaje-alerta ${tipoMensaje}`}>{mensaje}</div>
               )}
-            </div>
           </div>
         </div>
       </div>
