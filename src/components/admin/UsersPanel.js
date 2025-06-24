@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import {
   FaUserShield,
@@ -9,7 +9,7 @@ import {
   FaUserCog,
 } from "react-icons/fa";
 
-Modal.setAppElement("#__next"); // o '#root' dependiendo de tu estructura
+Modal.setAppElement("#__next");
 
 export default function PanelUsuarios() {
   const [users, setUsers] = useState([]);
@@ -21,14 +21,7 @@ export default function PanelUsuarios() {
     role: "paciente",
     idsap: "",
   });
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const [searchRole, setSearchRole] = useState('');
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage] = useState(25); // Puedes ajustar este valor
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchField, setSearchField] = useState("idsap"); // 'idsap' o 'nombre'
+  const [loading, setLoading] = useState(false);
 
   // Efecto para sincronizar email con ID SAP
   useEffect(() => {
@@ -46,41 +39,27 @@ export default function PanelUsuarios() {
   }, [newUser.idsap]);
 
   // Cargar usuarios
-
-  const fetchUsers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `/api/admin/users?page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&field=${searchField}&role=${searchRole}`
-      );
-      // Verificar si la respuesta es JSON
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await res.text();
-        throw new Error(`Respuesta inesperada: ${text.substring(0, 100)}...`);
-      }
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          data.message || data.error || "Error al cargar usuarios"
-        );
-      }
-
-      setUsers(data.users || []);
-      setTotalPages(data.totalPages || 1);
-    } catch (err) {
-      console.error("Error cargando usuarios:", err);
-      alert(`Error al cargar usuarios: ${err.message}`);
-      setUsers([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, itemsPerPage, searchTerm, searchField, searchRole]);
-
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || data.error || "Error al cargar usuarios");
+        }
+
+        setUsers(data.users || []);
+      } catch (err) {
+        console.error("Error cargando usuarios:", err);
+        alert(`Error al cargar usuarios: ${err.message}`);
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUsers();
   }, []);
 
@@ -98,7 +77,7 @@ export default function PanelUsuarios() {
       if (!res.ok) throw new Error(data.error || "Error al actualizar usuario");
 
       alert("Usuario actualizado");
-      fetchUsers(); // recarga tabla
+      fetchUsers();
     } catch (error) {
       console.error(error);
       alert(error.message);
@@ -121,7 +100,7 @@ export default function PanelUsuarios() {
       if (!res.ok) throw new Error(data.error || "Error al eliminar usuario");
 
       alert("Usuario eliminado");
-      fetchUsers(); // actualiza tabla
+      fetchUsers();
     } catch (error) {
       console.error(error);
       alert(error.message);
@@ -141,11 +120,8 @@ export default function PanelUsuarios() {
 
       alert("Usuario creado correctamente");
       setShowModal(false);
-      resetNewUserForm(); // Limpiar el formulario
-
-      const res = fetchUsers();
-      const data = await res.json();
-      setUsers(data);
+      resetNewUserForm();
+      fetchUsers();
     } catch (error) {
       alert("Error: " + error.message);
     }
@@ -160,6 +136,19 @@ export default function PanelUsuarios() {
     });
   };
 
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/admin/users');
+      const data = await res.json();
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error("Error al cargar usuarios:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const roleIcons = {
     paciente: <FaUserInjured />,
     medico: <FaUserMd />,
@@ -169,97 +158,71 @@ export default function PanelUsuarios() {
     admin: <FaUserCog />,
   };
 
+  const roleNames = {
+    paciente: "Pacientes",
+    medico: "Médicos",
+    enfermeria: "Enfermería",
+    supervisor: "Coordinadores",
+    turno: "Turnos",
+    admin: "Administradores",
+  };
+
+  // Agrupar usuarios por rol
+  const usersByRole = users.reduce((acc, user) => {
+    if (!acc[user.role]) {
+      acc[user.role] = [];
+    }
+    acc[user.role].push(user);
+    return acc;
+  }, {});
+
   return (
     <div className="admin-users">
       <div className="admin-controls">
         <button className="ok" onClick={() => setShowModal(true)}>
           + Agregar Usuario
         </button>
-        <div className="admin-search">
-          <select
-            value={searchField}
-            onChange={(e) => setSearchField(e.target.value)}
-            className="admin-search-select"
-          >
-            <option value="idsap">Buscar por ID SAP</option>
-            <option value="nombre">Buscar por Nombre</option>
-          </select>
-          <input
-            type="text"
-            placeholder={`Buscar por ${
-              searchField === "idsap" ? "ID SAP" : "Nombre"
-            }...`}
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1); // Resetear a primera página al buscar
-            }}
-            className="admin-search-input"
-          />
-          <button
-            className="admin-search-btn"
-            onClick={() => {
-              setCurrentPage(1); // Resetear a primera página
-              fetchUsers();
-            }}
-          >
-            Buscar
-          </button>
-        </div>
       </div>
 
       {loading ? (
         <div className="loading-indicator">Cargando...</div>
       ) : (
-        <>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Nombre</th>
-                <th>ID SAP</th>
-                <th>Rol</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr
-                  key={user.id}
-                  onClick={() => setSelectedUser(user)}
-                  style={{ cursor: "pointer" }}
-                  className={`admin-clickable-row rol-${user.role}`}
-                >
-                  <td className={`rol-${user.role}`}>
-                    <span className="rol-tag">{roleIcons[user.role]}</span>
-                  </td>
-                  <td>{user.nombre}</td>
-                  <td>{user.idsap}</td>
-                  <td>{user.role}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="admin-pagination">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
-
-            <span>
-              Página {currentPage} de {totalPages}
-            </span>
-
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Siguiente
-            </button>
-          </div>
-        </>
+        <div className="users-by-role">
+          {Object.entries(usersByRole).map(([role, roleUsers]) => (
+            <div key={role} className="role-group">
+              <h3 className="role-header">
+                {roleIcons[role]} {roleNames[role] || role} ({roleUsers.length})
+              </h3>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>ID SAP</th>
+                    <th>Rol</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roleUsers.map((user) => (
+                    <tr
+                      key={user.id}
+                      onClick={() => setSelectedUser(user)}
+                      style={{ cursor: "pointer" }}
+                      className={`admin-clickable-row rol-${user.role}`}
+                    >
+                      <td className={`rol-${user.role}`}>
+                        <span className="rol-tag">{roleIcons[user.role]}</span>
+                      </td>
+                      <td>{user.nombre}</td>
+                      <td>{user.idsap}</td>
+                      <td>{user.role}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+        </div>
       )}
 
       <Modal

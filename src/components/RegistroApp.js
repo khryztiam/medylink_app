@@ -26,10 +26,10 @@ export default function RegisterPage() {
     setError('');
 
     try {
-        // Validar que las contraseñas coincidan
-        if (password !== confirmPassword) {
-          throw new Error('Las contraseñas no coinciden');
-        }
+      // Validar que las contraseñas coincidan
+      if (password !== confirmPassword) {
+        throw new Error('Las contraseñas no coinciden');
+      }
       // Validar si el ID SAP ya está registrado
       const { data: existingUser } = await supabase
         .from('app_users')
@@ -96,19 +96,19 @@ export default function RegisterPage() {
     }
   };
 
-useEffect(() => {
-  if (idsap.trim() !== '') {
-    setEmail(`${idsap.toLowerCase()}@yazaki.com`);
-  } else {
-    setEmail('');
-  }
-}, [idsap]);
+  useEffect(() => {
+    if (idsap.trim() !== '') {
+      setEmail(`${idsap.toLowerCase()}@yazaki.com`);
+    } else {
+      setEmail('');
+    }
+  }, [idsap]);
 
   return (
     <div className="register-container">
       <div className='login-modal-header'>
         <h2>Registro de Usuario</h2>
-      </div> 
+      </div>
       <form onSubmit={handleRegister} className='login-modal-content'>
         <div className="material-group">
           <input
@@ -120,16 +120,7 @@ useEffect(() => {
           />
         </div>
 
-        <div className="material-group">
-          <input
-            type="hidden"
-            value={email}
-            placeholder='Email' 
-            className='login-form-control'
-            readOnly
-            required
-          />
-        </div>
+
 
         <div className="material-group">
           <input
@@ -139,29 +130,29 @@ useEffect(() => {
             placeholder='Contraseña'
             required
           />
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="toggle-password"
             onClick={() => setShowPassword(!showPassword)}
-            >
+          >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
 
         <div className="material-group">
           <input
-             type={showConfirmPassword ? "text" : "password"} // Cambia el tipo según el estado
+            type={showConfirmPassword ? "text" : "password"} // Cambia el tipo según el estado
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder='Confirmar contraseña'
             required
           />
-          <button 
-              type="button" 
-              className="toggle-password"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+          <button
+            type="button"
+            className="toggle-password"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
 
@@ -176,13 +167,23 @@ useEffect(() => {
             {loading ? 'Registrando...' : 'Registrar'}
           </button>
         </div>
-
+        <div className="material-group">
+          <input
+            type="hidden"
+            value={email}
+            placeholder='Email'
+            className='login-form-control'
+            readOnly
+            required
+          />
+        </div>
         <div className="mt-4">
           <p>
             ¿Ya tienes una cuenta?{' '}
             <Link href="/" className="modal-footer-link">Inicia sesión aquí</Link>
           </p>
         </div>
+
       </form>
     </div>
   );

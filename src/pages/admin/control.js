@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PanelUsuarios from "@/components/admin/UsersPanel";
 import PanelImportarCSV from "@/components/admin/CSVImportPanel";
+import ResumenUsuariosCard from "@/components/admin/ResumenUsuarios";
 import { FaUserCog, FaTachometerAlt } from "react-icons/fa";
 
 export default function ControlAdmin() {
@@ -25,6 +26,7 @@ export default function ControlAdmin() {
           </div>
         </div>
         <div className="sidebar">
+          <ResumenUsuariosCard />
           <PanelImportarCSV />
         </div>
       </div>

@@ -116,7 +116,13 @@ export default function Home() {
                 <h2>
                   {iconoSaludo} {saludo}, {nombre}.
                 </h2>
-                <p className="saludo-frase">Esperamos que tengas un gran día 👨‍⚕️</p>
+                <p className="saludo-frase"
+                style={{
+                  fontSize: "1.1em",
+                  marginTop: "20px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}>Esperamos que tengas un gran día 👨‍⚕️</p>
               </div>
 
               <div className="saludo-boton">

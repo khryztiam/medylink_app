@@ -703,3 +703,39 @@
     min-width: 0; /* ✅ Evita que se imponga el mínimo de 250px en pantallas pequeñas */
   }
 }
+
+.resumen-usuarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.resumen-usuarios-card {
+  background-color: #f5f9ff;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.resumen-usuarios-card:hover {
+  transform: translateY(-2px);
+}
+
+.resumen-usuarios-title {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  color: #2a4365;
+}
+
+.resumen-usuarios-count {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #1a202c;
+}
+
+.resumen-total {
+  background-color: #e0f7fa;
+}

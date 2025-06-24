@@ -46,46 +46,10 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     try {
-      // Obtener parámetros de consulta con valores por defecto
-      const { page = 1, limit = 25, search = "", field = "idsap" } = req.query;
-      const pageInt = parseInt(page);
-      const limitInt = parseInt(limit);
-
-      // Validar parámetros
-      if (isNaN(pageInt) || pageInt < 1) {
-        return res
-          .status(400)
-          .json({ error: "Parámetro page debe ser un número mayor a 0" });
-      }
-      if (isNaN(limitInt) || limitInt < 1 || limitInt > 25) {
-        return res
-          .status(400)
-          .json({ error: "Parámetro limit debe ser un número entre 1 y 25" });
-      }
-
-      const offset = (pageInt - 1) * limitInt;
-
-      // Construir consulta base con conteo exacto
-      let query = supabase
+      // Consulta simple para obtener todos los usuarios
+      const { data, error } = await supabase
         .from("app_users")
-        .select("id, idsap, role, status, allowed_users(nombre)", {
-          count: "exact",
-        });
-
-      // Filtros
-      if (search && search.trim() !== "") {
-        if (field === "idsap") {
-          query = query.ilike("idsap", `%${search.trim()}%`);
-        } else if (field === "nombre") {
-          query = query.ilike("allowed_users.nombre", `%${search.trim()}%`);
-        }
-      }
-
-      // Paginación
-      const { data, error, count } = await query.range(
-        offset,
-        offset + limitInt - 1
-      );
+        .select("id, idsap, role, status, allowed_users(nombre)");
 
       if (error) {
         console.error("Detalles del error de Supabase:", {
@@ -101,16 +65,6 @@ export default async function handler(req, res) {
         });
       }
 
-      // Verificar si hay datos
-      if (!data) {
-        return res.status(200).json({
-          users: [],
-          currentPage: pageInt,
-          totalPages: 0,
-          totalUsers: 0,
-        });
-      }
-
       // Procesar resultados
       const users = data
         .map((user) => ({
@@ -122,12 +76,7 @@ export default async function handler(req, res) {
         }))
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-      return res.status(200).json({
-        users,
-        currentPage: pageInt,
-        totalPages: Math.max(1, Math.ceil(count / limitInt)),
-        totalUsers: count || 0,
-      });
+      return res.status(200).json({ users });
     } catch (error) {
       console.error("Error en GET /api/admin/users:", error);
       return res.status(500).json({
