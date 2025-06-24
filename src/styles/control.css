@@ -739,3 +739,46 @@
 .resumen-total {
   background-color: #e0f7fa;
 }
+
+.recent-users-panel {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.recent-users-list {
+  margin-top: 1rem;
+}
+
+.recent-user-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.recent-user-item:hover {
+  background: var(--hover-color);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-weight: bold;
+}
+
+.user-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
