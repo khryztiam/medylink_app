@@ -4,8 +4,10 @@ import { getCitas, actualizarCita } from "../lib/citasData";
 import { supabase } from "@/lib/supabase";
 import DoctorPanel from "../components/DoctorPanel";
 import { FaUserMd, FaCalendarAlt } from "react-icons/fa";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Doctor() {
+  const { userName } = useAuth();
   const [citasProgramadas, setCitasProgramadas] = useState([]);
   const [ultimasProgramadas, setUltimasProgramadas] = useState([]);
 
@@ -123,6 +125,23 @@ export default function Doctor() {
     </>
   );
 
+  const hora = new Date().getHours();
+  let saludo = "Hola";
+  let iconoSaludo = "👋";
+
+  if (hora >= 6 && hora < 12) {
+    saludo = "Buenos días";
+    iconoSaludo = "☀️";
+  } else if (hora >= 12 && hora < 19) {
+    saludo = "Buenas tardes";
+    iconoSaludo = "🌤️";
+  } else {
+    saludo = "Buenas noches";
+    iconoSaludo = "🌙";
+  }
+
+  const nombre = userName || "Paciente";
+
   return (
     <div className="main-content">
       <div className="title-bar">
@@ -138,6 +157,24 @@ export default function Doctor() {
       <div className="content-wrapper">
         <div className="main">
           <div className="doctor-container">
+            <div className="saludo-card">
+              <div className="saludo-texto">
+                <h2>
+                  {iconoSaludo} {saludo}, {nombre}.
+                </h2>
+                <p
+                  className="saludo-frase"
+                  style={{
+                    fontSize: "1.1em",
+                    marginTop: "20px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}
+                >
+                  Gracias por brindar atención con entrega y criterio. Tu labor marca la diferencia en cada consulta 🩺📌
+                </p>
+              </div>
+            </div>
             <div className="doctor-layout">
               <DoctorPanel
                 citas={citasProgramadas}

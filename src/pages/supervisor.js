@@ -4,14 +4,22 @@ import { supabase } from "@/lib/supabase";
 import CitaForm from "@/components/CitaForm"; // 👈 Asegúrate de que el path esté correcto
 import { v4 as uuidv4 } from "uuid";
 import { agregarCita, getCitas } from "../lib/citasData";
-import { FaUserShield, FaTachometerAlt, FaCalendarAlt, FaStethoscope, FaCheckCircle, FaRegClock, FaCalendarCheck } from "react-icons/fa";
+import {
+  FaUserShield,
+  FaTachometerAlt,
+  FaCalendarAlt,
+  FaStethoscope,
+  FaCheckCircle,
+  FaRegClock,
+  FaCalendarCheck,
+} from "react-icons/fa";
 import EstadoConsulta from "@/components/EstadoConsulta";
 import Modal from "react-modal";
 
 Modal.setAppElement("#__next");
 
 const Supervisor = () => {
-  const { user } = useAuth();
+  const { user, userName } = useAuth();
   const [citasProgramadas, setCitasProgramadas] = useState([]);
   const [tiempoPromedio, setTiempoPromedio] = useState(null);
   const [mensaje, setMensaje] = useState("");
@@ -228,6 +236,23 @@ const Supervisor = () => {
     }, 3000);
   };
 
+  const hora = new Date().getHours();
+  let saludo = "Hola";
+  let iconoSaludo = "👋";
+
+  if (hora >= 6 && hora < 12) {
+    saludo = "Buenos días";
+    iconoSaludo = "☀️";
+  } else if (hora >= 12 && hora < 19) {
+    saludo = "Buenas tardes";
+    iconoSaludo = "🌤️";
+  } else {
+    saludo = "Buenas noches";
+    iconoSaludo = "🌙";
+  }
+
+  const nombre = userName || "Paciente";
+
   return (
     <div className="main-content">
       <div className="title-bar">
@@ -246,7 +271,28 @@ const Supervisor = () => {
             <div className="panels-container">
               {/* Panel principal */}
               <div className="panel-main">
-                <h2 className="panel-title">Programación y Monitoreo de Citas</h2>
+                <div className="saludo-card">
+                  <div className="saludo-texto">
+                    <h2>
+                      {iconoSaludo} {saludo}, {nombre}.
+                    </h2>
+                    <p
+                      className="saludo-frase"
+                      style={{
+                        fontSize: "1.3em",
+                        marginTop: "20px",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                      }}
+                    >
+                      Gracias por asegurar la producción sin perder de vista lo
+                      más valioso: la salud y bienestar de tu equipo 🩺👷‍♂️⚙️
+                    </p>
+                  </div>
+                </div>
+                <h2 className="panel-title">
+                  Programación y Monitoreo de Citas
+                </h2>
                 <div className="panel-content">
                   {/* Programadas */}
                   <div className="section-header estado-programado2">
@@ -258,22 +304,29 @@ const Supervisor = () => {
                       {citasProgramadas.map((cita) => (
                         <li key={cita.id} className="cita-item">
                           <div className="cita-detalle">
-                            <strong className="cita-nombre">{cita.nombre}</strong>
+                            <strong className="cita-nombre">
+                              {cita.nombre}
+                            </strong>
                             <span className="cita-fecha">
-                              {new Date(cita.programmer_at).toLocaleString("es-MX", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              })}
+                              {new Date(cita.programmer_at).toLocaleString(
+                                "es-MX",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                }
+                              )}
                             </span>
                           </div>
                           <button
                             className="btn-cancelc"
                             onClick={() =>
-                              window.confirm("¿Estás seguro de cancelar esta cita?")
+                              window.confirm(
+                                "¿Estás seguro de cancelar esta cita?"
+                              )
                                 ? cancelarCita(cita.id)
                                 : null
                             }
@@ -289,7 +342,10 @@ const Supervisor = () => {
 
                   {/* En Consulta */}
                   <div className="section-header2 estado-consulta2">
-                    <span><FaStethoscope className="estado-icon estado-consulta2" /> En Consulta</span>
+                    <span>
+                      <FaStethoscope className="estado-icon estado-consulta2" />{" "}
+                      En Consulta
+                    </span>
                   </div>
                   {citasEnConsulta.length > 0 ? (
                     <ul className="citas-list">
@@ -297,11 +353,14 @@ const Supervisor = () => {
                         <li key={cita.id} className="estado-consulta2">
                           <strong>{cita.nombre}</strong> —{" "}
                           {cita.consultation_at
-                            ? new Date(cita.consultation_at).toLocaleString("es-MX", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })
+                            ? new Date(cita.consultation_at).toLocaleString(
+                                "es-MX",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                }
+                              )
                             : "sin hora"}
                         </li>
                       ))}
@@ -312,7 +371,10 @@ const Supervisor = () => {
 
                   {/* Atendidas */}
                   <div className="section-header3 estado-atendido">
-                    <span><FaCheckCircle className="estado-icon estado-atendido" /> Atendidas</span>
+                    <span>
+                      <FaCheckCircle className="estado-icon estado-atendido" />{" "}
+                      Atendidas
+                    </span>
                   </div>
                   {citasAtendidas.length > 0 ? (
                     <ul className="citas-list">
@@ -321,10 +383,10 @@ const Supervisor = () => {
                           <strong>{cita.nombre}</strong> —{" "}
                           {cita.check_out
                             ? new Date(cita.check_out).toLocaleString("es-MX", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
                             : "sin salida"}
                         </li>
                       ))}

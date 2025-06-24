@@ -19,13 +19,13 @@ import {
   FaCalendarCheck,
   FaSignOutAlt,
   FaUserNurse,
-  FaTimes
+  FaTimes,
 } from "react-icons/fa";
 
 Modal.setAppElement("#__next");
 
 export default function Enfermeria() {
-  const { user } = useAuth();
+  const { user, userName } = useAuth();
   const [pendientes, setPendientes] = useState([]);
   const [programadas, setProgramadas] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,7 +40,6 @@ export default function Enfermeria() {
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
-
 
   useEffect(() => {
     const fetchTodasCitas = async () => {
@@ -280,6 +279,24 @@ export default function Enfermeria() {
   const openNuevaCitaModal = () => {
     setIsNuevaCitaModalOpen(true);
   };
+
+  const hora = new Date().getHours();
+  let saludo = "Hola";
+  let iconoSaludo = "👋";
+
+  if (hora >= 6 && hora < 12) {
+    saludo = "Buenos días";
+    iconoSaludo = "☀️";
+  } else if (hora >= 12 && hora < 19) {
+    saludo = "Buenas tardes";
+    iconoSaludo = "🌤️";
+  } else {
+    saludo = "Buenas noches";
+    iconoSaludo = "🌙";
+  }
+
+  const nombre = userName || "Paciente";
+
   //Html renderizado
   return (
     <div className="main-content">
@@ -346,26 +363,60 @@ export default function Enfermeria() {
           </div>
         </div>
         <div className="main">
+          <div className="saludo-card">
+            <div className="saludo-texto">
+              <h2>
+                {iconoSaludo} {saludo}, {nombre}.
+              </h2>
+              <p
+                className="saludo-frase"
+                style={{
+                  fontSize: "1.1em",
+                  marginTop: "20px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Cada cita que programas es una muestra de tu compromiso con la
+                salud y el bienestar. ¡Gracias por estar ahí siempre! 🫶📋
+              </p>
+            </div>
+          </div>
           <div className="enfermeria-container">
             {/* Tabs con React */}
-            <Tabs selectedIndex={tabIndex}
+            <Tabs
+              selectedIndex={tabIndex}
               onSelect={(index) => setTabIndex(index)}
-              className={`custom-tabs ${isMobile ? "mobile-view" : ""}`}>
+              className={`custom-tabs ${isMobile ? "mobile-view" : ""}`}
+            >
               <TabList className="tab-list">
-                <Tab className="tab-item" selectedClassName="tab-item--selected">
+                <Tab
+                  className="tab-item"
+                  selectedClassName="tab-item--selected"
+                >
                   🗓️ Programadas
                 </Tab>
-                <Tab className="tab-item" selectedClassName="tab-item--selected">
+                <Tab
+                  className="tab-item"
+                  selectedClassName="tab-item--selected"
+                >
                   ✅ Check-in
                 </Tab>
-                <Tab className="tab-item" selectedClassName="tab-item--selected">
+                <Tab
+                  className="tab-item"
+                  selectedClassName="tab-item--selected"
+                >
                   🔍 Consulta
                 </Tab>
               </TabList>
 
               {/* Contenido dinámico según el tab */}
 
-              <TabPanel className={`tab-panel tab-panel-transition ${tabIndex === 0 ? "active" : ""}`}>
+              <TabPanel
+                className={`tab-panel tab-panel-transition ${
+                  tabIndex === 0 ? "active" : ""
+                }`}
+              >
                 <div className="panel-programadas">
                   <h2>🗓️ Últimas 25 Citas Programadas</h2>
                   <div className="table-container">
@@ -404,7 +455,9 @@ export default function Enfermeria() {
                             </td>
                             <td>{cita.motivo}</td>
                             <td>
-                              {new Date(cita.programmer_at).toLocaleDateString()}
+                              {new Date(
+                                cita.programmer_at
+                              ).toLocaleDateString()}
                             </td>
                             <td>
                               {new Date(cita.programmer_at).toLocaleTimeString(
@@ -424,10 +477,14 @@ export default function Enfermeria() {
                   <div className="mobile-cards">
                     {programadas.length > 0 ? (
                       programadas.map((cita) => (
-                        <div key={cita.id} className={`cita-card ${cita.estado?.toLowerCase()}`}>
+                        <div
+                          key={cita.id}
+                          className={`cita-card ${cita.estado?.toLowerCase()}`}
+                        >
                           {/* Contenido de la card (usando tu estructura) */}
                           <div className="cita-header">
-                            <FaUser style={{ marginRight: "6px" }} /> {cita.nombre}
+                            <FaUser style={{ marginRight: "6px" }} />{" "}
+                            {cita.nombre}
                           </div>
                           <div className="cita-motivo-estado">
                             <div className="motivo">{cita.motivo}</div>
@@ -436,7 +493,9 @@ export default function Enfermeria() {
                             <div>
                               <FaCalendarAlt className="fa-creacion" />
                               <br />
-                              {new Date(cita.programmer_at).toLocaleDateString()}
+                              {new Date(
+                                cita.programmer_at
+                              ).toLocaleDateString()}
                             </div>
                             <div>
                               <FaRegClock className="fa-cita" />
@@ -460,11 +519,15 @@ export default function Enfermeria() {
                 </div>
               </TabPanel>
 
-              <TabPanel className={`tab-panel tab-panel-transition ${tabIndex === 1 ? "active" : ""}`}>
+              <TabPanel
+                className={`tab-panel tab-panel-transition ${
+                  tabIndex === 1 ? "active" : ""
+                }`}
+              >
                 <div className="panel-checkin">
                   <h2>✅ Pacientes en espera</h2>
                   {enEspera.filter((c) => c.estado === "en espera").length ===
-                    0 ? (
+                  0 ? (
                     <p>No hay pacientes en espera.</p>
                   ) : (
                     <div className="lista-checkin">
@@ -473,14 +536,15 @@ export default function Enfermeria() {
                         .map((cita) => (
                           <div
                             key={cita.id}
-                            className={`item-checkin ${cita.emergency ? "emergency-card" : ""
-                              }`}
+                            className={`item-checkin ${
+                              cita.emergency ? "emergency-card" : ""
+                            }`}
                             style={
                               cita.emergency
                                 ? {
-                                  borderLeft: "5px solid #ff3d3d",
-                                  order: -1,
-                                }
+                                    borderLeft: "5px solid #ff3d3d",
+                                    order: -1,
+                                  }
                                 : {}
                             }
                           >
@@ -518,7 +582,11 @@ export default function Enfermeria() {
                 </div>
               </TabPanel>
 
-              <TabPanel className={`tab-panel tab-panel-transition ${tabIndex === 2 ? "active" : ""}`}>
+              <TabPanel
+                className={`tab-panel tab-panel-transition ${
+                  tabIndex === 2 ? "active" : ""
+                }`}
+              >
                 <div className="panel-consulta">
                   <div className="material-group">
                     <button onClick={openNuevaCitaModal} className="ok">
@@ -573,7 +641,10 @@ export default function Enfermeria() {
                     >
                       Check-in (asignar turno)
                     </button>
-                    <button type="submit" className="prog-btn prog-btn-secondary">
+                    <button
+                      type="submit"
+                      className="prog-btn prog-btn-secondary"
+                    >
                       Reprogramar cita
                     </button>
                     <button
