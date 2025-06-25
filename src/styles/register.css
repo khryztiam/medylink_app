@@ -3,7 +3,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  animation: fadeInScale 0.4s ease-out;
+  animation: fadeInScale2 0.4s ease-out;
   max-width: 400px;
   width: 90%;
   margin: 0 auto;
@@ -14,7 +14,7 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeInScale {
+@keyframes fadeInScale2 {
   from {
     opacity: 0;
     transform: translate(-50%, -60%) scale(0.95);
