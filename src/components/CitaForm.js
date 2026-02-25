@@ -1,147 +1,171 @@
 // components/CitaForm.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/context/AuthContext";
-import EstadoConsulta from './EstadoConsulta';
+//import EstadoConsulta from './EstadoConsulta';
+
+export default function CitaForm({ onSubmit, onClose }) {
+  const { userName, idsap, role } = useAuth();
 
 
-export default function CitaForm({ onSubmit }) {
-  const { user, userName, idsap, role } = useAuth()
-  const [nombre, setNombre] = useState('')
-  const [motivo, setMotivo] = useState('')
-  const [idSAP, setIdSAP] = useState('')
-  const [buscando, setBuscando] = useState(false)
-  const [urgente, setUrgente] = useState(false)
-  const [isss, setIsss] = useState(false)
+// Estados del formulario
+  const [nombre, setNombre] = useState('');
+  const [motivo, setMotivo] = useState('');
+  const [idSAP, setIdSAP] = useState('');
+  const [buscando, setBuscando] = useState(false);
+  const [urgente, setUrgente] = useState(false);
+  const [isss, setIsss] = useState(false);
+  const [errorSAP, setErrorSAP] = useState(null);
 
-    // Si el usuario es PACIENTE, autocompleta los datos
-    useEffect(() => {
-      if (role === 'paciente') {
-        setNombre(userName || '')
-        setIdSAP(idsap || '')
-      }
-    }, [userName, idsap, role])
-  
-    // Si es ENFERMERÍA, y cambia el SAP, busca el nombre
-    useEffect(() => {
-      const buscarNombre = async () => {
-        if ((role === 'enfermeria' || role === 'admin' || role === 'supervisor') && idSAP.trim().length > 7) {
-          setBuscando(true)
-    
-          const { data, error } = await supabase
-            .from('allowed_users')
-            .select('nombre')
-            .eq('idsap', idSAP.trim())
-            .single()
-    
-          console.log('🔍 [CitaForm] Resultado búsqueda:', { data, error })
-    
-          if (error || !data) {
-            setNombre('')
-            alert('El SAP ingresado no está autorizado o no se encontró en la base.')
-          } else {
-            setNombre(data.nombre)
-          }
-    
-          setBuscando(false)
-        }
-      }
-    
-      buscarNombre()
-    }, [idSAP, role])
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const idSAPInt = parseInt(idSAP,10)
-    if (!nombre.trim() || !motivo.trim() || isNaN(idSAPInt) ){
-      alert('Completa los campos')
-      return
+// Inicialización para PACIENTE, los datos se autocompletan en el form
+  useEffect(() => {
+    if (role === 'paciente') {
+      setNombre(userName || '');
+      setIdSAP(idsap || '');
     }
-    onSubmit(nombre.trim(), motivo.trim(), idSAPInt, urgente, isss)
-    setNombre('')
-    setMotivo('')
-    setIdSAP('')
-    setUrgente(false)
-    setIsss(false)
-  }
+  }, [userName, idsap, role]);
+  
+// Búsqueda automática por SAP (Solo para personal médico/admin)
+  useEffect(() => {
+    const buscarNombre = async () => {
+      const sapLimpio = String(idsap || "").trim();
+      
+      // Solo buscar si tiene la longitud mínima y el rol lo permite
+      if (['enfermeria', 'admin', 'supervisor'].includes(role) && sapLimpio.length >= 8) {
+        setBuscando(true);
+        setErrorSAP(null);
 
-  return (
-    <form onSubmit={handleSubmit}>
-    <div className='pac-modal-header'>
-      <h2>Solicitud de cita</h2>
-    </div>
-    <div className='pac-modal-content'>
-    <div className="pac-form-group">
-    <label htmlFor="sap">SAP</label>
-      <input
-        type="text"
-        id="sap"
-        value={idSAP}
-        placeholder=" "
-        onChange={(e) => setIdSAP(e.target.value)}
-        className='pac-form-control'
-        required
-        disabled={role === 'paciente'}
-      />
-    </div>
+        const { data, error } = await supabase
+          .from('allowed_users')
+          .select('nombre')
+          .eq('idsap', sapLimpio)
+          .single();
 
-    <div className="pac-form-group">
-    <label htmlFor="nombre">
-        {buscando ? 'Buscando nombre...' : 'Nombre'}
-      </label>
-      <input
-        type="text"
-        id="nombre"
-        value={nombre}
-        placeholder=" "
-        onChange={(e) => setNombre(e.target.value)}
-        className='pac-form-control'
-        required
-        disabled={role === 'paciente' || role === 'enfermeria'}
-      />
-    </div>
+        if (error || !data) {
+          setNombre('');
+          setErrorSAP('Usuario no encontrado o no autorizado');
+        } else {
+          setNombre(data.nombre);
+          setErrorSAP(null);
+        }
+        setBuscando(false);
+      }
+    };
 
-    <div className="pac-toggle-container">
-    <label htmlFor="urgente" className='pac-toggle-label'>Es una emergencia?</label>
-    <label className="pac-toggle-switch">
-      <input
-        type="checkbox"
-        id="urgente"
-        checked={urgente}
-        onChange={(e) => setUrgente(e.target.checked)}
-      />
-      <span className={`pac-toggle-slider ${urgente ? 'toggle-rojo' : ''}`}/>
-    </label>  
-    </div>
+    const debounceTimer = setTimeout(buscarNombre, 500); // Evita peticiones excesivas
+    return () => clearTimeout(debounceTimer);
+  }, [idSAP, role]);
 
-    <div className="pac-toggle-container">
-      <label htmlFor="toggle-isss" className="pac-toggle-label">Consulta ISSS</label>
-      <label className="pac-toggle-switch">
-        <input
-          type="checkbox"
-          id="toggle-isss"
-          checked={isss}
-          onChange={(e) => setIsss(e.target.checked)}
-        />
-        <span className="pac-toggle-slider" />
-      </label>
-    </div>
+const handleSubmit = (e) => {
+    e.preventDefault();
+    const idSAPInt = parseInt(idSAP, 10);
 
-    <div className="pac-form-group">
-    <label htmlFor="motivo">Motivo de consulta</label>
-      <textarea
-        id="motivo"
-        value={motivo}
-        placeholder=" "
-        onChange={(e) => setMotivo(e.target.value)}
-        className='pac-form-control'
-        required
-      />
-    </div>
-    <div className='pac-modal-actions'>
-    <button type="submit" className='pac-btn pac-btn-primary'>Solicitar cita</button>
-    </div>
-    </div>
-  </form>
-  )
+    if (!nombre.trim() || !motivo.trim() || isNaN(idSAPInt)) {
+      alert('Por favor, verifique los datos del formulario.');
+      return;
+    }
+
+onSubmit(nombre.trim(), motivo.trim(), idSAPInt, urgente, isss);
+    
+    // Limpieza
+    setMotivo('');
+    setUrgente(false);
+    setIsss(false);
+    if (onClose) onClose();
+  };
+
+return (
+    <form onSubmit={handleSubmit} className="pac-modal-form">
+      <div className='pac-modal-header'>
+        <h2>Nueva Solicitud</h2>
+        <p>Complete los detalles para la atención en enfermería</p>
+      </div>
+
+      <div className='pac-modal-content'>
+        {/* Campo SAP */}
+        <div className={`pac-form-group ${errorSAP ? 'has-error' : ''}`}>
+          <label htmlFor="sap">Número de SAP</label>
+          <input
+            type="text"
+            id="sap"
+            value={idSAP}
+            placeholder="Ingrese SAP del trabajador"
+            onChange={(e) => setIdSAP(e.target.value)}
+            className='pac-form-control'
+            required
+            disabled={role === 'paciente'}
+            autoFocus={role !== 'paciente'}
+          />
+          {errorSAP && <span className="error-text">{errorSAP}</span>}
+        </div>
+
+        {/* Campo Nombre (Dinámico) */}
+        <div className="pac-form-group">
+          <label htmlFor="nombre">
+            {buscando ? <span className="loading-dots">Validando usuario</span> : 'Trabajador'}
+          </label>
+          <input
+            type="text"
+            id="nombre"
+            value={nombre}
+            className={`pac-form-control pac-read-only ${buscando ? 'is-loading' : ''}`}
+            placeholder="Nombre del paciente"
+            readOnly
+            tabIndex="-1"
+          />
+        </div>
+
+        {/* Sección de Toggles (Emergencia / ISSS) */}
+        <div className="pac-toggles-grid">
+          <div className="pac-toggle-container">
+            <span className="pac-toggle-label">¿Es una emergencia?</span>
+            <label className="pac-toggle-switch">
+              <input
+                type="checkbox"
+                checked={urgente}
+                onChange={(e) => setUrgente(e.target.checked)}
+              />
+              <span className="pac-toggle-slider toggle-rojo"/>
+            </label>
+          </div>
+
+          <div className="pac-toggle-container">
+            <span className="pac-toggle-label">Consulta ISSS</span>
+            <label className="pac-toggle-switch">
+              <input
+                type="checkbox"
+                checked={isss}
+                onChange={(e) => setIsss(e.target.checked)}
+              />
+              <span className="pac-toggle-slider" />
+            </label>
+          </div>
+        </div>
+
+        {/* Motivo de consulta */}
+        <div className="pac-form-group">
+          <label htmlFor="motivo">Motivo de la visita</label>
+          <textarea
+            id="motivo"
+            value={motivo}
+            placeholder="Describa brevemente el síntoma o necesidad..."
+            onChange={(e) => setMotivo(e.target.value)}
+            className='pac-form-control pac-textarea'
+            rows="3"
+            required
+          />
+        </div>
+
+        <div className='pac-modal-actions'>
+          <button 
+            type="submit" 
+            className={`pac-btn-submit ${urgente ? 'btn-urgente' : ''}`}
+            disabled={buscando || !nombre}
+          >
+            {urgente ? '⚡ NOTIFICAR EMERGENCIA' : 'Confirmar Solicitud'}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
 }

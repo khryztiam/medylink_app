@@ -1,6 +1,6 @@
 // doctor.js
 import { useEffect, useState } from "react";
-import { getCitas, actualizarCita } from "../lib/citasData";
+import { getTodasLasCitas, actualizarCita } from "../lib/citasData";
 import { supabase } from "@/lib/supabase";
 import DoctorPanel from "../components/DoctorPanel";
 import { FaUserMd, FaCalendarAlt } from "react-icons/fa";
@@ -12,7 +12,7 @@ export default function Doctor() {
   const [ultimasProgramadas, setUltimasProgramadas] = useState([]);
 
   const obtenerUltimasProgramadas = async () => {
-    const todas = await getCitas();
+    const todas = await getTodasLasCitas();
     const programadas = todas
       .filter((c) => c.estado === "programado")
       .sort((a, b) => new Date(b.programmer_at) - new Date(a.programmer_at))
@@ -21,7 +21,7 @@ export default function Doctor() {
   };
 
   const obtenerCitasProgramadas = async () => {
-    const todas = await getCitas();
+    const todas = await getTodasLasCitas();
     const programadas = todas
       .filter((c) => c.estado === "en espera" || c.estado === "en consulta")
       .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at));

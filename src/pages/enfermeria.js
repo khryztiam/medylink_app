@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { getCitas, actualizarCita, agregarCita } from "../lib/citasData";
+import { getTodasLasCitas, getCitasPorPaciente, actualizarCita, agregarCita } from "../lib/citasData";
 import CitaForm from "../components/CitaForm";
 import FechaHoraInput from "../components/FechaHoraInput";
 import ConsultaCita from "../components/ConsultaCita";
@@ -25,7 +25,7 @@ import {
 Modal.setAppElement("#__next");
 
 export default function Enfermeria() {
-  const { user, userName } = useAuth();
+  const { user, userName, idsap } = useAuth();
   const [pendientes, setPendientes] = useState([]);
   const [programadas, setProgramadas] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,15 +42,14 @@ export default function Enfermeria() {
   const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
-    const fetchTodasCitas = async () => {
-      const { data } = await supabase
-        .from("citas")
-        .select("*")
-        .order("created_at", { ascending: false });
-      setTodasLasCitas(data);
-    };
-    fetchTodasCitas();
-  }, []);
+  const fetchTodasCitas = async () => {
+    // Usamos el helper getCitas en lugar de la llamada directa a supabase
+    // para mantener las reglas de negocio (como el límite de registros)
+    const data = await getTodasLasCitas(50); // Traemos las últimas 50 para el historial global de enfermería
+    setTodasLasCitas(data);
+  };
+  fetchTodasCitas();
+}, []);
 
   // Detectar cambio de tamaño de pantalla
   useEffect(() => {
@@ -60,17 +59,22 @@ export default function Enfermeria() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Carga inicial y al actualizar
-  const load = async () => {
-    const todas = await getCitas();
-    setPendientes(todas.filter((c) => c.estado === "pendiente"));
-    setEnEspera(todas.filter((c) => c.estado === "en espera"));
-    const prog = todas
-      .filter((c) => c.estado === "programado")
-      .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at))
-      .slice(0, 25);
-    setProgramadas(prog);
-  };
+  // Carga inicial optimizada para el motor de enfermería
+const load = async () => {
+  const todas = await getTodasLasCitas(); // Asegúrate que en citasData.js getCitas() siga existiendo para traer todo lo reciente
+  
+  if (!Array.isArray(todas)) return;
+
+  setPendientes(todas.filter((c) => c.estado === "pendiente"));
+  setEnEspera(todas.filter((c) => c.estado === "en espera"));
+  
+  // Para programadas, mantenemos el límite de 25 para no saturar la vista
+  const prog = todas
+    .filter((c) => c.estado === "programado")
+    .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at))
+    .slice(0, 25);
+  setProgramadas(prog);
+};
 
   function reproducirSonidoNuevaCita() {
     const audio = new Audio("/nueva_cita.mp3"); // Ruta de tu sonido
@@ -190,7 +194,7 @@ export default function Enfermeria() {
     if (!selected) return;
 
     // 1. Traer todas las citas
-    const todas = await getCitas();
+    const todas = await getCitasPorPaciente();
 
     // 2. Fecha de hoy en 'YYYY-MM-DD'
     const hoy = new Date().toISOString().slice(0, 10);
