@@ -1,5 +1,5 @@
 export const enviarNotificacionTelegram = async (chatId, mensaje) => {
-  const token = "8730857054:AAHHuNjvGDlvQby1nvMrf2cOtccC66Gy5Fo";
+  const token = process.env.TELEGRAM_TOKEN;
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
   try {
