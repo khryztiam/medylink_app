@@ -185,7 +185,7 @@ const Supervisor = () => {
         id: uuidv4(),
         nombre,
         motivo,
-        idSAP: idSAPInt,
+        idSAP: String(idSAPInt).trim(),
         estado: "pendiente",
         orden_llegada: null,
         emergency: urgente,
