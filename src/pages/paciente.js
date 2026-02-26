@@ -182,7 +182,7 @@ export default function Home() {
                   <div className="telegram-text-group">
                     <h3>Notificaciones instantáneas</h3>
                     <p>
-                      Recibe avisos de tus citas y turnos directamente en tu
+                      Recibe avisos de tus citas directamente en tu
                       celular.
                     </p>
                   </div>
@@ -194,7 +194,7 @@ export default function Home() {
                       Más tarde
                     </button>
                     <a
-                      href={`https://t.me/medylinkalert_bot?start=${idsap}`}
+                      href={`https://telegram.me/medylinkalert_bot?start=${idsap}`}
                       target="_blank"
                       rel="noreferrer"
                       className="btn-link-telegram"
