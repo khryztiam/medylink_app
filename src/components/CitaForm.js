@@ -5,32 +5,30 @@ import { useAuth } from "@/context/AuthContext";
 //import EstadoConsulta from './EstadoConsulta';
 
 export default function CitaForm({ onSubmit, onClose }) {
-  const { userName, idsap, role } = useAuth();
+  const { userName, idsap: authSap, role } = useAuth();
 
-
-// Estados del formulario
   const [nombre, setNombre] = useState('');
   const [motivo, setMotivo] = useState('');
-  const [idSAP, setIdSAP] = useState('');
+  const [idSAP, setIdSAP] = useState(''); // Este es el valor del INPUT
   const [buscando, setBuscando] = useState(false);
   const [urgente, setUrgente] = useState(false);
   const [isss, setIsss] = useState(false);
   const [errorSAP, setErrorSAP] = useState(null);
 
-// Inicialización para PACIENTE, los datos se autocompletan en el form
+  // Inicialización: Si es paciente, bloqueamos y autocompletamos con sus datos de sesión
   useEffect(() => {
     if (role === 'paciente') {
       setNombre(userName || '');
-      setIdSAP(idsap || '');
+      setIdSAP(authSap || '');
     }
-  }, [userName, idsap, role]);
+  }, [userName, authSap, role]);
   
-// Búsqueda automática por SAP (Solo para personal médico/admin)
+  // Búsqueda automática: Solo corre para personal médico cuando escriben en el input
   useEffect(() => {
     const buscarNombre = async () => {
-      const sapLimpio = String(idsap || "").trim();
+      // USAMOS idSAP (el del input), no el del auth
+      const sapLimpio = String(idSAP || "").trim();
       
-      // Solo buscar si tiene la longitud mínima y el rol lo permite
       if (['enfermeria', 'admin', 'supervisor'].includes(role) && sapLimpio.length >= 8) {
         setBuscando(true);
         setErrorSAP(null);
@@ -38,12 +36,12 @@ export default function CitaForm({ onSubmit, onClose }) {
         const { data, error } = await supabase
           .from('allowed_users')
           .select('nombre')
-          .eq('idsap', sapLimpio)
+          .eq('idsap', sapLimpio) // Comprobación contra la base de datos
           .single();
 
         if (error || !data) {
           setNombre('');
-          setErrorSAP('Usuario no encontrado o no autorizado');
+          setErrorSAP('Usuario no encontrado');
         } else {
           setNombre(data.nombre);
           setErrorSAP(null);
@@ -52,27 +50,24 @@ export default function CitaForm({ onSubmit, onClose }) {
       }
     };
 
-    const debounceTimer = setTimeout(buscarNombre, 500); // Evita peticiones excesivas
+    // Debounce para no saturar Supabase mientras escriben
+    const debounceTimer = setTimeout(buscarNombre, 500); 
     return () => clearTimeout(debounceTimer);
-  }, [idsap, role]);
+  }, [idSAP, role]);
 
-const handleSubmit = (e) => {
-    e.preventDefault();
-    const idSAPInt = parseInt(idSAP, 10);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const sapNumerico = parseInt(idSAP, 10);
+  if (!nombre.trim() || !motivo.trim() || isNaN(sapNumerico)) return;
 
-    if (!nombre.trim() || !motivo.trim() || isNaN(idSAPInt)) {
-      alert('Por favor, verifique los datos del formulario.');
-      return;
-    }
-
-onSubmit(nombre.trim(), motivo.trim(), idSAPInt, urgente, isss);
-    
-    // Limpieza
-    setMotivo('');
-    setUrgente(false);
-    setIsss(false);
-    if (onClose) onClose();
-  };
+  await onSubmit({
+    nombre: nombre.trim(),
+    motivo: motivo.trim(),
+    idSAP: sapNumerico,
+    emergency: urgente,
+    isss: isss // Agregado si lo usas ahora
+  });
+};
 
 return (
     <form onSubmit={handleSubmit} className="pac-modal-form">

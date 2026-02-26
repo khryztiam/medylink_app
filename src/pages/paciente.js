@@ -25,6 +25,15 @@ export default function Home() {
   const [tipoMensaje, setTipoMensaje] = useState(""); // exito / error
   const [showTelegramBanner, setShowTelegramBanner] = useState(false);
 
+  const cargarHistorial = async () => {
+  const idActual = idsap || user?.idsap || user?.idSAP;
+  if (!idActual) return;
+
+  // Usamos la función específica para pacientes que ya importaste
+  const citasData = await getCitasPorPaciente(idActual, 15);
+  setCitas(Array.isArray(citasData) ? citasData : []);
+};
+
   useEffect(() => {
     const idActual = idsap || user?.idsap || user?.idSAP;
 
@@ -76,39 +85,29 @@ export default function Home() {
     };
   }, [idsap, user]); // Usamos idsap como dependencia clave
 
-  const handleNuevaCita = async (nombre, motivo, idSAPInt, urgente, isss) => {
-    try {
-      const nuevaCita = {
-        id: uuidv4(),
-        nombre,
-        motivo,
-        idsap: idSAPInt,
-        estado: "pendiente",
-        orden_llegada: null,
-        emergency: urgente,
-        isss: isss,
-      };
+const handleNuevaCita = async ({ nombre, motivo, idSAP, emergency, isss }) => {
+  try {
+    const nuevaCita = {
+      nombre,
+      motivo,
+      idSAP,
+      emergency,
+      isss,
+      estado: 'pendiente'
+    };
 
-      await agregarCita(nuevaCita);
-      setMiCita(nuevaCita);
-
-      // Mensaje de éxito
-      setTipoMensaje("exito");
-      setMensaje("✅ Cita creada exitosamente.");
-
-      closeModal();
-    } catch (error) {
-      console.error("Error al crear la cita:", error);
-      setTipoMensaje("error");
-      setMensaje("❌ Ocurrió un error al crear la cita.");
-    }
-
-    // Ocultar mensaje después de 3 segundos
-    setTimeout(() => {
-      setMensaje("");
-      setTipoMensaje("");
-    }, 3000);
-  };
+    await agregarCita(nuevaCita); // Esperamos a la DB
+    setMiCita(nuevaCita);
+    setMensaje('✅ Cita creada exitosamente.');
+    setTipoMensaje('exito');
+    
+    closeModal(); // Ahora sí se cerrará siempre que no haya error
+    await cargarHistorial(); // Refresca la lista
+  } catch (error) {
+    setTipoMensaje('error');
+    setMensaje('❌ Error: ' + error.message);
+  }
+};
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -182,7 +181,7 @@ export default function Home() {
                   <div className="telegram-text-group">
                     <h3>Notificaciones instantáneas</h3>
                     <p>
-                      Recibe avisos de tus citas directamente en tu
+                      Recibe avisos de tus citas y turnos directamente en tu
                       celular.
                     </p>
                   </div>
