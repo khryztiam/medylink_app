@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { getCitas, subscribeToCitasChanges } from "../lib/citasData"; // supongo que agregas subscribeToCitasChanges
+import { getCitasHoy, subscribeToCitasChanges } from "../lib/citasData"; // supongo que agregas subscribeToCitasChanges
 import TurnoVisual from "../components/TurnoDisplay";
 
 export default function TurnoEnPantalla() {
@@ -9,7 +9,7 @@ export default function TurnoEnPantalla() {
   const [citasSidebar, setCitasSidebar] = useState([]);
 
   const load = async () => {
-    const todas = await getCitas();
+    const todas = await getCitasHoy();
 
     const relevantes = todas
       .filter((c) => c.estado === "en espera" || c.estado === "en consulta")

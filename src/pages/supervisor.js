@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import CitaForm from "@/components/CitaForm"; // 👈 Asegúrate de que el path esté correcto
 import { v4 as uuidv4 } from "uuid";
-import { agregarCita, getCitas } from "../lib/citasData";
+import { agregarCita, getCitasHoy } from "../lib/citasData";
 import {
   FaUserShield,
   FaTachometerAlt,
