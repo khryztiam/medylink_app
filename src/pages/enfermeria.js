@@ -244,13 +244,13 @@ const load = async () => {
     load();
   };
 
-  const handleNuevaCita = async (nombre, motivo, idSAPInt, urgente, isss) => {
+  const handleNuevaCita = async ({nombre, motivo, idSAP, urgente, isss}) => {
     try {
       const nuevaCita = {
         id: uuidv4(),
         nombre,
         motivo,
-        idSAP: String(idSAPInt).trim(),
+        idSAP,
         estado: "pendiente",
         orden_llegada: null,
         emergency: urgente,
