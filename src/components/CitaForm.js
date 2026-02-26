@@ -54,7 +54,7 @@ export default function CitaForm({ onSubmit, onClose }) {
 
     const debounceTimer = setTimeout(buscarNombre, 500); // Evita peticiones excesivas
     return () => clearTimeout(debounceTimer);
-  }, [idSAP, role]);
+  }, [idsap, role]);
 
 const handleSubmit = (e) => {
     e.preventDefault();
