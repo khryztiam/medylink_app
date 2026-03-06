@@ -1,455 +1,338 @@
-import React, { useEffect, useState } from "react";
+// pages/supervisor.js
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
-import CitaForm from "@/components/CitaForm"; // 👈 Asegúrate de que el path esté correcto
-import { v4 as uuidv4 } from "uuid";
-import { agregarCita, getCitasHoy } from "../lib/citasData";
+import CitaForm from "@/components/CitaForm";
+import { agregarCita } from "../lib/citasData";
 import {
-  FaUserShield,
-  FaTachometerAlt,
-  FaCalendarAlt,
-  FaStethoscope,
-  FaCheckCircle,
-  FaRegClock,
-  FaCalendarCheck,
+  FaCalendarAlt, FaStethoscope, FaCheckCircle,
+  FaHourglassHalf, FaClock, FaPlus,
 } from "react-icons/fa";
 import EstadoConsulta from "@/components/EstadoConsulta";
 import Modal from "react-modal";
+import styles from "@/styles/Supervisor.module.css";
 
 Modal.setAppElement("#__next");
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getSaludo() {
+  const h = new Date().getHours();
+  if (h >= 6  && h < 12) return { texto: "Buenos días",   icono: "☀️" };
+  if (h >= 12 && h < 19) return { texto: "Buenas tardes", icono: "🌤️" };
+  return                         { texto: "Buenas noches", icono: "🌙" };
+}
+
+function formatFechaHora(str) {
+  if (!str) return "—";
+  return new Date(str).toLocaleString("es-MX", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+}
+function formatHora(str) {
+  if (!str) return "—";
+  return new Date(str).toLocaleTimeString("es-MX", {
+    hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+}
+
+function hoyRango() {
+  const ini = new Date(); ini.setHours(0, 0, 0, 0);
+  const fin = new Date(); fin.setHours(23, 59, 59, 999);
+  return { ini: ini.toISOString(), fin: fin.toISOString() };
+}
+
+// ─── Componente ───────────────────────────────────────────────────────────────
 const Supervisor = () => {
   const { user, userName } = useAuth();
+
   const [citasProgramadas, setCitasProgramadas] = useState([]);
-  const [tiempoPromedio, setTiempoPromedio] = useState(null);
-  const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState(""); // exito / error
+  const [citasEnConsulta,  setCitasEnConsulta]  = useState([]);
+  const [citasAtendidas,   setCitasAtendidas]   = useState([]);
+  const [tiempoPromedio,   setTiempoPromedio]   = useState(null);
   const [cuposProgramados, setCuposProgramados] = useState(0);
-  const [cuposEnEspera, setCuposEnEspera] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [citasEnConsulta, setCitasEnConsulta] = useState([]);
-  const [citasAtendidas, setCitasAtendidas] = useState([]);
+  const [cuposEnEspera,    setCuposEnEspera]    = useState(0);
+  const [isModalOpen,      setIsModalOpen]      = useState(false);
+  const [mensaje,          setMensaje]          = useState(null);
 
-  const hoyInicio = new Date();
-  hoyInicio.setHours(0, 0, 0, 0);
+  const { texto: saludoTexto, icono: saludoIcono } = getSaludo();
+  const nombre = userName || "Coordinador";
 
-  const hoyFin = new Date();
-  hoyFin.setHours(23, 59, 59, 999);
-
-  // Nueva función para obtener los cupos ocupados (excluyendo 'pendiente')
-  const fetchCuposOcupados = async () => {
-    const { data, error } = await supabase
-      .from("citas")
-      .select("*")
-      .in("estado", ["programado", "en espera"]) // Excluye estado 'pendiente'
-      .gte("programmer_at", hoyInicio.toISOString())
-      .lte("programmer_at", hoyFin.toISOString())
-      .order("programmer_at", { ascending: true });
-
-    if (error) {
-      console.error("Error al obtener los estados:", error);
-      return { programado: [], enEspera: [] }; // Retorna objetos vacíos en caso de error
-    }
-
-    // Contar los estados
-    const programado = data.filter((cita) => cita.estado === "programado");
-    const enEspera = data.filter((cita) => cita.estado === "en espera");
-
-    setCuposProgramados(cuposProgramados);
-    setCuposEnEspera(cuposEnEspera);
-  };
-
-  // Fetch inicial de citas programadas
-  const fetchCitasProgramadas = async () => {
-    const { data, error } = await supabase
-      .from("citas")
-      .select("*")
-      .eq("estado", "programado")
-      .order("programmer_at", { ascending: true });
-
-    if (error) {
-      console.error("Error al obtener citas:", error);
-      return;
-    }
-
-    setCitasProgramadas(data);
-  };
-
-  const fetchCitasEnConsulta = async () => {
-    const { data, error } = await supabase
-      .from("citas")
-      .select("*")
-      .eq("estado", "en consulta")
-      .gte("programmer_at", hoyInicio.toISOString())
-      .lte("programmer_at", hoyFin.toISOString())
-      .order("programmer_at", { ascending: true });
-
-    if (error) {
-      console.error("Error al obtener citas en consulta:", error);
-      return;
-    }
-
-    setCitasEnConsulta(data);
-  };
-
-  const fetchCitasAtendidas = async () => {
-    const { data, error } = await supabase
-      .from("citas")
-      .select("*")
-      .eq("estado", "atendido")
-      .gte("check_in", hoyInicio.toISOString())
-      .lte("check_in", hoyFin.toISOString())
-      .order("check_in", { ascending: true });
-
-    if (error) {
-      console.error("Error al obtener citas atendidas:", error);
-      return;
-    }
-
-    setCitasAtendidas(data);
-  };
-
-  // Calcular tiempo promedio de atención
-  const fetchTiempoPromedio = async () => {
-    const { data, error } = await supabase
-      .from("citas")
-      .select("check_in, check_out")
-      .eq("estado", "atendido")
-      // Filtramos para obtener solo citas atendidas hoy
-      .gte("check_in", hoyInicio.toISOString())
-      .lte("check_in", hoyFin.toISOString());
-
-    if (error) {
-      console.error("Error al calcular tiempo promedio:", error);
-      return;
-    }
-
-    if (data.length === 0) {
-      setTiempoPromedio(null);
-      return;
-    }
-
-    const tiempos = data
-      .filter((cita) => {
-        // Aseguramos que ambas fechas existan y sean del mismo día
-        if (!cita.check_in || !cita.check_out) return false;
-
-        const inicio = new Date(cita.check_in);
-        const fin = new Date(cita.check_out);
-        // Verificamos que sean del mismo día
-        return inicio.toDateString() === fin.toDateString();
-      })
-      .map((cita) => {
-        const inicio = new Date(cita.check_in);
-        const fin = new Date(cita.check_out);
-        return (fin - inicio) / 60000; // minutos
-      });
-    // Si no hay tiempos válidos después del filtrado
-    if (tiempos.length === 0) {
-      setTiempoPromedio(null);
-      return;
-    }
-
-    const promedio = tiempos.reduce((a, b) => a + b, 0) / tiempos.length;
-    setTiempoPromedio(promedio.toFixed(1));
-  };
-
+  // ── Auto-limpiar mensaje ──────────────────────────────────────────
   useEffect(() => {
-    fetchCitasProgramadas();
-    fetchCitasEnConsulta();
-    fetchCitasAtendidas();
-    fetchTiempoPromedio();
-    fetchCuposOcupados();
+    if (!mensaje) return;
+    const t = setTimeout(() => setMensaje(null), 3500);
+    return () => clearTimeout(t);
+  }, [mensaje]);
 
-    const canal = supabase
-      .channel("supervisor_realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "citas" },
-        (payload) => {
-          fetchCitasProgramadas();
-          fetchCitasEnConsulta();
-          fetchCitasAtendidas();
-          fetchTiempoPromedio();
-          fetchCuposOcupados();
-        }
-      )
-      .subscribe();
-
-    return () => supabase.removeChannel(canal);
+  // ── Fetchers ──────────────────────────────────────────────────────
+  const fetchProgramadas = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("citas").select("*").eq("estado", "programado")
+      .order("programmer_at", { ascending: true });
+    if (!error) setCitasProgramadas(data);
   }, []);
 
-  const handleNuevaCita = async ({nombre, motivo, idSAP, urgente}) => {
+  const fetchEnConsulta = useCallback(async () => {
+    const { ini, fin } = hoyRango();
+    const { data, error } = await supabase
+      .from("citas").select("*").eq("estado", "en consulta")
+      .gte("programmer_at", ini).lte("programmer_at", fin)
+      .order("programmer_at", { ascending: true });
+    if (!error) setCitasEnConsulta(data);
+  }, []);
+
+  const fetchAtendidas = useCallback(async () => {
+    const { ini, fin } = hoyRango();
+    const { data, error } = await supabase
+      .from("citas").select("*").eq("estado", "atendido")
+      .gte("check_in", ini).lte("check_in", fin)
+      .order("check_in", { ascending: true });
+    if (!error) setCitasAtendidas(data);
+  }, []);
+
+  // BUG FIX: antes se llamaba setCuposProgramados(cuposProgramados) con el valor
+  // anterior — nunca actualizaba. Ahora usa los datos recién traídos.
+  const fetchCupos = useCallback(async () => {
+    const { ini, fin } = hoyRango();
+    const { data, error } = await supabase
+      .from("citas").select("estado")
+      .in("estado", ["programado", "en espera"])
+      .gte("programmer_at", ini).lte("programmer_at", fin);
+    if (error) return;
+    setCuposProgramados(data.filter((c) => c.estado === "programado").length);
+    setCuposEnEspera(data.filter((c) => c.estado === "en espera").length);
+  }, []);
+
+  const fetchTiempoPromedio = useCallback(async () => {
+    const { ini, fin } = hoyRango();
+    const { data, error } = await supabase
+      .from("citas").select("check_in, check_out").eq("estado", "atendido")
+      .gte("check_in", ini).lte("check_in", fin);
+    if (error || !data?.length) { setTiempoPromedio(null); return; }
+
+    const tiempos = data
+      .filter((c) => c.check_in && c.check_out)
+      .map((c) => (new Date(c.check_out) - new Date(c.check_in)) / 60000)
+      .filter((t) => t > 0);
+
+    if (!tiempos.length) { setTiempoPromedio(null); return; }
+    setTiempoPromedio((tiempos.reduce((a, b) => a + b, 0) / tiempos.length).toFixed(1));
+  }, []);
+
+  const loadAll = useCallback(() => {
+    fetchProgramadas();
+    fetchEnConsulta();
+    fetchAtendidas();
+    fetchCupos();
+    fetchTiempoPromedio();
+  }, [fetchProgramadas, fetchEnConsulta, fetchAtendidas, fetchCupos, fetchTiempoPromedio]);
+
+  useEffect(() => {
+    loadAll();
+    const canal = supabase
+      .channel("supervisor-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "citas" }, loadAll)
+      .subscribe();
+    return () => supabase.removeChannel(canal);
+  }, [loadAll]);
+
+  // ── Acciones ──────────────────────────────────────────────────────
+  const cancelarCita = async (id) => {
+    if (!window.confirm("¿Estás seguro de cancelar esta cita?")) return;
+    const { error } = await supabase.from("citas").update({ estado: "cancelado" }).eq("id", id);
+    setMensaje(error
+      ? { texto: "❌ No se pudo cancelar la cita.", tipo: "error" }
+      : { texto: "✅ Cita cancelada correctamente.", tipo: "exito" }
+    );
+  };
+
+  const handleNuevaCita = async ({ nombre, motivo, idSAP, urgente, isss }) => {
     try {
-      const nuevaCita = {
-        id: uuidv4(),
-        nombre,
-        motivo,
+      await agregarCita({
+        nombre, motivo,
         idSAP: String(idSAP).trim(),
         estado: "pendiente",
-        orden_llegada: null,
         emergency: urgente,
-      };
-
-      await agregarCita(nuevaCita);
-
-      // Mensaje de éxito
-      setTipoMensaje("exito");
-      setMensaje("✅ Cita creada exitosamente.");
-      closeModal();
-    } catch (error) {
-      console.error("Error al crear la cita:", error);
-      setTipoMensaje("error");
-      setMensaje("❌ Ocurrió un error al crear la cita.");
+        isss: isss,
+      });
+      setMensaje({ texto: "✅ Cita creada exitosamente.", tipo: "exito" });
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      setMensaje({ texto: "❌ Error al crear la cita.", tipo: "error" });
     }
-
-    // Ocultar mensaje después de 3 segundos
-    setTimeout(() => {
-      setMensaje("");
-      setTipoMensaje("");
-    }, 3000);
   };
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
-  /* Cancelacion de citas */
-  const cancelarCita = async (idCita) => {
-    const { error } = await supabase
-      .from("citas")
-      .update({ estado: "cancelado" })
-      .eq("id", idCita);
-
-    if (error) {
-      console.error("Error al cancelar la cita:", error);
-      setMensaje("❌ No se pudo cancelar la cita.");
-      setTipoMensaje("error");
-    } else {
-      setMensaje("✅ Cita cancelada correctamente.");
-      setTipoMensaje("exito");
-    }
-
-    // Ocultar mensaje después de 3 segundos
-    setTimeout(() => {
-      setMensaje("");
-      setTipoMensaje("");
-    }, 3000);
-  };
-
-  const hora = new Date().getHours();
-  let saludo = "Hola";
-  let iconoSaludo = "👋";
-
-  if (hora >= 6 && hora < 12) {
-    saludo = "Buenos días";
-    iconoSaludo = "☀️";
-  } else if (hora >= 12 && hora < 19) {
-    saludo = "Buenas tardes";
-    iconoSaludo = "🌤️";
-  } else {
-    saludo = "Buenas noches";
-    iconoSaludo = "🌙";
-  }
-
-  const nombre = userName || "Paciente";
-
+  // ── JSX ───────────────────────────────────────────────────────────
   return (
-    <div className="main-content">
-      <div className="title-bar">
-        <h1 className="supervisor-title">
-          <FaUserShield className="title-icon" />
-          Coordinador
-          <span className="title-extra">
-            <FaTachometerAlt className="extra-icon" />
-            Panel de Gestión de Linea
-          </span>
-        </h1>
-      </div>
-      <div className="content-wrapper">
-        <div className="main">
-          <div className="supervisor-container">
-            <div className="panels-container">
-              {/* Panel principal */}
-              <div className="panel-main">
-                <div className="saludo-card">
-                  <div className="saludo-texto">
-                    <h2>
-                      {iconoSaludo} {saludo}, {nombre}.
-                    </h2>
-                    <p
-                      className="saludo-frase"
-                      style={{
-                        fontSize: "1.3em",
-                        marginTop: "20px",
-                        fontWeight: "bold",
-                        textAlign: "center",
-                      }}
-                    >
-                      Gracias por asegurar la producción sin perder de vista lo
+    <div className={styles.page}>
+
+      {/* ── Columna principal ──────────────────────────────────── */}
+      <div className={styles.main}>
+
+        {/* Saludo compacto */}
+        <div className={styles.saludoCard}>
+          <div className={styles.saludoTexto}>
+            <h2>{saludoIcono} {saludoTexto}, {nombre}.</h2>
+            <p className={styles.saludoFrase}>
+              Gracias por asegurar la producción sin perder de vista lo
                       más valioso: la salud y bienestar de tu equipo 🩺👷‍♂️⚙️
-                    </p>
-                  </div>
-                </div>
-                <h2 className="panel-title">
-                  Programación y Monitoreo de Citas
-                </h2>
-                <div className="panel-content">
-                  {/* Programadas */}
-                  <div className="section-header estado-programado2">
-                    <FaCalendarAlt className="estado-icon" />
-                    <span>Programadas</span>
-                  </div>
-                  {citasProgramadas.length > 0 ? (
-                    <ul className="citas-list">
-                      {citasProgramadas.map((cita) => (
-                        <li key={cita.id} className="cita-item">
-                          <div className="cita-detalle">
-                            <strong className="cita-nombre">
-                              {cita.nombre}
-                            </strong>
-                            <span className="cita-fecha">
-                              {new Date(cita.programmer_at).toLocaleString(
-                                "es-MX",
-                                {
-                                  day: "2-digit",
-                                  month: "2-digit",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: true,
-                                }
-                              )}
-                            </span>
-                          </div>
-                          <button
-                            className="btn-cancelc"
-                            onClick={() =>
-                              window.confirm(
-                                "¿Estás seguro de cancelar esta cita?"
-                              )
-                                ? cancelarCita(cita.id)
-                                : null
-                            }
-                          >
-                            Cancelar
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No hay citas programadas actualmente.</p>
-                  )}
-
-                  {/* En Consulta */}
-                  <div className="section-header2 estado-consulta2">
-                    <span>
-                      <FaStethoscope className="estado-icon estado-consulta2" />{" "}
-                      En Consulta
-                    </span>
-                  </div>
-                  {citasEnConsulta.length > 0 ? (
-                    <ul className="citas-list">
-                      {citasEnConsulta.map((cita) => (
-                        <li key={cita.id} className="estado-consulta2">
-                          <strong>{cita.nombre}</strong> —{" "}
-                          {cita.consultation_at
-                            ? new Date(cita.consultation_at).toLocaleString(
-                                "es-MX",
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: true,
-                                }
-                              )
-                            : "sin hora"}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No hay citas en consulta.</p>
-                  )}
-
-                  {/* Atendidas */}
-                  <div className="section-header3 estado-atendido">
-                    <span>
-                      <FaCheckCircle className="estado-icon estado-atendido" />{" "}
-                      Atendidas
-                    </span>
-                  </div>
-                  {citasAtendidas.length > 0 ? (
-                    <ul className="citas-list">
-                      {citasAtendidas.map((cita) => (
-                        <li key={cita.id} className="estado-atendido">
-                          <strong>{cita.nombre}</strong> —{" "}
-                          {cita.check_out
-                            ? new Date(cita.check_out).toLocaleString("es-MX", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              })
-                            : "sin salida"}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No hay citas atendidas aún.</p>
-                  )}
-                </div>
-              </div>
-              <div className="floating-status-paciente">
-                <EstadoConsulta />
-              </div>
-            </div>
+            </p>
           </div>
         </div>
-        <div className="sidebar">
-          <h3>Datos del Dia</h3>
-          <div className="summary-cards">
-            {/* Programados */}
-            <div className="summary-card">
-              <span className="summary-icon">📅</span>
-              <div className="divider" />
-              <h3>Programaciones</h3>
-              <p>{cuposProgramados}</p>
-            </div>
-            {/* En espera */}
-            <div className="summary-card">
-              <span className="summary-icon">⏳</span>
-              <div className="divider" />
-              <h3>En espera</h3>
-              <p>{cuposEnEspera}</p>
-            </div>
 
-            {/* Tiempo Promedio */}
-            <div className="summary-card">
-              <span className="summary-icon">⏱️</span>
-              <div className="divider" />
-              <h3>Tiempo Promedio</h3>
-              <p>{tiempoPromedio ? `${tiempoPromedio} min` : "N/A"}</p>
-            </div>
+        {/* Estado consulta — componente existente */}
+        <EstadoConsulta />
+
+        {/* Panel de monitoreo */}
+        <div className={styles.monitorPanel}>
+          <div className={styles.monitorHeader}>
+            <h2 className={styles.monitorTitle}>
+              <FaCalendarAlt /> Programación y Monitoreo de Citas
+            </h2>
           </div>
-          <div className="panel-side">
-            <div className="saludo-boton">
-              <button onClick={openModal} className="pac-card-button">
-                Solicitar Cita
-              </button>
+
+          <div className={styles.monitorBody}>
+
+            {/* ── Programadas ──────────────────────────────── */}
+            <div className={styles.seccion}>
+              <div className={`${styles.seccionHeader} ${styles.seccionProgramadas}`}>
+                <FaCalendarAlt className={styles.seccionIcon} />
+                Programadas
+              </div>
+              {citasProgramadas.length === 0 ? (
+                <p className={styles.emptySeccion}>No hay citas programadas actualmente.</p>
+              ) : (
+                <ul className={styles.citasList}>
+                  {citasProgramadas.map((cita) => (
+                    <li key={cita.id} className={styles.citaItem}>
+                      <div className={styles.citaDetalle}>
+                        <span className={styles.citaNombre}>{cita.nombre}</span>
+                        <span className={styles.citaFecha}>{formatFechaHora(cita.programmer_at)}</span>
+                      </div>
+                      <button
+                        className={styles.btnCancelar}
+                        onClick={() => cancelarCita(cita.id)}
+                      >
+                        Cancelar
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
-            <Modal
-              isOpen={isModalOpen}
-              onRequestClose={closeModal}
-              contentLabel="Formulario de cita"
-              className="pac-modal"
-              overlayClassName="pac-modal-overlay"
-            >
-              <CitaForm onSubmit={handleNuevaCita} user={user} />
-            </Modal>
-            {mensaje && (
-              <div className={`mensaje-alerta ${tipoMensaje}`}>{mensaje}</div>
-            )}
+            {/* ── En Consulta ──────────────────────────────── */}
+            <div className={styles.seccion}>
+              <div className={`${styles.seccionHeader} ${styles.seccionConsulta}`}>
+                <FaStethoscope className={styles.seccionIcon} />
+                En Consulta
+              </div>
+              {citasEnConsulta.length === 0 ? (
+                <p className={styles.emptySeccion}>No hay citas en consulta.</p>
+              ) : (
+                <ul className={styles.citasList}>
+                  {citasEnConsulta.map((cita) => (
+                    <li key={cita.id} className={styles.citaItemSimple}>
+                      <span className={styles.citaNombreSimple}>{cita.nombre}</span>
+                      <span className={styles.citaHora}>{formatHora(cita.consultation_at)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* ── Atendidas ────────────────────────────────── */}
+            <div className={styles.seccion}>
+              <div className={`${styles.seccionHeader} ${styles.seccionAtendidas}`}>
+                <FaCheckCircle className={styles.seccionIcon} />
+                Atendidas
+              </div>
+              {citasAtendidas.length === 0 ? (
+                <p className={styles.emptySeccion}>No hay citas atendidas aún.</p>
+              ) : (
+                <ul className={styles.citasList}>
+                  {citasAtendidas.map((cita) => (
+                    <li key={cita.id} className={styles.citaItemSimple}>
+                      <span className={styles.citaNombreSimple}>{cita.nombre}</span>
+                      <span className={styles.citaHora}>{formatHora(cita.check_out)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
+
+      {/* ── Aside derecho ──────────────────────────────────────── */}
+      <aside className={styles.aside}>
+
+        {/* KPI cards */}
+        <p className={styles.asideTitle}>Datos del Día</p>
+        <div className={styles.kpiGrid}>
+          <div className={styles.kpiCard}>
+            <div className={`${styles.kpiIconWrap} ${styles.kpiIconBlue}`}>📅</div>
+            <div className={styles.kpiInfo}>
+              <p className={styles.kpiLabel}>Programaciones</p>
+              <p className={styles.kpiValue}>{cuposProgramados}</p>
+            </div>
+          </div>
+
+          <div className={styles.kpiCard}>
+            <div className={`${styles.kpiIconWrap} ${styles.kpiIconAmber}`}>⏳</div>
+            <div className={styles.kpiInfo}>
+              <p className={styles.kpiLabel}>En Espera</p>
+              <p className={styles.kpiValue}>{cuposEnEspera}</p>
+            </div>
+          </div>
+
+          <div className={styles.kpiCard}>
+            <div className={`${styles.kpiIconWrap} ${styles.kpiIconGreen}`}>⏱️</div>
+            <div className={styles.kpiInfo}>
+              <p className={styles.kpiLabel}>Tiempo Promedio</p>
+              <p className={`${styles.kpiValue} ${tiempoPromedio ? styles.kpiValueSmall : ""}`}>
+                {tiempoPromedio ? `${tiempoPromedio} min` : "N/A"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Acciones */}
+        <div className={styles.accionesCard}>
+          <p className={styles.accionesTitle}>Acciones</p>
+          <button className={styles.btnAgregar} onClick={() => setIsModalOpen(true)}>
+            <FaPlus size={11} />
+            Solicitar Cita
+          </button>
+
+          {mensaje && (
+            <div className={`${styles.mensajeAlerta} ${styles[mensaje.tipo]}`}>
+              {mensaje.texto}
+            </div>
+          )}
+        </div>
+
+      </aside>
+
+      {/* ── Modal nueva cita ───────────────────────────────────── */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Formulario de cita"
+        className="pac-modal"
+        overlayClassName="pac-modal-overlay"
+        closeTimeoutMS={250}
+      >
+        <CitaForm
+          onSubmit={handleNuevaCita}
+          user={user}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      </Modal>
+
     </div>
   );
 };

@@ -1,147 +1,97 @@
-/* styles/globals.css */
-.layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+/* =====================================================================
+   globals.css — MedyLink
+   ===================================================================== */
+
+/* ── Variables CSS globales ──────────────────────────────────────── */
+:root {
+  --blue:         #3f91e8;
+  --blue-dark:    #1a5fa8;
+  --blue-light:   #e8f3fd;
+  --blue-mid:     #c3dff9;
+
+  --indigo:       #4f46e5;
+  --indigo-dark:  #3730a3;
+  --indigo-light: #eef2ff;
+  --indigo-mid:   #c7d2fe;
+
+  --green:        #16a34a;
+  --green-light:  #dcfce7;
+  --amber:        #f59e0b;
+  --amber-light:  #fef3c7;
+  --red:          #dc2626;
+  --red-light:    #fee2e2;
+  --purple:       #9333ea;
+  --orange:       #ea580c;
+
+  --text-main:    #1e293b;
+  --text-soft:    #64748b;
+  --text-muted:   #94a3b8;
+
+  --surface:      #ffffff;
+  --border:       #e2e8f0;
+  --bg:           #eef4fb;
+
+  --radius-lg:    14px;
+  --radius-md:    10px;
+  --radius-sm:    7px;
+
+  --shadow-sm:    0 2px 10px rgba(63, 145, 232, 0.08);
+  --shadow-md:    0 4px 18px rgba(63, 145, 232, 0.14);
 }
 
-.header {
-  background-color: #3f91e8;
-  padding: 0.6rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  position: sticky;
-  top: 0;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.content-wrapper {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.main {
-  flex: 1;
-  padding: 0.5rem;
-  overflow-y: auto;
-  background-color: linear-gradient(90deg, #3182ce 0%, #4fd1c5 100%);
-}
-
-.sidebar {
-  width: 350px;
-  background-color: #e2e8f0;
-  padding: 0.6rem;
-}
-
-/* Responsive: ocultar sidebar en pantallas pequeñas */
-@media (max-width: 768px) {
-  .layout {
-    flex-direction: column;
-  }
-
-  .main-content
-  .content-wrapper {
-    flex-direction: column; /* ← esto es lo que te falta */
-  }
-
-  .sidebar {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid #ccc;
-  }
-
-  .main {
-    padding: 10px;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.ReactModal__Overlay {
-  /* Fondo semitransparente */
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  /* Centrar el contenido */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Que quede por encima de todo */
-  z-index: 1000 !important;
-}
-
-/* Overlay cuando está abierto */
-.ReactModal__Overlay--after-open {
-  opacity: 1;
-}
-
-.ReactModal__Content {
-  /* Anular posicionamiento inline de react-modal */
-  position: relative !important;
-  inset: auto !important;
-  /* Dimensiones y espaciado */
-  width: 90%;
-  max-width: 500px;
-  padding: 0;
-  /* Fondo y bordes */
-  background-color: #ffffff;
-  border-radius: 16px;
-  /* Sombra para destacar */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  /* Evitar outline azul al hacer foco */
-  outline: none !important;
-  transform: translateY(20px);
-  transition: transform 0.3s ease-out;
-}
-
-/* Contenido cuando está abierto */
-.ReactModal__Content--after-open {
-  transform: translateY(0);
-}
-
-/* Reset y contenedor */
-
-* {
+/* ── Reset ───────────────────────────────────────────────────────── */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Globales para botones, y colores, titulos y forms*/
+html, body { height: 100%; }
 
 body {
-  margin: 0;
-  font-family: "Arial", sans-serif;
-  background: linear-gradient(90deg, #3182ce 0%, #4fd1c5 100%);
-  height: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── react-modal base ────────────────────────────────────────────── */
+.ReactModal__Overlay {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000 !important;
+}
+.ReactModal__Content {
+  position: relative !important;
+  inset: auto !important;
+  width: 90%;
+  max-width: 500px;
   padding: 0;
+  background-color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  outline: none !important;
+  transform: translateY(20px);
+  transition: transform 0.3s ease-out;
 }
+.ReactModal__Content--after-open { transform: translateY(0); }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
+/* ── Botones globales legacy ─────────────────────────────────────── */
 button.ok {
-  background-color: #28a745; /* Verde para los botones */
+  background-color: #28a745;
   color: white;
   font-weight: 600;
   padding: 0.8rem 1.6rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s;
   margin: 5px;
 }
-
+button.ok:hover    { background-color: #218838; }
 button.cancel {
   background-color: #a72828;
   color: white;
@@ -150,39 +100,18 @@ button.cancel {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s;
   margin: 5px;
 }
+button.cancel:hover { background-color: #701b1b; }
 
-button.ok:hover {
-  background-color: #218838; /* Verde oscuro */
-}
-
-button.cancel:hover {
-  background-color: #701b1b;
-}
-
-.title {
-  background-color: #e2e8f0; /* gris claro suave */
-  color: #2c5282;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-}
-
+/* ── material-group (CitaForm) ───────────────────────────────────── */
 .material-group {
   position: relative;
   display: flex;
   flex-direction: column;
   margin-bottom: 16px;
 }
-
 .material-group input,
 .material-group textarea,
 .material-group select {
@@ -194,379 +123,497 @@ button.cancel:hover {
   transition: border-color 0.3s;
   outline: none;
 }
-
 .material-group input:focus,
 .material-group textarea:focus,
-.material-group select:focus {
-  border-bottom: 2px solid #0070f3;
-}
-
-/* Etiquetas */
+.material-group select:focus { border-bottom: 2px solid #0070f3; }
 .material-group label {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: 1rem; left: 1rem;
   font-size: 1rem;
   color: #777;
   pointer-events: none;
   transition: 0.2s ease all;
 }
-
 .material-group input:focus + label,
-.material-group input:not(:placeholder-shown) + label,
-.material-group textarea:focus + label,
-.material-group textarea:not(:placeholder-shown) + label {
-  top: -0.6rem;
-  left: 0.4rem;
+.material-group input:not(:placeholder-shown) + label {
+  top: -0.6rem; left: 0.4rem;
   font-size: 0.75rem;
   color: #0077cc;
   background: white;
   padding: 0 0.25rem;
 }
 
-/* Agregar algunos colores globales para consistencia */
-.primary-color {
-  color: #3f91e8; /* Azul principal */
-}
-
-.secondary-color {
-  color: #2c80c3; /* Azul más oscuro */
-}
-
-.background-main {
-  background-color: #f4f7fa; /* Fondo claro */
-}
-
-h2,
-h3 {
-  font-family: "Roboto", sans-serif;
-  font-weight: 500; /* Peso de fuente según Material Design */
-  margin-bottom: 16px; /* Espacio debajo de los títulos */
-  color: #2c80c3; /* Azul oscuro */
-}
-
-/* Párrafos */
-p {
-  font-size: 1rem;
-  color: #616161; /* Color más suave para párrafos */
-  margin-bottom: 20px; /* Espacio debajo del párrafo */
-  line-height: 1.6; /* Espaciado entre líneas */
-}
-
-/* Estilo para negritas */
-strong {
-  font-weight: 600; /* Peso de fuente para negritas */
-  color: #212121; /* Color del texto en negrita */
-}
-
-.card-material {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 0.8rem 0;
-  font-family: "Roboto", sans-serif;
-  transition: box-shadow 0.3s ease;
-}
-
-.card-material:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.card-material p {
-  margin-bottom: 10px;
-  color: #424242;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.card-material strong {
-  color: #1e88e5;
-  font-weight: 600;
-}
-
-/* === Tabla estilo Material Design === */
+/* ── Tabla material legacy (enfermería / médico) ─────────────────── */
 .table-material {
   width: 100%;
   border-collapse: collapse;
-  font-family: "Roboto", sans-serif;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 8px;
   overflow: hidden;
 }
-
-.table-material thead {
-  background-color: #f5f5f5;
-}
-
+.table-material thead     { background: #f5f5f5; }
 .table-material th,
-.table-material td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-}
+.table-material td        { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+.table-material th        { font-weight: 600; color: #616161; text-transform: uppercase; font-size: 0.85rem; }
+.table-material tbody tr:hover { background: #fafafa; }
+.table-material td        { font-size: 0.95rem; color: #424242; }
+.table-container          { width: 100%; overflow-x: auto; margin: 1rem 0; }
 
-.table-material th {
-  font-weight: 600;
-  color: #616161;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-}
+/* ── Tabla citas moderna (ConsultaCita) ──────────────────────────── */
+.consulta-cita-container  { padding: 20px; }
+.table-header-flex        { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.historial-title          { color: #4a76a8; font-size: 1.2rem; font-weight: 500; }
 
-.table-material tbody tr:hover {
-  background-color: #fafafa;
-}
+.table-citas-modern       { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+.table-citas-modern th    { color: #718096; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 0 25px; text-align: left; }
+.table-citas-modern td    { background: white; padding: 16px 15px; font-size: 0.88rem; color: #4a5568; border-top: 1px solid #edf2f7; border-bottom: 1px solid #edf2f7; }
+.table-citas-modern td:first-child { border-left: 1px solid #edf2f7; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.table-citas-modern td:last-child  { border-right: 1px solid #edf2f7; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+.row-hover-effect:hover td { background: #f8fafc; }
 
-.table-material td {
+/* Badges estado */
+.badge-status-v2  { display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; min-width: 85px; height: 24px; border: 1px solid transparent; }
+.status-atendido  { background: #c6f6d5; color: #22543d; border-color: #9ae6b4; }
+.status-pendiente { background: #feebc8; color: #744210; border-color: #fbd38d; }
+.status-programado{ background: #bee3f8; color: #2a4365; border-color: #90cdf4; }
+
+/* ── Buscador moderno ────────────────────────────────────────────── */
+.search-box-modern { display: flex; align-items: center; background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; width: 300px; }
+.search-box-modern:focus-within { border-color: #4a90e2; box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
+.search-box-modern input  { border: none !important; padding: 10px 15px; flex-grow: 1; outline: none; font-size: 0.9rem; color: #4a5568; }
+.search-box-modern button { background: #4a90e2; color: white; border: none; padding: 10px 18px; cursor: pointer; }
+.search-box-modern button:hover { background: #357abd; }
+
+/* ── CitaItem / Turno (enfermería / médico legacy) ───────────────── */
+.item-cita input[type="time"] { margin-top: 0.5rem; padding: 0.5rem; }
+.item-cita button { margin-top: 1rem; padding: 0.6rem; background: #28a745; color: white; border: none; cursor: pointer; }
+.item-cita button:hover { background: #218838; }
+.turno { background: #fff; padding: 1rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+.turno button { margin-top: 0.5rem; padding: 0.6rem; background: #0070f3; color: white; border: none; cursor: pointer; }
+.turno button:hover { opacity: 0.9; }
+
+/* =====================================================================
+   MODALES PACIENTE — pac-modal / pac-modal-overlay
+   ===================================================================== */
+.pac-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.60);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: pac-fadeIn 0.25s ease-out;
+}
+.pac-modal {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  width: 92%;
+  max-width: 480px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  overflow: hidden;
+  outline: none;
+  animation: pac-slideUp 0.28s ease-out;
+}
+@keyframes pac-fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pac-slideUp { from { transform: translateY(18px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.pac-modal-header            { padding: 22px 22px 16px; border-bottom: 1px solid #f0f4f8; text-align: center; }
+.pac-modal-header h2         { color: #1a202c; font-size: 1.4rem; font-weight: 700; margin: 0 0 4px; }
+.pac-modal-header p          { color: #718096; font-size: 0.88rem; margin: 0; }
+.pac-modal-content           { padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; }
+.pac-form-group              { display: flex; flex-direction: column; gap: 7px; }
+.pac-form-group label        { font-weight: 600; color: #4a5568; font-size: 0.9rem; }
+.pac-form-control {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
   font-size: 0.95rem;
-  color: #424242;
-}
-
-/* Responsive con scroll horizontal si es necesario */
-.table-container {
+  color: #2d3748;
   width: 100%;
-  overflow-x: auto;
-  margin: 1rem 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pac-form-control:focus      { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(63,145,232,0.12); outline: none; }
+.pac-read-only               { background: #edf2f7; cursor: not-allowed; font-weight: 600; color: #4a5568; }
+
+.pac-toggles-grid            { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #f8fafc; padding: 14px; border-radius: var(--radius-md); border: 1px solid #e2e8f0; }
+.pac-toggle-container        { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pac-toggle-label            { font-size: 0.82rem; font-weight: 600; color: #4a5568; text-align: center; }
+.pac-toggle-switch           { position: relative; display: inline-block; width: 48px; height: 25px; }
+.pac-toggle-switch input     { opacity: 0; width: 0; height: 0; }
+.pac-toggle-slider           { position: absolute; cursor: pointer; inset: 0; background: #cbd5e0; transition: 0.3s; border-radius: 25px; }
+.pac-toggle-slider::before   { position: absolute; content: ""; height: 19px; width: 19px; left: 3px; bottom: 3px; background: #fff; transition: 0.3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.pac-toggle-switch input:checked + .pac-toggle-slider             { background: var(--blue); }
+.pac-toggle-switch input:checked + .pac-toggle-slider.toggle-rojo { background: var(--red); }
+.pac-toggle-switch input:checked + .pac-toggle-slider::before     { transform: translateX(23px); }
+
+.pac-btn-submit {
+  width: 100%; padding: 14px; border-radius: var(--radius-md); border: none;
+  background: var(--blue); color: #fff; font-size: 1rem; font-weight: 700;
+  cursor: pointer; font-family: 'Segoe UI', sans-serif;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 10px rgba(63,145,232,0.25);
+}
+.pac-btn-submit:hover:not(:disabled) { background: var(--blue-dark); transform: translateY(-1px); }
+.pac-btn-submit:disabled             { background: #cbd5e0; cursor: not-allowed; box-shadow: none; }
+.btn-urgente                         { background: var(--red) !important; animation: pulse-red 2s infinite; }
+@keyframes pulse-red {
+  0%   { box-shadow: 0 0 0 0    rgba(220,38,38,0.45); }
+  70%  { box-shadow: 0 0 0 14px rgba(220,38,38,0); }
+  100% { box-shadow: 0 0 0 0    rgba(220,38,38,0); }
+}
+.has-error .pac-form-control { border-color: #fc8181; }
+.error-text                  { color: #c53030; font-size: 0.78rem; margin-top: 3px; }
+
+/* =====================================================================
+   MODALES ADMIN — medl-modal (editar) / medl-add-modal (crear usuario)
+   Mismo lenguaje visual que pac-modal. Acento índigo para editar,
+   verde para crear.
+   ===================================================================== */
+.medl-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: medl-fadeIn 0.22s ease-out;
+}
+@keyframes medl-fadeIn  { from { opacity: 0; }              to { opacity: 1; } }
+@keyframes medl-slideUp { from { transform: translateY(18px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ── Contenedor compartido ───────────────────────────────────────── */
+.medl-modal,
+.medl-add-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 92%;
+  max-width: 460px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.16);
+  overflow: hidden;
+  outline: none;
+  animation: medl-slideUp 0.26s ease-out;
 }
 
-@media (max-width: 768px) {
-  .table-material th,
-  .table-material td {
-    padding: 10px 12px; /* Reducir el padding para pantallas pequeñas */
-  }
+/* ── Cabecera centrada con ícono ─────────────────────────────────── */
+.medl-modal-header,
+.medl-add-modal-header {
+  padding: 26px 24px 18px;
+  background: #fff;
+  border-bottom: 1px solid #f0f4f8;
+  text-align: center;
 }
+.medl-modal-header h2,
+.medl-add-modal-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+/* Subtítulo opcional debajo del título */
+.medl-modal-header p,
+.medl-add-modal-header p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #718096;
+}
+/* Ícono de color encima del título */
+.medl-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  font-size: 1.4rem;
+}
+.medl-modal-icon-indigo { background: var(--indigo-light); color: var(--indigo); }
+.medl-modal-icon-green  { background: var(--green-light);  color: var(--green);  }
 
-/* Consulta de cita por paciente */
-.consulta-cita {
-  width: 100%;
-  margin-top: 2rem;
+/* ── Cuerpo del modal ────────────────────────────────────────────── */
+.medl-modal-content,
+.medl-add-modal-content {
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-.consulta-cita input {
-  padding: 0.8rem;
-  font-size: 1rem;
-}
-.consulta-cita button {
-  padding: 0.8rem;
-  font-size: 1rem;
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-.detalle-cita {
-  background: #f1f1f1;
-  padding: 1rem;
-  margin-top: 1rem;
+  gap: 16px;
 }
 
-/* CitaItem (Enfermería y Doctor) */
-
-.item-cita input[type="time"] {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-}
-.item-cita button {
-  margin-top: 1rem;
-  padding: 0.6rem;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-.item-cita button:hover {
-  background-color: #218838;
-}
-
-/* TurnoDisplay (DoctorPanel) */
-.turno {
-  background: #fff;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-.turno button {
-  margin-top: 0.5rem;
-  padding: 0.6rem;
-  background-color: #0070f3;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-.turno button:hover {
-  opacity: 0.9;
-}
-
-/* Titulares genéricos */
-h2,
-h3 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-@media (max-width: 768px) {
-  .title {
-    margin-top: 70px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 0.5rem;
-  }
-}
-
-/* --- MEJORAS EN LA TABLA COMPONENTE CONSULTACITA--- */
-/* CONTENEDOR PRINCIPAL */
-.consulta-cita-container {
-  padding: 20px;
-  background-color: transparent;
-}
-
-.table-header-flex {
+/* Info de solo lectura (nombre, SAP) */
+.medl-info-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.historial-title {
-  color: #4a76a8;
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-/* --- TABLA DE CITAS V2 (Exclusiva) --- */
-.table-citas-modern {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 12px; /* Espacio entre filas como en la imagen */
-}
-
-.table-citas-modern th {
-  color: #718096;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 0 25px;
-  text-align: left;
-  border: none;
-}
-
-.table-citas-modern td {
-  background-color: white;
-  padding: 16px 15px;
-  font-size: 0.88rem;
-  color: #4a5568;
-  border-top: 1px solid #edf2f7;
-  border-bottom: 1px solid #edf2f7;
-}
-
-/* Redondear las esquinas de las filas */
-.table-citas-modern td:first-child {
-  border-left: 1px solid #edf2f7;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-}
-
-.table-citas-modern td:last-child {
-  border-right: 1px solid #edf2f7;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
-/* SOMBRA SUTIL AL PASAR EL MOUSE */
-.row-hover-effect:hover td {
-  background-color: #f8fafc;
-  border-color: #cbd5e0;
-  transition: all 0.2s ease;
-}
-
-/* --- BADGES V2 (Solución al tamaño gigante) --- */
-.badge-status-v2 {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 0.7rem; /* Tamaño pequeño y legible */
-  font-weight: 700;
-  text-transform: uppercase;
-  min-width: 85px;
-  height: 24px;
-  border: 1px solid transparent;
-}
-
-.status-atendido {
-  background-color: #c6f6d5 !important;
-  color: #22543d !important;
-  border-color: #9ae6b4 !important;
-}
-
-.status-pendiente {
-  background-color: #feebc8 !important;
-  color: #744210 !important;
-  border-color: #fbd38d !important;
-}
-
-.status-programado {
-  background-color: #bee3f8 !important;
-  color: #2a4365 !important;
-  border-color: #90cdf4 !important;
-}
-
-/* Efecto hover en la fila */
-.table-citas-modern tr:hover td {
-  background-color: #f7fafc;
-  transform: translateY(-1px);
-  transition: all 0.2s;
-}
-
-.text-center { text-align: center; }
-
-/* BUSCADOR MODERNO */
-.search-box-modern {
-  display: flex;
-  align-items: center;
-  background-color: white;
+  flex-direction: column;
+  gap: 10px;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  width: 300px; /* Tamaño fijo para que no se estire */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  padding: 12px 14px;
 }
-
-.search-box-modern:focus-within {
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+.medl-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #475569;
 }
+.medl-info-item strong { color: #1e293b; font-weight: 600; }
 
-.search-box-modern input {
-  border: none !important;
-  padding: 10px 15px;
-  flex-grow: 1;
-  outline: none;
-  font-size: 0.9rem;
+/* ── Grupos de formulario ────────────────────────────────────────── */
+.medl-form-group,
+.medl-add-form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.medl-form-group label,
+.medl-add-form-group label {
+  font-size: 0.82rem;
+  font-weight: 700;
   color: #4a5568;
+  letter-spacing: 0.01em;
 }
 
-.search-box-modern button {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  padding: 10px 18px;
+/* Inputs y selects — mismo estilo que pac-form-control */
+.medl-form-group select,
+.medl-form-select,
+.medl-add-form-control {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  color: #2d3748;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.medl-form-group select:focus,
+.medl-form-select:focus {
+  border-color: var(--indigo);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+  outline: none;
+}
+.medl-add-form-control:focus {
+  border-color: var(--green);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+  outline: none;
+}
+
+/* Checkbox "Estado Activo" */
+.medl-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.88rem;
+  color: #475569;
   cursor: pointer;
+  transition: border-color 0.2s;
+}
+.medl-checkbox-container:hover { border-color: var(--indigo); }
+.medl-checkbox-container input[type="checkbox"] {
+  width: 17px; height: 17px;
+  accent-color: var(--indigo);
+  cursor: pointer;
+}
+.medl-checkbox-container label { cursor: pointer; font-weight: 600; }
+
+/* ── Pie de acciones ─────────────────────────────────────────────── */
+.medl-modal-actions,
+.medl-add-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+}
+
+.medl-btn,
+.medl-add-btn {
+  padding: 10px 20px;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.12s, box-shadow 0.15s;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+.medl-btn:hover,
+.medl-add-btn:hover { transform: translateY(-1px); }
+
+.medl-btn-primary         { background: var(--indigo); color: #fff; box-shadow: 0 3px 8px rgba(79,70,229,0.25); }
+.medl-btn-primary:hover   { background: var(--indigo-dark); box-shadow: 0 4px 12px rgba(79,70,229,0.35); }
+.medl-btn-secondary       { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.medl-btn-secondary:hover { background: #e2e8f0; }
+.medl-btn-danger          { background: var(--red-light); color: var(--red); border: 1px solid #fca5a5; }
+.medl-btn-danger:hover    { background: #fca5a5; }
+
+.medl-add-btn-cancel      { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+.medl-add-btn-cancel:hover{ background: #e2e8f0; }
+.medl-add-btn-submit      { background: var(--green); color: #fff; box-shadow: 0 3px 8px rgba(22,163,74,0.25); }
+.medl-add-btn-submit:hover{ background: #15803d; box-shadow: 0 4px 12px rgba(22,163,74,0.35); }
+
+/* =====================================================================
+   AGREGAR AL FINAL DE globals.css
+   Modal de enfermería — prog-modal (Gestionar Cita)
+   Mismo lenguaje visual que pac-modal. Acento púrpura enfermería.
+   ===================================================================== */
+
+.prog-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: prog-fadeIn 0.22s ease-out;
+}
+@keyframes prog-fadeIn  { from { opacity: 0; }               to { opacity: 1; } }
+@keyframes prog-slideUp { from { transform: translateY(18px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.prog-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 92%;
+  max-width: 480px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  outline: none;
+  position: relative;
+  animation: prog-slideUp 0.26s ease-out;
+}
+
+/* Cabecera blanca centrada */
+.prog-modal-header {
+  padding: 26px 24px 18px;
+  background: #fff;
+  border-bottom: 1px solid #f0f4f8;
+  text-align: center;
+}
+.prog-modal-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+/* Ícono de acento */
+.prog-modal-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f3e8ff;
+  color: #9333ea;
+  margin: 0 auto 12px;
+  font-size: 1.3rem;
 }
 
-.search-box-modern button:hover {
-  background-color: #357abd;
+.prog-modal-content {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Bloque de info de solo lectura */
+.prog-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.prog-info-item        { font-size: 0.88rem; color: #475569; }
+.prog-info-item strong { color: #1e293b; font-weight: 600; }
+
+.prog-form-group { display: flex; flex-direction: column; gap: 6px; }
+.prog-form-group label { font-size: 0.82rem; font-weight: 700; color: #4a5568; }
+
+.prog-form-control {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  color: #2d3748;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.prog-form-control:focus {
+  border-color: #9333ea;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.12);
+  outline: none;
+}
+
+.prog-modal-actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+}
+
+.prog-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.12s, box-shadow 0.15s;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  white-space: nowrap;
+}
+.prog-btn:hover { transform: translateY(-1px); }
+
+.prog-btn-primary         { background: #3f91e8; color: #fff; box-shadow: 0 3px 8px rgba(63,145,232,0.25); }
+.prog-btn-primary:hover   { background: #1a5fa8; box-shadow: 0 4px 12px rgba(63,145,232,0.35); }
+.prog-btn-secondary       { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.prog-btn-secondary:hover { background: #fde68a; }
+.prog-btn-danger          { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.prog-btn-danger:hover    { background: #fca5a5; }
+
+/* X — ahora oscura sobre fondo blanco */
+.close-icon {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: color 0.2s, transform 0.15s;
+  line-height: 1;
+  padding: 4px;
+}
+.close-icon:hover { color: #475569; transform: rotate(90deg); }
+
+@media (max-width: 480px) {
+  .prog-modal-actions { flex-direction: column; }
+  .prog-btn { flex: none; width: 100%; }
 }

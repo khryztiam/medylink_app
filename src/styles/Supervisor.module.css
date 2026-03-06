@@ -1,0 +1,317 @@
+/* =====================================================================
+   Supervisor.module.css — MedyLink
+   Layout: columna principal (monitoreo citas) + aside derecho (KPIs + acciones)
+   Acento naranja coordinador #ea580c
+   ===================================================================== */
+
+/* ── Página ───────────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  gap: 18px;
+  padding: 18px 18px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start;
+  animation: fadeIn 0.3s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Columna principal ───────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Aside derecho ───────────────────────────────────────────────── */
+.aside {
+  width: 290px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 18px;
+}
+
+/* ── Saludo compacto ─────────────────────────────────────────────── */
+.saludoCard {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fff 100%);
+  border-radius: 12px;
+  border: 1px solid #fed7aa;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(234,88,12,0.08);
+}
+.saludoTexto h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #7c2d12;
+  line-height: 1.2;
+}
+.saludoFrase { margin: 0; font-size: 0.78rem; color: #ea580c; font-weight: 500; }
+
+/* ── Panel de monitoreo ──────────────────────────────────────────── */
+.monitorPanel {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #fed7aa;
+  box-shadow: 0 2px 10px rgba(234,88,12,0.07);
+  overflow: hidden;
+}
+
+.monitorHeader {
+  padding: 14px 18px;
+  background: #fff7ed;
+  border-bottom: 1px solid #fed7aa;
+}
+.monitorTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #9a3412;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monitorBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Sección de estado ───────────────────────────────────────────── */
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seccionHeader {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+/* Variantes de color por estado */
+.seccionProgramadas { background: #dbeafe; color: #1e40af; border-left: 3px solid #3f91e8; }
+.seccionConsulta    { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
+.seccionAtendidas   { background: #dcfce7; color: #166534; border-left: 3px solid #16a34a; }
+
+.seccionIcon { font-size: 0.9rem; flex-shrink: 0; }
+
+/* Lista de citas */
+.citasList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.citaItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 10px 12px;
+  transition: background 0.15s;
+}
+.citaItem:hover { background: #f1f5f9; }
+
+.citaDetalle { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.citaNombre  { font-weight: 600; font-size: 0.85rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.citaFecha   { font-size: 0.75rem; color: #94a3b8; }
+
+/* Botón cancelar */
+.btnCancelar {
+  flex-shrink: 0;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 7px;
+  padding: 5px 11px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'Segoe UI', sans-serif;
+}
+.btnCancelar:hover { background: #fca5a5; }
+
+/* Item consulta/atendida (sin botón) */
+.citaItemSimple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 10px 12px;
+}
+.citaNombreSimple { font-weight: 600; font-size: 0.85rem; color: #1e293b; }
+.citaHora { font-size: 0.78rem; color: #94a3b8; }
+
+/* Empty state */
+.emptySeccion {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  padding: 8px 4px;
+}
+
+/* ── Aside: KPI cards ────────────────────────────────────────────── */
+.asideTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #9a3412;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 2px;
+  margin: 0;
+}
+
+.kpiGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kpiCard {
+  background: #fff;
+  border-radius: 11px;
+  border: 1px solid #e2e8f0;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.kpiCard:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
+
+.kpiIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.kpiIconBlue   { background: #dbeafe; }
+.kpiIconAmber  { background: #fef3c7; }
+.kpiIconGreen  { background: #dcfce7; }
+
+.kpiInfo { flex: 1; min-width: 0; }
+.kpiLabel {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 2px;
+}
+.kpiValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+}
+.kpiValueSmall { font-size: 1.1rem; }
+
+/* ── Aside: Acciones ─────────────────────────────────────────────── */
+.accionesCard {
+  background: #fff;
+  border-radius: 11px;
+  border: 1px solid #fed7aa;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 4px rgba(234,88,12,0.07);
+}
+.accionesTitle {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #9a3412;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.btnAgregar {
+  width: 100%;
+  padding: 11px;
+  border-radius: 9px;
+  border: none;
+  background: #ea580c;
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 8px rgba(234,88,12,0.25);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.btnAgregar:hover {
+  background: #c2410c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234,88,12,0.35);
+}
+
+/* Mensaje de alerta */
+.mensajeAlerta {
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  animation: fadeIn 0.25s ease both;
+}
+.exito { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+.error { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .aside { width: 250px; }
+}
+@media (max-width: 768px) {
+  .page {
+    flex-direction: column;
+    padding: 12px 10px 60px;
+  }
+  .aside {
+    width: 100%;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .kpiGrid { flex-direction: row; flex-wrap: wrap; }
+  .kpiCard { flex: 1 1 calc(50% - 5px); }
+  .accionesCard { width: 100%; }
+}

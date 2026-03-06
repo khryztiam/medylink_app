@@ -1,49 +1,58 @@
+// components/admin/UserRecents.jsx
 import { useEffect, useState } from "react";
 import { FaUserClock } from "react-icons/fa";
+import styles from "@/styles/Admin.module.css";
 
 export default function UsuariosRecientes({ onUserSelect }) {
   const [recentUsers, setRecentUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Consideraremos "recientes" los registrados en los últimos 7 días
-  const fetchRecentUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/admin/users/recent');
-      const data = await res.json();
-      setRecentUsers(data.users || []);
-    } catch (error) {
-      console.error("Error cargando usuarios recientes:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading, setLoading]         = useState(true);
 
   useEffect(() => {
+    const fetchRecentUsers = async () => {
+      try {
+        setLoading(true);
+        const res  = await fetch("/api/admin/users/recent");
+        const data = await res.json();
+        setRecentUsers(data.users || []);
+      } catch (err) {
+        console.error("Error cargando usuarios recientes:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchRecentUsers();
   }, []);
 
   return (
-    <div className="recent-users-panel">
-      <h3>
-        <FaUserClock /> Usuarios Recientes ({recentUsers.length})
-      </h3>
-      
+    <div className={styles.card}>
+      <div className={styles.cardHeader}>
+        <h3 className={styles.cardTitle}>
+          <FaUserClock className={styles.cardTitleIcon} />
+          Usuarios Recientes ({recentUsers.length})
+        </h3>
+      </div>
+
       {loading ? (
-        <div className="loading">Cargando...</div>
+        <div className={styles.loading}>Cargando...</div>
+      ) : recentUsers.length === 0 ? (
+        <div className={styles.emptyRecent}>Sin actividad reciente</div>
       ) : (
-        <div className="recent-users-list">
-          {recentUsers.map(user => (
-            <div 
-              key={user.id} 
-              className={`recent-user-item rol-${user.role}`}
-              onClick={() => onUserSelect(user)}
+        <div className={styles.recentList}>
+          {recentUsers.map((u) => (
+            <div
+              key={u.id}
+              className={styles.recentItem}
+              onClick={() => onUserSelect?.(u)}
             >
-              <span className="user-avatar">{user.nombre.charAt(0)}</span>
-              <div className="user-info">
-                <strong>{user.nombre || `ID: ${user.idsap}`}</strong>
-                <span className="user-meta">
-                  {new Date(user.created_at).toLocaleDateString()} • {user.role}
+              <div className={styles.recentAvatar}>
+                {(u.nombre || u.idsap?.toString() || "?")[0].toUpperCase()}
+              </div>
+              <div className={styles.recentInfo}>
+                <span className={styles.recentName}>
+                  {u.nombre || `ID: ${u.idsap}`}
+                </span>
+                <span className={styles.recentMeta}>
+                  {new Date(u.created_at).toLocaleDateString("es-SV")} · {u.role}
                 </span>
               </div>
             </div>

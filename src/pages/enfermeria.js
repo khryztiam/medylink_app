@@ -1,156 +1,206 @@
-import { useEffect, useState } from "react";
+// pages/enfermeria.js
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { getTodasLasCitas, getCitasPorPaciente, actualizarCita, agregarCita } from "../lib/citasData";
+import {
+  getTodasLasCitas,
+  getCitasPorPaciente,
+  actualizarCita,
+  agregarCita,
+} from "../lib/citasData";
 import CitaForm from "../components/CitaForm";
 import FechaHoraInput from "../components/FechaHoraInput";
 import ConsultaCita from "../components/ConsultaCita";
-import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/lib/supabase";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Modal from "react-modal";
 import MedicoActivo from "@/components/MedicoActivo";
 import {
-  FaUser,
-  FaClock,
-  FaCalendarAlt,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaRegClock,
-  FaCalendarCheck,
-  FaSignOutAlt,
-  FaUserNurse,
-  FaTimes,
+  FaCalendarAlt, FaCheckCircle, FaSearch,
+  FaPlus, FaTimes, FaChevronDown,
+  FaExclamationTriangle, FaClock,
 } from "react-icons/fa";
+import styles from "@/styles/Enfermeria.module.css";
+
+// ─── Audio helper ──────────────────────────────────────────────────────────────
+// Política de autoplay: los browsers bloquean audio hasta que el usuario
+// interactúa con la página. Desbloquear en el primer click/tecla garantiza
+// que el sonido de nueva cita funcione aunque llegue antes de cualquier acción.
+let audioDesbloqueado = false;
+
+function desbloquearAudio() {
+  if (audioDesbloqueado) return;
+  // Crear y reproducir silencio para "desbloquear" el contexto de audio
+  const audio = new Audio("/nueva_cita.mp3");
+  audio.volume = 0;
+  audio.play()
+    .then(() => { audio.pause(); audio.currentTime = 0; audioDesbloqueado = true; })
+    .catch(() => {}); // Si falla, se intentará de nuevo en el próximo click
+}
+
+function reproducirSonidoNuevaCita() {
+  try {
+    const audio = new Audio("/nueva_cita.mp3");
+    audio.volume = 1.0;
+    const promise = audio.play();
+    if (promise !== undefined) {
+      promise.catch(() => {
+        console.warn("🔇 Audio bloqueado — el usuario aún no ha interactuado con la página.");
+      });
+    }
+  } catch (err) {
+    console.warn("Audio no disponible:", err);
+  }
+}
 
 Modal.setAppElement("#__next");
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getSaludo() {
+  const h = new Date().getHours();
+  if (h >= 6  && h < 12) return { texto: "Buenos días",   icono: "☀️" };
+  if (h >= 12 && h < 19) return { texto: "Buenas tardes", icono: "🌤️" };
+  return                         { texto: "Buenas noches", icono: "🌙" };
+}
+
+function formatHora(str) {
+  if (!str) return "—";
+  return new Date(str).toLocaleTimeString("es-MX", {
+    hour12: true, hour: "2-digit", minute: "2-digit",
+  });
+}
+function formatFecha(str) {
+  if (!str) return "—";
+  return new Date(str).toLocaleDateString("es-SV", {
+    day: "2-digit", month: "2-digit", year: "2-digit",
+  });
+}
+function formatFechaHora(str) {
+  if (!str) return "—";
+  return new Date(str).toLocaleString("es-MX", {
+    hour12: true, hour: "2-digit", minute: "2-digit",
+    day: "2-digit", month: "2-digit", year: "numeric",
+  });
+}
+
+// ─── Componente ───────────────────────────────────────────────────────────────
 export default function Enfermeria() {
-  const { user, userName, idsap } = useAuth();
-  const [pendientes, setPendientes] = useState([]);
-  const [programadas, setProgramadas] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isNuevaCitaModalOpen, setIsNuevaCitaModalOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [fechasProgramadas, setFechasProgramadas] = useState({});
-  const [nuevaFechaHora, setNuevaFechaHora] = useState("");
-  const [enEspera, setEnEspera] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
+  const { user, userName } = useAuth();
+
+  const [pendientes,    setPendientes]    = useState([]);
+  const [programadas,   setProgramadas]   = useState([]);
+  const [enEspera,      setEnEspera]      = useState([]);
   const [todasLasCitas, setTodasLasCitas] = useState([]);
-  const [miCita, setMiCita] = useState(null);
-  const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState("");
-  const [tabIndex, setTabIndex] = useState(0);
 
-  useEffect(() => {
-  const fetchTodasCitas = async () => {
-    // Usamos el helper getCitas en lugar de la llamada directa a supabase
-    // para mantener las reglas de negocio (como el límite de registros)
-    const data = await getTodasLasCitas(50); // Traemos las últimas 50 para el historial global de enfermería
-    setTodasLasCitas(data);
-  };
-  fetchTodasCitas();
-}, []);
+  const [isModalOpen,       setIsModalOpen]       = useState(false);
+  const [isNuevaCitaModal,  setIsNuevaCitaModal]  = useState(false);
+  const [selected,          setSelected]          = useState(null);
+  const [fechasProgramadas, setFechasProgramadas] = useState({});
+  const [nuevaFechaHora,    setNuevaFechaHora]    = useState("");
 
-  // Detectar cambio de tamaño de pantalla
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+  const [mensaje,    setMensaje]    = useState(null); // { texto, tipo }
+  const [tabIndex,   setTabIndex]   = useState(0);
+  const [bannerOpen, setBannerOpen] = useState(true); // colapsable
+
+  // Ref con IDs de citas ya conocidas — evita stale closure en el canal realtime.
+  // Se actualiza cada vez que `load` trae datos frescos.
+  const citasConocidasRef = useRef(new Set());
+
+  const { texto: saludoTexto, icono: saludoIcono } = getSaludo();
+  const nombre = userName || "Enfermería";
+
+  // ── Carga de datos ───────────────────────────────────────────────
+  const load = useCallback(async () => {
+    const todas = await getTodasLasCitas();
+    if (!Array.isArray(todas)) return;
+
+    // Registrar todos los IDs actuales como "conocidos"
+    // para que el canal realtime sepa qué es realmente nuevo.
+    citasConocidasRef.current = new Set(todas.map((c) => c.id));
+
+    setPendientes(todas.filter((c) => c.estado === "pendiente"));
+    setEnEspera(todas.filter((c) => c.estado === "en espera"));
+    setProgramadas(
+      todas
+        .filter((c) => c.estado === "programado")
+        .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at))
+        .slice(0, 25)
+    );
+    setTodasLasCitas(todas.slice(0, 50));
   }, []);
 
-  // Carga inicial optimizada para el motor de enfermería
-const load = async () => {
-  const todas = await getTodasLasCitas(); // Asegúrate que en citasData.js getCitas() siga existiendo para traer todo lo reciente
-  
-  if (!Array.isArray(todas)) return;
+  useEffect(() => { load(); }, [load]);
 
-  setPendientes(todas.filter((c) => c.estado === "pendiente"));
-  setEnEspera(todas.filter((c) => c.estado === "en espera"));
-  
-  // Para programadas, mantenemos el límite de 25 para no saturar la vista
-  const prog = todas
-    .filter((c) => c.estado === "programado")
-    .sort((a, b) => new Date(a.programmer_at) - new Date(b.programmer_at))
-    .slice(0, 25);
-  setProgramadas(prog);
-};
-
-  function reproducirSonidoNuevaCita() {
-    const audio = new Audio("/nueva_cita.mp3"); // Ruta de tu sonido
-    audio.play();
-  }
-
+  // Desbloquear audio en el primer gesto del usuario
+  // Esto garantiza que el sonido de nueva cita funcione aunque llegue
+  // antes de que la enfermera haya clickeado algo en la página.
   useEffect(() => {
-    load();
-  }, []);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("realtime-citas")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "citas" },
-        (payload) => {
-          const cita = payload.new;
-
-          // Actualizar según el nuevo estado
-          if (cita.estado === "pendiente") {
-            setPendientes((prev) => {
-              const yaExiste = prev.find((c) => c.id === cita.id);
-              if (yaExiste) {
-                return prev.map((c) => (c.id === cita.id ? cita : c));
-              } else {
-                reproducirSonidoNuevaCita();
-                return [cita, ...prev];
-              }
-            });
-          } else {
-            // Si la cita ya no es pendiente, quitarla de pendientes
-            setPendientes((prev) => prev.filter((c) => c.id !== cita.id));
-          }
-
-          if (cita.estado === "en espera") {
-            setEnEspera((prev) => {
-              const yaExiste = prev.find((c) => c.id === cita.id);
-              if (yaExiste) {
-                return prev.map((c) => (c.id === cita.id ? cita : c));
-              } else {
-                return [...prev, cita];
-              }
-            });
-          } else {
-            // Si ya no está en espera, quitarla de enEspera
-            setEnEspera((prev) => prev.filter((c) => c.id !== cita.id));
-          }
-
-          if (cita.estado === "programado") {
-            setProgramadas((prev) => {
-              const yaExiste = prev.find((c) => c.id === cita.id);
-              if (yaExiste) {
-                return prev.map((c) => (c.id === cita.id ? cita : c));
-              } else {
-                return [...prev, cita];
-              }
-            });
-          } else {
-            // Si ya no está programado, quitarlo de programadas
-            setProgramadas((prev) => prev.filter((c) => c.id !== cita.id));
-          }
-        }
-      )
-      .subscribe();
-
+    const unlock = () => { desbloquearAudio(); };
+    window.addEventListener("click",   unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    window.addEventListener("touchstart", unlock, { once: true });
     return () => {
-      supabase.removeChannel(channel);
+      window.removeEventListener("click",      unlock);
+      window.removeEventListener("keydown",    unlock);
+      window.removeEventListener("touchstart", unlock);
     };
   }, []);
 
-  // Asignar fecha y hora (combinadas) con el nuevo componente
-  const handleDatetimeChange = (id, value) => {
-    setFechasProgramadas((prev) => ({ ...prev, [id]: value }));
-  };
+  // ── Suscripción realtime ─────────────────────────────────────────
+  useEffect(() => {
+    const channel = supabase
+      .channel("realtime-citas-enfermeria")
+      .on("postgres_changes", { event: "*", schema: "public", table: "citas" }, (payload) => {
+        const cita = payload.new;
+        if (!cita) return;
 
+        const upsert = (setter, cita) =>
+          setter((prev) => {
+            const existe = prev.find((c) => c.id === cita.id);
+            return existe ? prev.map((c) => c.id === cita.id ? cita : c) : [cita, ...prev];
+          });
+        const remove = (setter, id) =>
+          setter((prev) => prev.filter((c) => c.id !== id));
+
+        // ── Sonido: solo si la cita es nueva (no estaba en la carga inicial) ──
+        // Usamos la ref — no depende del estado React, nunca es stale.
+        const esNueva = !citasConocidasRef.current.has(cita.id);
+        if (cita.estado === "pendiente" && esNueva) {
+          reproducirSonidoNuevaCita();
+        }
+        // Marcar como conocida para no sonar de nuevo en updates posteriores
+        citasConocidasRef.current.add(cita.id);
+
+        if (cita.estado === "pendiente") {
+          upsert(setPendientes, cita);
+        } else {
+          remove(setPendientes, cita.id);
+        }
+
+        if (cita.estado === "en espera") {
+          upsert(setEnEspera, cita);
+        } else {
+          remove(setEnEspera, cita.id);
+        }
+
+        if (cita.estado === "programado") {
+          upsert(setProgramadas, cita);
+        } else {
+          remove(setProgramadas, cita.id);
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []); // Sin dependencias — la ref no necesita re-suscribir
+
+  // ── Auto-limpiar mensaje ─────────────────────────────────────────
+  useEffect(() => {
+    if (!mensaje) return;
+    const t = setTimeout(() => setMensaje(null), 3500);
+    return () => clearTimeout(t);
+  }, [mensaje]);
+
+  // ── Acciones ─────────────────────────────────────────────────────
   const programarCita = async (id) => {
     const fechaHora = fechasProgramadas[id];
     if (!fechaHora) return alert("Selecciona fecha y hora.");
@@ -161,525 +211,397 @@ const load = async () => {
     load();
   };
 
-  // Abrir modal de reprogramación/cancelación
   const openModal = (cita) => {
     setSelected(cita);
     setNuevaFechaHora(cita.programmer_at?.slice(0, 16) || "");
     setIsModalOpen(true);
   };
-  const closeModal = () => setIsModalOpen(false);
 
-  // Reprogramar cita
   const handleReprogram = async (e) => {
     e.preventDefault();
     if (!nuevaFechaHora) return alert("Selecciona fecha y hora.");
-
     await actualizarCita(selected.id, {
       programmer_at: new Date(nuevaFechaHora).toISOString(),
     });
-
-    closeModal();
+    setIsModalOpen(false);
     load();
   };
 
-  // Cancelar cita
   const handleCancel = async () => {
     await actualizarCita(selected.id, { estado: "cancelado" });
-    closeModal();
+    setIsModalOpen(false);
     load();
   };
 
-  //CheckIn
   const handleCheckIn = async () => {
     if (!selected) return;
 
-    // 1. Traer todas las citas
-    const todas = await getCitasPorPaciente();
-
-    // 2. Fecha de hoy en 'YYYY-MM-DD'
+    // Traer citas del paciente para calcular orden (fix: sin argumento indefinido)
+    const todas = await getTodasLasCitas();
     const hoy = new Date().toISOString().slice(0, 10);
-
-    // 3. Filtrar citas de hoy que ya tengan orden_llegada
     const hoyCitas = todas.filter((c) => {
       const fechaProg = c.programmer_at?.slice(0, 10);
-      const tieneOrden = c.orden_llegada != null;
-      return fechaProg === hoy && tieneOrden;
+      return fechaProg === hoy && c.orden_llegada != null;
     });
 
-    // 4. Calcular siguiente orden
     let siguienteOrden;
-
-    // Si es emergencia, asignar orden 0 (prioridad máxima)
     if (selected.emergency) {
       siguienteOrden = 0;
-
-      // Reordenar las demás citas (sumar 1 a sus órdenes)
-      const updatePromises = hoyCitas
-        .filter((c) => c.orden_llegada >= 0)
-        .map((c) =>
-          actualizarCita(c.id, {
-            orden_llegada: c.orden_llegada + 1,
-          })
-        );
-
-      await Promise.all(updatePromises);
+      await Promise.all(
+        hoyCitas
+          .filter((c) => c.orden_llegada >= 0)
+          .map((c) => actualizarCita(c.id, { orden_llegada: c.orden_llegada + 1 }))
+      );
     } else {
-      // Para citas normales, calcular el siguiente orden disponible
       const maxOrden = hoyCitas.reduce(
-        (max, c) => (c.orden_llegada > max ? c.orden_llegada : max),
-        0
+        (max, c) => (c.orden_llegada > max ? c.orden_llegada : max), 0
       );
       siguienteOrden = maxOrden + 1;
     }
 
-    // 5. Actualizar la cita seleccionada
     await actualizarCita(selected.id, {
       estado: "en espera",
       orden_llegada: siguienteOrden,
       check_in: new Date().toISOString(),
     });
 
-    alert(`Check-in exitoso. Turno asignado: #${siguienteOrden}`);
-    closeModal();
+    setIsModalOpen(false);
     load();
   };
 
-  const handleNuevaCita = async ({nombre, motivo, idSAP, urgente, isss}) => {
+  const handleNuevaCita = async ({ nombre, motivo, idSAP, urgente, isss }) => {
     try {
-      const nuevaCita = {
-        id: uuidv4(),
-        nombre,
-        motivo,
-        idSAP,
+      await agregarCita({
+        nombre, motivo, idSAP,
         estado: "pendiente",
-        orden_llegada: null,
         emergency: urgente,
         isss: isss,
-        created_at: new Date().toISOString(), // Añade fecha de creación
-        programmer_at: null, // Añade esto si es necesario
-      };
-
-      await agregarCita(nuevaCita);
-      await load(); // Usa tu función existente para refrescar los datos
-
-      // Mensaje de éxito
-      setTipoMensaje("exito");
-      setMensaje("✅ Cita creada exitosamente.");
-
-      setIsNuevaCitaModalOpen(false);
-    } catch (error) {
-      console.error("Error al crear la cita:", error);
-      setTipoMensaje("error");
-      setMensaje("❌ Ocurrió un error al crear la cita.");
+      });
+      setMensaje({ texto: "✅ Cita creada exitosamente.", tipo: "exito" });
+      setIsNuevaCitaModal(false);
+      load();
+    } catch (err) {
+      console.error(err);
+      setMensaje({ texto: "❌ Error al crear la cita.", tipo: "error" });
     }
-
-    // Ocultar mensaje después de 3 segundos
-    setTimeout(() => {
-      setMensaje("");
-      setTipoMensaje("");
-    }, 3000);
   };
 
-  const openNuevaCitaModal = () => {
-    setIsNuevaCitaModalOpen(true);
-  };
+  // ── Conteos para chips y badges ──────────────────────────────────
+  const countEmergencias = pendientes.filter((c) => c.emergency).length;
+  const countIsss        = pendientes.filter((c) => c.isss && !c.emergency).length;
+  const countNormales    = pendientes.filter((c) => !c.emergency && !c.isss).length;
 
-  const hora = new Date().getHours();
-  let saludo = "Hola";
-  let iconoSaludo = "👋";
-
-  if (hora >= 6 && hora < 12) {
-    saludo = "Buenos días";
-    iconoSaludo = "☀️";
-  } else if (hora >= 12 && hora < 19) {
-    saludo = "Buenas tardes";
-    iconoSaludo = "🌤️";
-  } else {
-    saludo = "Buenas noches";
-    iconoSaludo = "🌙";
-  }
-
-  const nombre = userName || "Paciente";
-
-  //Html renderizado
+  // ── JSX ──────────────────────────────────────────────────────────
   return (
-    <div className="main-content">
-      <div className="title-bar">
-        <h1 className="enfermeria-title">
-          <FaUserNurse className="title-icon" />
-          Enfermería
-          <span className="title-extra">
-            <FaCalendarAlt className="extra-icon" />
-            Panel de Gestión de Citas
-          </span>
-        </h1>
+    <div className={styles.page}>
+
+      {/* ── 1. Fila superior: saludo + botón ──────────────────────── */}
+      <div className={styles.topRow}>
+        <div className={styles.saludoTexto}>
+          <h2>{saludoIcono} {saludoTexto}, {nombre}.</h2>
+          <p className={styles.saludoFrase}>
+            Cada cita que programas marca la diferencia 🫶
+          </p>
+        </div>
+        <button
+          className={styles.btnNuevaCita}
+          onClick={() => setIsNuevaCitaModal(true)}
+        >
+          <FaPlus size={11} />
+          Nueva Cita
+        </button>
       </div>
-      <div className="content-wrapper">
-        <div className="sidebar">
-          <div className="panel-pendientes">
-            <h2>🚩 Citas Pendientes</h2>
-            <div class="panel-pendientes-content">
-              {pendientes.length === 0 ? (
-                <p>No hay citas pendientes.</p>
-              ) : (
-                pendientes.map((cita) => (
-                  <div
-                    key={cita.id}
-                    className={`item-cita 
-                  ${cita.emergency ? "emergency-card" : ""} 
-                  ${cita.isss ? "isss-card" : ""}`}
-                  >
-                    <div className="cita-header">
-                      <p className="cita-nombre">
-                        <strong>{cita.nombre}</strong>
-                      </p>
-                      {cita.emergency && (
-                        <span className="emergency-tag">🚨 EMERGENCIA</span>
-                      )}
+
+      {/* ── 2. Banner colapsable: pendientes ──────────────────────── */}
+      <div className={styles.pendientesBanner}>
+        {/* Header del banner — clickeable para colapsar */}
+        <div
+          className={`${styles.pendientesBannerHeader} ${bannerOpen ? styles.pendientesBannerHeaderOpen : ""}`}
+          onClick={() => setBannerOpen((v) => !v)}
+        >
+          <div className={styles.pendientesBannerLeft}>
+            <h3 className={styles.pendientesBannerTitle}>
+              🚩 Citas Pendientes
+              <span className={`${styles.pendientesCount} ${pendientes.length === 0 ? styles.pendientesCountZero : ""}`}>
+                {pendientes.length}
+              </span>
+            </h3>
+
+            {/* Chips resumen — visibles aunque esté colapsado */}
+            <div className={styles.pendientesChips}>
+              {countEmergencias > 0 && (
+                <span className={styles.chip + " " + styles.chipEmergencia}>
+                  🚨 {countEmergencias} emergencia{countEmergencias > 1 ? "s" : ""}
+                </span>
+              )}
+              {countIsss > 0 && (
+                <span className={styles.chip + " " + styles.chipIsss}>
+                  🏥 {countIsss} ISSS
+                </span>
+              )}
+              {countNormales > 0 && (
+                <span className={styles.chip + " " + styles.chipNormal}>
+                  📋 {countNormales} normal{countNormales > 1 ? "es" : ""}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <FaChevronDown
+            className={`${styles.chevron} ${bannerOpen ? styles.chevronOpen : ""}`}
+            size={14}
+          />
+        </div>
+
+        {/* Grid de cards — solo cuando está abierto */}
+        {bannerOpen && (
+          <div className={styles.pendientesGrid}>
+            {pendientes.length === 0 ? (
+              <div className={styles.pendientesEmpty}>
+                <span className={styles.pendientesEmptyIcon}>✅</span>
+                No hay citas pendientes por atender.
+              </div>
+            ) : (
+              pendientes.map((cita) => (
+                <div
+                  key={cita.id}
+                  className={`${styles.itemCita} ${cita.emergency ? styles.itemCitaEmergencia : ""} ${cita.isss && !cita.emergency ? styles.itemCitaIsss : ""}`}
+                >
+                  <div className={styles.itemCitaHeader}>
+                    <span className={styles.itemCitaNombre}>{cita.nombre}</span>
+                    {cita.emergency && (
+                      <span className={styles.emergenciaTag}>
+                        🚨 Emergencia
+                      </span>
+                    )}
+                  </div>
+                  <p className={styles.itemCitaMotivo}>{cita.motivo}</p>
+                  <p className={styles.itemCitaHora}>
+                    Solicitada: {formatFechaHora(cita.created_at)}
+                  </p>
+                  <div className={styles.itemCitaActions}>
+                    <div className={styles.fechaHoraWrap}>
+                      <FechaHoraInput
+                        value={fechasProgramadas[cita.id] || ""}
+                        onChange={(value) =>
+                          setFechasProgramadas((prev) => ({ ...prev, [cita.id]: value }))
+                        }
+                      />
                     </div>
-                    <p>
-                      {cita.motivo} -{" "}
-                      {new Date(cita.created_at).toLocaleString("es-MX", {
-                        hour12: true,
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}
-                    </p>
-                    <FechaHoraInput
-                      value={fechasProgramadas[cita.id] || ""}
-                      onChange={(value) =>
-                        setFechasProgramadas((prev) => ({
-                          ...prev,
-                          [cita.id]: value,
-                        }))
-                      }
-                    />
-                    <button onClick={() => programarCita(cita.id)}>
+                    <button
+                      className={styles.btnProgramar}
+                      onClick={() => programarCita(cita.id)}
+                    >
                       Programar
                     </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── 3. Área de trabajo con tabs ───────────────────────────── */}
+      <div className={styles.workArea}>
+        <Tabs selectedIndex={tabIndex} onSelect={setTabIndex}>
+
+          <TabList className={styles.tabList}>
+            <Tab className={styles.tabItem} selectedClassName={styles.tabItemSelected}>
+              <FaCalendarAlt size={13} />
+              Programadas
+              <span className={styles.tabBadge}>{programadas.length}</span>
+            </Tab>
+            <Tab className={styles.tabItem} selectedClassName={styles.tabItemSelected}>
+              <FaCheckCircle size={13} />
+              Check-in
+              <span className={styles.tabBadge}>{enEspera.length}</span>
+            </Tab>
+            <Tab className={styles.tabItem} selectedClassName={styles.tabItemSelected}>
+              <FaSearch size={13} />
+              Consulta
+            </Tab>
+          </TabList>
+
+          {/* ── Tab 1: Programadas ─────────────────────────────── */}
+          <TabPanel className={styles.tabPanel} selectedClassName={styles.tabPanelActive}>
+            <h3 className={styles.panelTitle}>
+              <FaCalendarAlt /> Últimas 25 Citas Programadas
+            </h3>
+
+            {/* Tabla desktop */}
+            <div className="table-container">
+              <table className={styles.tabla}>
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Motivo</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {programadas.map((cita) => (
+                    <tr key={cita.id} onClick={() => openModal(cita)}>
+                      <td>
+                        <span className={styles.nombreCell}>
+                          {cita.emergency && "🚨 "}{cita.nombre}
+                        </span>
+                      </td>
+                      <td>{cita.motivo}</td>
+                      <td>{formatFecha(cita.programmer_at)}</td>
+                      <td>{formatHora(cita.programmer_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Cards móvil */}
+            <div className={styles.mobileCards}>
+              {programadas.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <span className={styles.emptyIcon}>📅</span>
+                  No hay citas programadas.
+                </div>
+              ) : (
+                programadas.map((cita) => (
+                  <div key={cita.id} className={styles.citaCard} onClick={() => openModal(cita)}>
+                    <div className={styles.citaCardHeader}>
+                      <span className={styles.citaCardNombre}>
+                        {cita.emergency && "🚨 "}{cita.nombre}
+                      </span>
+                      <span className={styles.citaCardFecha}>
+                        {formatFecha(cita.programmer_at)} {formatHora(cita.programmer_at)}
+                      </span>
+                    </div>
+                    <p className={styles.citaCardMotivo}>{cita.motivo}</p>
                   </div>
                 ))
               )}
             </div>
-          </div>
-        </div>
-        <div className="main">
-          <div className="saludo-card">
-            <div className="saludo-texto">
-              <h2>
-                {iconoSaludo} {saludo}, {nombre}.
-              </h2>
-              <p
-                className="saludo-frase"
-                style={{
-                  fontSize: "1.1em",
-                  marginTop: "20px",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
-              >
-                Cada cita que programas es una muestra de tu compromiso con la
-                salud y el bienestar. ¡Gracias por estar ahí siempre! 🫶📋
-              </p>
-            </div>
-          </div>
-          <div className="enfermeria-container">
-            {/* Tabs con React */}
-            <Tabs
-              selectedIndex={tabIndex}
-              onSelect={(index) => setTabIndex(index)}
-              className={`custom-tabs ${isMobile ? "mobile-view" : ""}`}
-            >
-              <TabList className="tab-list">
-                <Tab
-                  className="tab-item"
-                  selectedClassName="tab-item--selected"
-                >
-                  🗓️ Programadas
-                </Tab>
-                <Tab
-                  className="tab-item"
-                  selectedClassName="tab-item--selected"
-                >
-                  ✅ Check-in
-                </Tab>
-                <Tab
-                  className="tab-item"
-                  selectedClassName="tab-item--selected"
-                >
-                  🔍 Consulta
-                </Tab>
-              </TabList>
+          </TabPanel>
 
-              {/* Contenido dinámico según el tab */}
+          {/* ── Tab 2: Check-in ────────────────────────────────── */}
+          <TabPanel className={styles.tabPanel} selectedClassName={styles.tabPanelActive}>
+            <h3 className={styles.panelTitle}>
+              <FaCheckCircle /> Pacientes en Espera
+            </h3>
 
-              <TabPanel
-                className={`tab-panel tab-panel-transition ${
-                  tabIndex === 0 ? "active" : ""
-                }`}
-              >
-                <div className="panel-programadas">
-                  <h2>🗓️ Últimas 25 Citas Programadas</h2>
-                  <div className="table-container">
-                    <table className="table-material">
-                      <thead>
-                        <tr>
-                          <th>Nombre</th>
-                          <th>Motivo</th>
-                          <th>Fecha</th>
-                          <th>Hora</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {programadas.map((cita) => (
-                          <tr
-                            key={cita.id}
-                            onClick={() => openModal(cita)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <td>
-                              {" "}
-                              {cita.emergency && (
-                                <span
-                                  style={{
-                                    color: "white",
-                                    fontSize: "15px",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "1px",
-                                  }}
-                                >
-                                  🚨
-                                </span>
-                              )}
-                              {cita.nombre}
-                            </td>
-                            <td>{cita.motivo}</td>
-                            <td>
-                              {new Date(
-                                cita.programmer_at
-                              ).toLocaleDateString()}
-                            </td>
-                            <td>
-                              {new Date(cita.programmer_at).toLocaleTimeString(
-                                "es-MX",
-                                {
-                                  hour12: true,
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="mobile-cards">
-                    {programadas.length > 0 ? (
-                      programadas.map((cita) => (
-                        <div
-                          key={cita.id}
-                          className={`cita-card ${cita.estado?.toLowerCase()}`}
-                        >
-                          {/* Contenido de la card (usando tu estructura) */}
-                          <div className="cita-header">
-                            <FaUser style={{ marginRight: "6px" }} />{" "}
-                            {cita.nombre}
-                          </div>
-                          <div className="cita-motivo-estado">
-                            <div className="motivo">{cita.motivo}</div>
-                          </div>
-                          <div className="cita-fechas">
-                            <div>
-                              <FaCalendarAlt className="fa-creacion" />
-                              <br />
-                              {new Date(
-                                cita.programmer_at
-                              ).toLocaleDateString()}
-                            </div>
-                            <div>
-                              <FaRegClock className="fa-cita" />
-                              <br />
-                              {new Date(cita.programmer_at).toLocaleTimeString(
-                                "es-MX",
-                                {
-                                  hour12: true,
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="sin-citas">No hay citas programadas</p>
-                    )}
-                  </div>
-                </div>
-              </TabPanel>
-
-              <TabPanel
-                className={`tab-panel tab-panel-transition ${
-                  tabIndex === 1 ? "active" : ""
-                }`}
-              >
-                <div className="panel-checkin">
-                  <h2>✅ Pacientes en espera</h2>
-                  {enEspera.filter((c) => c.estado === "en espera").length ===
-                  0 ? (
-                    <p>No hay pacientes en espera.</p>
-                  ) : (
-                    <div className="lista-checkin">
-                      {enEspera
-                        .sort((a, b) => a.orden_llegada - b.orden_llegada)
-                        .map((cita) => (
-                          <div
-                            key={cita.id}
-                            className={`item-checkin ${
-                              cita.emergency ? "emergency-card" : ""
-                            }`}
-                            style={
-                              cita.emergency
-                                ? {
-                                    borderLeft: "5px solid #ff3d3d",
-                                    order: -1,
-                                  }
-                                : {}
-                            }
-                          >
-                            <h3 className="card-nombre">
-                              {cita.emergency && (
-                                <span className="emergency-tag">
-                                  🚨 EMERGENCIA
-                                </span>
-                              )}
-                              {cita.nombre}
-                            </h3>
-
-                            <p className="card-motivo">{cita.motivo}</p>
-                            <div className="card-turno">
-                              Turno: <span>#{cita.orden_llegada}</span>
-                            </div>
-
-                            {/* Mostrar hora de check-in si existe */}
-                            {cita.check_in && (
-                              <div className="checkin-time">
-                                <span>Check-in: </span>
-                                {new Date(cita.check_in).toLocaleTimeString(
-                                  "es-MX",
-                                  {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </div>
-              </TabPanel>
-
-              <TabPanel
-                className={`tab-panel tab-panel-transition ${
-                  tabIndex === 2 ? "active" : ""
-                }`}
-              >
-                <div className="panel-consulta">
-                  <div className="material-group">
-                    <button onClick={openNuevaCitaModal} className="ok">
-                      Solicitar Cita
-                    </button>
-                  </div>
-                  <ConsultaCita citas={todasLasCitas} />
-                  {mensaje && (
-                    <div className={`mensaje-alerta ${tipoMensaje}`}>
-                      {mensaje}
-                    </div>
-                  )}
-                </div>
-              </TabPanel>
-            </Tabs>
-
-            {/* Modal de reprogramación */}
-            <Modal
-              isOpen={isModalOpen}
-              onRequestClose={closeModal}
-              contentLabel="Reprogramar o cancelar cita"
-              className="prog-modal"
-              overlayClassName="prog-modal-overlay"
-              closeTimeoutMS={300}
-            >
-              <div className="prog-modal-header">
-                <h2>Reprogramar / Cancelar</h2>
+            {enEspera.length === 0 ? (
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>🪑</span>
+                No hay pacientes en espera.
               </div>
-              {selected && (
-                <form onSubmit={handleReprogram} className="prog-modal-content">
-                  <div className="prog-from-group">
-                    <label htmlFor="nombre">
-                      Nombre: <strong>{selected.nombre}</strong>
-                    </label>
-                  </div>
-                  <div>
-                    <label>
-                      Motivo: <strong>{selected.motivo}</strong>
-                    </label>
-                  </div>
-                  <div className="prog-form-group">
-                    <FechaHoraInput
-                      value={nuevaFechaHora}
-                      onChange={setNuevaFechaHora}
-                    />
-                  </div>
-                  <div className="prog-modal-actions">
-                    <button
-                      type="button"
-                      onClick={handleCheckIn}
-                      className="prog-btn prog-btn-primary"
+            ) : (
+              <div className={styles.listaCheckin}>
+                {[...enEspera]
+                  .sort((a, b) => a.orden_llegada - b.orden_llegada)
+                  .map((cita) => (
+                    <div
+                      key={cita.id}
+                      className={`${styles.itemCheckin} ${cita.emergency ? styles.itemCheckinEmergencia : ""}`}
                     >
-                      Check-in (asignar turno)
-                    </button>
-                    <button
-                      type="submit"
-                      className="prog-btn prog-btn-secondary"
-                    >
-                      Reprogramar cita
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCancel}
-                      className="prog-btn prog-btn-danger"
-                    >
-                      Cancelar cita
-                    </button>
-                  </div>
-                </form>
+                      <h4 className={styles.checkinNombre}>
+                        {cita.emergency && <span className={styles.emergenciaTag} style={{ marginRight: 6 }}>🚨 Emergencia</span>}
+                        {cita.nombre}
+                      </h4>
+                      <p className={styles.checkinMotivo}>{cita.motivo}</p>
+                      <span className={`${styles.checkinTurno} ${cita.emergency ? styles.checkinEmergenciaTurno : ""}`}>
+                        <FaClock size={11} />
+                        Turno #{cita.orden_llegada}
+                      </span>
+                      {cita.check_in && (
+                        <p className={styles.checkinTime}>
+                          Check-in: {formatHora(cita.check_in)}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            )}
+          </TabPanel>
+
+          {/* ── Tab 3: Consulta ────────────────────────────────── */}
+          <TabPanel className={styles.tabPanel} selectedClassName={styles.tabPanelActive}>
+            <div className={styles.panelConsulta}>
+              {mensaje && (
+                <div className={`${styles.mensajeAlerta} ${styles[mensaje.tipo]}`}>
+                  {mensaje.texto}
+                </div>
               )}
-              <button className="close-icon" onClick={closeModal}>
-                <FaTimes />
-              </button>
-            </Modal>
-            <Modal
-              isOpen={isNuevaCitaModalOpen}
-              onRequestClose={() => setIsNuevaCitaModalOpen(false)}
-              contentLabel="Formulario de cita"
-            >
-              <CitaForm
-                onSubmit={handleNuevaCita}
-                user={user}
-                onCancel={() => setIsNuevaCitaModalOpen(false)}
-              />
-            </Modal>
-            <MedicoActivo />
-          </div>
-        </div>
+              <ConsultaCita citas={todasLasCitas} />
+            </div>
+          </TabPanel>
+
+        </Tabs>
       </div>
+
+      {/* ── Componente flotante médico activo ─────────────────────── */}
+      <MedicoActivo />
+
+      {/* ── Modal reprogramar / cancelar / check-in ───────────────── */}
+      {/* prog-modal y prog-modal-overlay están en globals.css */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Gestionar cita"
+        className="prog-modal"
+        overlayClassName="prog-modal-overlay"
+        closeTimeoutMS={250}
+      >
+        <div className="prog-modal-header">
+          <div className="prog-modal-icon">🗓️</div>
+          <h2>Gestionar Cita</h2>
+        </div>
+        {selected && (
+          <form onSubmit={handleReprogram} className="prog-modal-content">
+            <div className="prog-info-row">
+              <div className="prog-info-item">
+                Paciente: <strong>{selected.nombre}</strong>
+              </div>
+              <div className="prog-info-item">
+                Motivo: <strong>{selected.motivo}</strong>
+              </div>
+            </div>
+            <div className="prog-form-group">
+              <FechaHoraInput value={nuevaFechaHora} onChange={setNuevaFechaHora} />
+            </div>
+            <div className="prog-modal-actions">
+              <button type="button" onClick={handleCheckIn} className="prog-btn prog-btn-primary">
+                Check-in
+              </button>
+              <button type="submit" className="prog-btn prog-btn-secondary">
+                Reprogramar
+              </button>
+              <button type="button" onClick={handleCancel} className="prog-btn prog-btn-danger">
+                Cancelar cita
+              </button>
+            </div>
+          </form>
+        )}
+        <button className="close-icon" onClick={() => setIsModalOpen(false)} type="button">
+          <FaTimes />
+        </button>
+      </Modal>
+
+      {/* ── Modal nueva cita ──────────────────────────────────────── */}
+      {/* Usa las clases globales pac-modal del CitaForm */}
+      <Modal
+        isOpen={isNuevaCitaModal}
+        onRequestClose={() => setIsNuevaCitaModal(false)}
+        contentLabel="Nueva cita"
+        className="pac-modal"
+        overlayClassName="pac-modal-overlay"
+        closeTimeoutMS={250}
+      >
+        <CitaForm
+          onSubmit={handleNuevaCita}
+          user={user}
+          onCancel={() => setIsNuevaCitaModal(false)}
+        />
+      </Modal>
+
     </div>
   );
 }

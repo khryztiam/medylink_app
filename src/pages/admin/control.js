@@ -1,37 +1,30 @@
+// pages/admin/control.js
 import { useState } from "react";
 import PanelUsuarios from "@/components/admin/UsersPanel";
 import PanelImportarCSV from "@/components/admin/CSVImportPanel";
 import ResumenUsuariosCard from "@/components/admin/ResumenUsuarios";
 import UsuariosRecientes from "@/components/admin/UserRecents";
-import { FaUserCog, FaTachometerAlt } from "react-icons/fa";
+import styles from "@/styles/Admin.module.css";
 
 export default function ControlAdmin() {
-  const [tab, setTab] = useState("usuarios");
+  // Estado compartido: usuario seleccionado desde "Recientes"
+  const [selectedFromRecent, setSelectedFromRecent] = useState(null);
 
   return (
-    <div className="main-content">
-      <div className="title-bar">
-        <h1 className="control-title">
-          <FaUserCog className="title-icon" />
-          Administrador
-          <span className="title-extra">
-            <FaTachometerAlt className="extra-icon" />
-            Panel de Control
-          </span>
-        </h1>
+    <div className={styles.page}>
+
+      {/* ── Columna principal: tabla de usuarios ─────────────────── */}
+      <div className={styles.main}>
+        <PanelUsuarios externalSelected={selectedFromRecent} />
       </div>
-      <div className="content-wrapper">
-        <div className="main">
-          <div className="admin-container">
-            <PanelUsuarios />
-          </div>
-        </div>
-        <div className="sidebar">
-          <ResumenUsuariosCard />
-          <UsuariosRecientes />
-          <PanelImportarCSV />
-        </div>
-      </div>
+
+      {/* ── Sidebar derecho: widgets ──────────────────────────────── */}
+      <aside className={styles.aside}>
+        <ResumenUsuariosCard />
+        <UsuariosRecientes onUserSelect={setSelectedFromRecent} />
+        <PanelImportarCSV />
+      </aside>
+
     </div>
   );
 }

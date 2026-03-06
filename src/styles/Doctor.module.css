@@ -1,0 +1,331 @@
+/* =====================================================================
+   Doctor.module.css — MedyLink
+   Layout: columna principal (citas activas) + sidebar derecho (programadas)
+   Acento verde médico #16a34a
+   ===================================================================== */
+
+/* ── Página ───────────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  gap: 18px;
+  padding: 18px 18px 60px;
+  max-width: 1300px;
+  margin: 0 auto;
+  align-items: flex-start;
+  animation: fadeIn 0.3s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Columna principal ───────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Sidebar derecho ─────────────────────────────────────────────── */
+.aside {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #d1fae5;
+  box-shadow: 0 2px 10px rgba(22,163,74,0.08);
+  overflow: hidden;
+  max-height: calc(100vh - 120px);
+  position: sticky;
+  top: 18px;
+}
+
+.asideHeader {
+  padding: 14px 18px;
+  border-bottom: 1px solid #d1fae5;
+  background: #f0fdf4;
+}
+.asideTitle {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.asideTitleIcon { color: #16a34a; }
+
+.asideList {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #bbf7d0 transparent;
+}
+.asideList::-webkit-scrollbar { width: 4px; }
+.asideList::-webkit-scrollbar-thumb { background: #bbf7d0; border-radius: 4px; }
+
+/* Card en sidebar */
+.asideCard {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0fdf4;
+  transition: background 0.15s;
+  cursor: default;
+}
+.asideCard:last-child { border-bottom: none; }
+.asideCard:hover { background: #f0fdf4; }
+
+.asideCardNombre {
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 2px;
+}
+.asideCardMotivo { font-size: 0.76rem; color: #64748b; margin-bottom: 2px; }
+.asideCardFecha  { font-size: 0.7rem; color: #94a3b8; }
+
+.asideEmpty {
+  padding: 24px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+/* ── Saludo compacto ─────────────────────────────────────────────── */
+.saludoCard {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #fff 100%);
+  border-radius: 12px;
+  border: 1px solid #bbf7d0;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.08);
+}
+.saludoTexto h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #14532d;
+  line-height: 1.2;
+}
+.saludoFrase { margin: 0; font-size: 0.78rem; color: #16a34a; font-weight: 500; }
+
+/* ── Panel de citas activas ──────────────────────────────────────── */
+.panelCard {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #d1fae5;
+  box-shadow: 0 2px 10px rgba(22,163,74,0.08);
+  overflow: hidden;
+}
+
+.panelHeader {
+  padding: 14px 18px;
+  border-bottom: 1px solid #d1fae5;
+  background: #f0fdf4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panelTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panelTitleIcon { color: #16a34a; }
+
+.citasGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  padding: 16px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+.emptyState {
+  padding: 48px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+.emptyIcon { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+/* ── Card de cita activa ─────────────────────────────────────────── */
+.citaCard {
+  background: #fff;
+  border-radius: 11px;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #16a34a;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s, transform 0.15s;
+  animation: cardIn 0.3s ease both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.citaCard:hover { box-shadow: 0 4px 14px rgba(22,163,74,0.14); transform: translateY(-1px); }
+
+/* Por estado */
+.citaCardEspera   { border-left-color: #3f91e8; }
+.citaCardConsulta { border-left-color: #f59e0b; }
+.citaCardEmergencia {
+  border-left-color: #dc2626;
+  background: #fff9f9;
+  animation: cardIn 0.3s ease both, pulseEmergencia 2s infinite;
+}
+@keyframes pulseEmergencia {
+  0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.2); }
+  50%      { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+}
+
+/* Header de la card */
+.citaCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.citaCardNombre {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+  line-height: 1.3;
+}
+.citaCardTurno {
+  flex-shrink: 0;
+  background: #f0fdf4;
+  color: #16a34a;
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 1px solid #bbf7d0;
+}
+.citaCardTurnoEmergencia { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+
+/* Badge de estado */
+.estadoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badgeDot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.estadoEspera   { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.estadoConsulta { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+
+/* Filas de info */
+.citaInfo { font-size: 0.8rem; color: #64748b; }
+.citaInfo strong { color: #1e293b; font-weight: 600; }
+
+.timeInfo {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  padding-top: 6px;
+  border-top: 1px dashed #f1f5f9;
+}
+.timeInfo strong { color: #64748b; }
+
+/* Selección de médico */
+.doctorSelection { display: flex; flex-direction: column; gap: 6px; }
+.doctorSelection label { font-size: 0.78rem; font-weight: 700; color: #475569; }
+
+.doctorSelect {
+  width: 100%;
+  padding: 9px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 9px;
+  font-size: 0.84rem;
+  color: #334155;
+  background: #f7fafc;
+  font-family: 'Segoe UI', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.doctorSelect:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+  outline: none;
+}
+
+/* Doctor asignado */
+.doctorAsignado {
+  font-size: 0.78rem;
+  color: #475569;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin-top: 4px;
+}
+.doctorAsignado strong { color: #166534; }
+
+/* Botón finalizar */
+.btnFinalizar {
+  width: 100%;
+  padding: 10px;
+  border-radius: 9px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 8px rgba(22,163,74,0.25);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 4px;
+}
+.btnFinalizar:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22,163,74,0.35);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .aside { width: 260px; }
+}
+
+@media (max-width: 768px) {
+  .page {
+    flex-direction: column;
+    padding: 12px 10px 60px;
+  }
+  .aside {
+    width: 100%;
+    position: static;
+    max-height: 280px;
+  }
+  .citasGrid { grid-template-columns: 1fr; }
+  .saludoCard { flex-direction: column; align-items: flex-start; }
+}

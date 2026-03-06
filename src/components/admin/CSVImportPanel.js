@@ -1,23 +1,25 @@
-import { useState } from 'react';
-import Papa from 'papaparse';
+// components/admin/CSVImportPanel.jsx
+import { useState } from "react";
+import Papa from "papaparse";
+import { FaFileCsv, FaUpload } from "react-icons/fa";
+import styles from "@/styles/Admin.module.css";
 
 export default function CSVImportPanel() {
-  const [stats, setStats] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [stats, setStats]       = useState(null);
+  const [isLoading, setLoading] = useState(false);
+  const [error, setError]       = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
     if (!file) return;
 
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
     setStats(null);
     setFileInfo({
       name: file.name,
-      size: (file.size / 1024).toFixed(2) + ' KB',
-      lastModified: new Date(file.lastModified).toLocaleString()
+      size: (file.size / 1024).toFixed(2) + " KB",
     });
 
     try {
@@ -25,134 +27,115 @@ export default function CSVImportPanel() {
         Papa.parse(file, {
           header: true,
           skipEmptyLines: true,
-          encoding: 'UTF-8',
+          encoding: "UTF-8",
           complete: async (results) => {
             try {
-              // Validación avanzada de datos
-              const invalidRows = results.data.filter(row => 
-                !row.idsap || 
-                !row.nombre ||
-                isNaN(Number(row.idsap)) ||
-                (row.grupo && isNaN(Number(row.grupo)))
+              const invalidRows = results.data.filter(
+                (row) => !row.idsap || !row.nombre || isNaN(Number(row.idsap))
               );
-
               if (invalidRows.length > 0) {
                 throw new Error(
-                  `${invalidRows.length} filas inválidas. ` +
-                  `IDs problemáticos: ${invalidRows.slice(0, 5).map(r => r.idsap).join(', ')}` +
-                  `${invalidRows.length > 5 ? '...' : ''}`
+                  `${invalidRows.length} filas inválidas. IDs: ` +
+                  invalidRows.slice(0, 5).map((r) => r.idsap).join(", ") +
+                  (invalidRows.length > 5 ? "..." : "")
                 );
               }
 
-              // Preparar datos para el backend
-              const processedData = results.data.map(row => ({
-                idsap: Number(row.idsap),
+              const processedData = results.data.map((row) => ({
+                idsap:  Number(row.idsap),
                 nombre: row.nombre.trim(),
-                grupo: row.grupo ? Number(row.grupo) : null,
-                puesto: row.puesto ? row.puesto.trim() : null
+                grupo:  row.grupo  ? Number(row.grupo)  : null,
+                puesto: row.puesto ? row.puesto.trim()  : null,
               }));
 
-              // Debug: mostrar primeros 3 registros
-              console.log('Datos a enviar (muestra):', processedData.slice(0, 3));
-
-              const response = await fetch('/api/admin/importarAllowed', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: processedData })
+              const response = await fetch("/api/admin/importarAllowed", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: processedData }),
               });
-
               const responseData = await response.json();
-
-              if (!response.ok) {
-                throw new Error(
-                  responseData.error || 
-                  responseData.message || 
-                  `Error ${response.status}: ${response.statusText}`
-                );
-              }
-
+              if (!response.ok) throw new Error(responseData.error || `Error ${response.status}`);
               setStats(responseData);
               resolve();
-            } catch (err) {
-              reject(err);
-            }
+            } catch (err) { reject(err); }
           },
-          error: (error) => {
-            reject(new Error(`Error al leer CSV: ${error.message}`));
-          }
+          error: (err) => reject(new Error(`Error al leer CSV: ${err.message}`)),
         });
       });
     } catch (err) {
-      console.error('Error en importación:', err);
-      setError({
-        title: 'Error al procesar archivo',
-        message: err.message,
-        details: err.details || 'Verifica el formato del archivo CSV'
-      });
+      setError({ title: "Error al procesar archivo", message: err.message });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="admin-import-panel">
-      <h2>Importar Lista Maestro</h2>
-      
-      <div className="material-group">
-        <input 
-          type="file" 
-          accept=".csv" 
-          onChange={handleFileUpload}
-          disabled={isLoading}
-        />
+    <div className={styles.card}>
+      <div className={styles.cardHeader}>
+        <h3 className={styles.cardTitle}>
+          <FaFileCsv className={styles.cardTitleIcon} />
+          Importar Lista Maestro
+        </h3>
       </div>
 
-      {fileInfo && (
-        <div className="file-info">
-          <p><strong>Archivo:</strong> {fileInfo.name}</p>
-          <p><strong>Tamaño:</strong> {fileInfo.size}</p>
-        </div>
-      )}
+      <div className={styles.importBody}>
+        {/* Input de archivo como label estilizada */}
+        <label className={styles.fileInputLabel}>
+          <FaUpload />
+          {isLoading ? "Procesando..." : "Seleccionar archivo CSV"}
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            disabled={isLoading}
+          />
+        </label>
 
-      {isLoading && (
-        <div className="loading-indicator">
-          <p>Procesando archivo...</p>
-          <div className="progress-bar"></div>
-        </div>
-      )}
+        {/* Info del archivo seleccionado */}
+        {fileInfo && (
+          <div className={styles.fileInfo}>
+            <span className={styles.fileInfoName}>{fileInfo.name}</span>
+            <br />
+            Tamaño: {fileInfo.size}
+          </div>
+        )}
 
-      {error && (
-        <div className="error-message">
-          <h3>{error.title || 'Error'}</h3>
-          <p>{error.message}</p>
-          {error.details && <p className="details">{error.details}</p>}
-        </div>
-      )}
+        {/* Barra de progreso */}
+        {isLoading && <div className={styles.progressBar} />}
 
-      {stats && (
-        <div className="import-results">
-          <h3>Resultados de la importación</h3>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <span className="stat-label">Total procesados:</span>
-              <span className="stat-value">{stats.total}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Nuevos agregados:</span>
-              <span className="stat-value">{stats.added}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Actualizados:</span>
-              <span className="stat-value">{stats.updated || 0}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Eliminados:</span>
-              <span className="stat-value">{stats.removed}</span>
+        {/* Error */}
+        {error && (
+          <div className={styles.importError}>
+            <strong>{error.title}</strong>
+            {error.message}
+          </div>
+        )}
+
+        {/* Resultados */}
+        {stats && (
+          <div className={styles.importStats}>
+            <p className={styles.importStatsTitle}>✅ Importación completada</p>
+            <div className={styles.statsGrid}>
+              <div className={styles.statItem}>
+                <span className={styles.statLabel}>Procesados</span>
+                <span className={styles.statValue}>{stats.total}</span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statLabel}>Nuevos</span>
+                <span className={styles.statValue}>{stats.added}</span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statLabel}>Actualizados</span>
+                <span className={styles.statValue}>{stats.updated || 0}</span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statLabel}>Eliminados</span>
+                <span className={styles.statValue}>{stats.removed}</span>
+              </div>
             </div>
           </div>
-          {stats.message && <p className="success-message">{stats.message}</p>}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

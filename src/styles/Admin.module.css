@@ -1,0 +1,421 @@
+/* =====================================================================
+   Admin.module.css — MedyLink
+   Variables viven en globals.css — este módulo solo las consume.
+   ===================================================================== */
+
+/* ── Página wrapper ──────────────────────────────────────────────── */
+.page {
+  display: flex;
+  gap: 20px;
+  padding: 22px 20px 48px;
+  max-width: 1300px;
+  margin: 0 auto;
+  align-items: flex-start;
+  animation: fadeIn 0.3s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Columna principal ───────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Sidebar derecho ─────────────────────────────────────────────── */
+.aside {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Card base ───────────────────────────────────────────────────── */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.08);
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cardTitleIcon { color: #4f46e5; font-size: 1rem; }
+
+/* ── Controles (botón agregar) ───────────────────────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.btnAgregar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 10px rgba(79,70,229,0.28);
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+.btnAgregar:hover {
+  background: #3730a3;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(79,70,229,0.35);
+}
+
+/* ── Grupo por rol ───────────────────────────────────────────────── */
+.roleGroup {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.08);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.roleHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: #f8fafd;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 0;
+}
+.roleHeaderIcon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Tabla ───────────────────────────────────────────────────────── */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tabla thead tr {
+  background: #f8fafd;
+  border-bottom: 2px solid #e2e8f0;
+}
+.tabla th {
+  padding: 10px 16px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-align: left;
+}
+.tabla td {
+  padding: 12px 16px;
+  font-size: 0.84rem;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+.tabla tbody tr:last-child td { border-bottom: none; }
+.tabla tbody tr {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tabla tbody tr:hover td { background: #eef2ff; }
+
+.userName {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ── Ícono circular por rol ──────────────────────────────────────── */
+.rolTag {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.rolPaciente   { color: #3182ce; background: rgba(49,130,206,0.12); }
+.rolMedico     { color: #16a34a; background: rgba(22,163,74,0.12); }
+.rolEnfermeria { color: #9333ea; background: rgba(147,51,234,0.12); }
+.rolSupervisor { color: #ea580c; background: rgba(234,88,12,0.12); }
+.rolAdmin      { color: #4f46e5; background: rgba(79,70,229,0.12); }
+.rolTurno      { color: #dc2626; background: rgba(220,38,38,0.12); }
+
+/* ── Badge de rol ────────────────────────────────────────────────── */
+.rolBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rolBadgePaciente   { background: rgba(49,130,206,0.12);  color: #1e40af; }
+.rolBadgeMedico     { background: rgba(22,163,74,0.12);   color: #166534; }
+.rolBadgeEnfermeria { background: rgba(147,51,234,0.12);  color: #6b21a8; }
+.rolBadgeSupervisor { background: rgba(234,88,12,0.12);   color: #9a3412; }
+.rolBadgeAdmin      { background: rgba(79,70,229,0.12);   color: #3730a3; }
+.rolBadgeTurno      { background: rgba(220,38,38,0.12);   color: #991b1b; }
+
+/* ── Loading / empty ─────────────────────────────────────────────── */
+.loading {
+  padding: 32px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+/* ── Resumen grid ────────────────────────────────────────────────── */
+.resumenGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px;
+}
+
+.resumenCard {
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.resumenCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.resumenCardIcon {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+  display: flex;
+}
+.resumenCardLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 2px;
+}
+.resumenCardCount {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+  margin: 0;
+}
+.resumenTotal {
+  grid-column: span 2;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+.resumenTotal .resumenCardCount { color: #4f46e5; }
+
+/* ── Usuarios recientes ──────────────────────────────────────────── */
+.recentList { padding: 6px 0; }
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f8fafd;
+}
+.recentItem:last-child { border-bottom: none; }
+.recentItem:hover { background: #eef2ff; }
+
+.recentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1.5px solid #c7d2fe;
+}
+
+.recentInfo { min-width: 0; flex: 1; }
+.recentName {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.recentMeta { font-size: 0.7rem; color: #94a3b8; }
+
+.emptyRecent {
+  padding: 18px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+/* ── CSV Import ──────────────────────────────────────────────────── */
+.importBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fileInputLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eef2ff;
+  border: 1.5px dashed #c7d2fe;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4f46e5;
+  transition: background 0.2s, border-color 0.2s;
+}
+.fileInputLabel:hover { background: #e0e7ff; border-color: #4f46e5; }
+.fileInputLabel input { display: none; }
+
+.fileInfo {
+  background: #f8fafd;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+.fileInfoName { font-weight: 700; color: #1e293b; }
+
+.progressBar {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.progressBar::after {
+  content: '';
+  position: absolute;
+  left: -40%; top: 0;
+  height: 100%;
+  width: 40%;
+  background: #4f46e5;
+  animation: slide 1.2s ease-in-out infinite;
+  border-radius: 4px;
+}
+@keyframes slide { 0% { left: -40%; } 100% { left: 100%; } }
+
+.importError {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: #dc2626;
+  line-height: 1.5;
+}
+.importError strong { display: block; margin-bottom: 3px; }
+
+.importStats {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 12px;
+}
+.importStatsTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #16a34a;
+  margin: 0 0 10px;
+}
+.statsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.statItem { background: #fff; border-radius: 6px; padding: 8px 10px; text-align: center; }
+.statLabel { display: block; font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+.statValue { display: block; font-size: 1.2rem; font-weight: 800; color: #16a34a; }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .aside { width: 240px; }
+}
+
+@media (max-width: 768px) {
+  .page { flex-direction: column; padding: 14px 10px 48px; }
+  .aside { width: 100%; }
+
+  .tabla thead { display: none; }
+  .tabla tbody tr {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .tabla tbody tr:last-child { border-bottom: none; }
+  .tabla td { padding: 0; border: none; font-size: 0.82rem; }
+  .tabla td:nth-child(4) { display: none; }
+
+  .resumenGrid { grid-template-columns: 1fr 1fr 1fr; }
+  .resumenTotal { grid-column: span 3; }
+}
+
+@media (max-width: 480px) {
+  .resumenGrid { grid-template-columns: 1fr 1fr; }
+  .resumenTotal { grid-column: span 2; }
+  .controls { flex-direction: column; align-items: stretch; }
+  .btnAgregar { width: 100%; justify-content: center; }
+}

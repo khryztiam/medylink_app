@@ -1,191 +1,177 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { supabase } from '@/lib/supabase';
-import Modal from 'react-modal';
-import Link from 'next/link';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+// components/RegistroApp.jsx
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { supabase } from "@/lib/supabase";
+import Link from "next/link";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import styles from "@/styles/Login.module.css";
 
-Modal.setAppElement('#__next');
-
-export default function RegisterPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [idsap, setIdsap] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+export default function RegistroApp() {
   const router = useRouter();
+
+  const [idsap,               setIdsap]               = useState("");
+  const [email,               setEmail]               = useState("");
+  const [password,            setPassword]            = useState("");
+  const [confirmPassword,     setConfirmPassword]     = useState("");
+  const [showPassword,        setShowPassword]        = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading,             setLoading]             = useState(false);
+  const [error,               setError]               = useState("");
+
+  // Generar email automáticamente desde idsap
+  useEffect(() => {
+    setEmail(idsap.trim() ? `${idsap.toLowerCase().trim()}@yazaki.com` : "");
+  }, [idsap]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      // Validar que las contraseñas coincidan
-      if (password !== confirmPassword) {
-        throw new Error('Las contraseñas no coinciden');
-      }
-      // Validar si el ID SAP ya está registrado
-      const { data: existingUser } = await supabase
-        .from('app_users')
-        .select('*')
-        .eq('idsap', idsap)
-        .maybeSingle();
+      if (password !== confirmPassword) throw new Error("Las contraseñas no coinciden.");
 
-      if (existingUser) {
-        throw new Error('Ya existe un usuario con ese ID SAP.');
-      }
+      // Verificar si el ID SAP ya está registrado
+      const { data: existingUser } = await supabase
+        .from("app_users").select("idsap").eq("idsap", idsap).maybeSingle();
+      if (existingUser) throw new Error("Ya existe un usuario con ese ID SAP.");
 
       // Registro en Supabase Auth
-      const { data: userData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password
-      });
-
+      const { data: userData, error: signUpError } = await supabase.auth.signUp({ email, password });
       if (signUpError) {
-        if (signUpError.message.includes('invalid email')) {
-          throw new Error('El correo no es válido.');
-        }
+        if (signUpError.message.includes("invalid email")) throw new Error("El correo no es válido.");
         throw signUpError;
       }
 
       // Insertar en app_users
-      const { error: insertError } = await supabase.from('app_users').insert([
-        {
-          id: userData.user.id,
-          idsap,
-          role: 'paciente',
-          status: false,
-        }
-      ]);
+      const { error: insertError } = await supabase.from("app_users").insert([{
+        id: userData.user.id,
+        idsap,
+        role: "paciente",
+        status: false,
+      }]);
+      if (insertError) throw insertError;
 
-      if (insertError) {
-        throw insertError;
+      // Activar si está en allowed_users
+      const { data: allowed } = await supabase
+        .from("allowed_users").select("idsap").eq("idsap", idsap).single();
+      if (allowed) {
+        await supabase.from("app_users").update({ status: true }).eq("id", userData.user.id);
       }
 
-      // Verificar si el idsap está permitido
-      const { data: allowedUser, error: allowedUserError } = await supabase
-        .from('allowed_users')
-        .select('*')
-        .eq('idsap', idsap)
-        .single();
-
-      if (allowedUserError && allowedUserError.code !== 'PGRST116') {
-        throw allowedUserError;
-      }
-
-      if (allowedUser) {
-        await supabase
-          .from('app_users')
-          .update({ status: true })
-          .eq('id', userData.user.id);
-      }
-
-      // Redirigir al login
-      router.push('/');
-    } catch (error) {
-      console.error('Error al registrar usuario:', error);
-      setError(error.message || 'Error desconocido');
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Error desconocido");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (idsap.trim() !== '') {
-      setEmail(`${idsap.toLowerCase()}@yazaki.com`);
-    } else {
-      setEmail('');
-    }
-  }, [idsap]);
-
   return (
-    <div className="register-container">
-      <div className='login-modal-header'>
-        <h2>Registro de Usuario</h2>
-      </div>
-      <form onSubmit={handleRegister} className='login-modal-content'>
-        <div className="material-group">
-          <input
-            type="text"
-            value={idsap}
-            onChange={(e) => setIdsap(e.target.value)}
-            placeholder='SAP'
-            required
-          />
+    <div className={styles.bodyBg}>
+      <div className={styles.card}>
+
+        {/* Cabecera */}
+        <div className={styles.logoWrap}>
+          <img src="/logo.png" alt="MedyLink" className={styles.logo} />
+          <h2 className={styles.cardTitle}>Crear cuenta</h2>
+          <p className={styles.cardSubtitle}>Ingresa tu ID SAP para registrarte</p>
         </div>
 
+        {/* Formulario */}
+        <form onSubmit={handleRegister} className={styles.form}>
 
-
-        <div className="material-group">
-          <input
-            type={showPassword ? "text" : "password"} // Cambia el tipo según el estado
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Contraseña'
-            required
-          />
-          <button
-            type="button"
-            className="toggle-password"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </button>
-        </div>
-
-        <div className="material-group">
-          <input
-            type={showConfirmPassword ? "text" : "password"} // Cambia el tipo según el estado
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder='Confirmar contraseña'
-            required
-          />
-          <button
-            type="button"
-            className="toggle-password"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-          </button>
-        </div>
-
-        {error && (
-          <div className="text-red-600 font-semibold my-2">
-            {error}
+          {/* SAP */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Número SAP</label>
+            <input
+              type="text"
+              placeholder="Ej. 10000000"
+              value={idsap}
+              onChange={(e) => setIdsap(e.target.value)}
+              className={styles.formControl}
+              required
+            />
           </div>
-        )}
 
-        <div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Registrando...' : 'Registrar'}
+          {/* Contraseña */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Contraseña</label>
+            <div className={styles.inputWrap}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={styles.formControl}
+                required
+              />
+              <button
+                type="button"
+                className={styles.togglePassword}
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
+
+          {/* Confirmar contraseña */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Confirmar contraseña</label>
+            <div className={styles.inputWrap}>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Repite la contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={styles.formControl}
+                required
+              />
+              <button
+                type="button"
+                className={styles.togglePassword}
+                onClick={() => setShowConfirmPassword((v) => !v)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className={styles.errorBox}>
+              <svg className={styles.errorIcon} viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z" />
+              </svg>
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={styles.btnSubmit}
+          >
+            {loading ? (
+              <span className={styles.spinnerWrap}>
+                <span className={styles.spinner} />
+                <span className={styles.spinnerText}>Registrando...</span>
+              </span>
+            ) : "Crear cuenta"}
           </button>
-        </div>
-        <div className="material-group">
-          <input
-            type="hidden"
-            value={email}
-            placeholder='Email'
-            className='login-form-control'
-            readOnly
-            required
-          />
-        </div>
-        <div className="mt-4">
-          <p>
-            ¿Ya tienes una cuenta?{' '}
-            <Link href="/" className="modal-footer-link">Inicia sesión aquí</Link>
-          </p>
+        </form>
+
+        {/* Footer */}
+        <div className={styles.cardFooter}>
+          <p>¿Ya tienes una cuenta?</p>
+          <Link href="/" className={styles.footerLink}>
+            Inicia sesión aquí →
+          </Link>
         </div>
 
-      </form>
+      </div>
     </div>
   );
 }
-

@@ -1,16 +1,16 @@
 // components/MedicoActivo.jsx
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import styles from "@/styles/MedicoActivo.module.css";
 
 export default function MedicoActivo() {
   const [activo, setActivo] = useState(false);
 
-  // Cargar estado inicial y suscribirse a cambios
   useEffect(() => {
     const fetchEstado = async () => {
       const { data } = await supabase
-        .from('estado_consultorio')
-        .select('medico_activo')
+        .from("estado_consultorio")
+        .select("medico_activo")
         .single();
       setActivo(data?.medico_activo || false);
     };
@@ -18,11 +18,11 @@ export default function MedicoActivo() {
     fetchEstado();
 
     const channel = supabase
-      .channel('estado_medico_flotante')
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'estado_consultorio'
+      .channel("estado-medico-flotante")
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "estado_consultorio",
       }, (payload) => {
         setActivo(payload.new.medico_activo);
       })
@@ -32,28 +32,23 @@ export default function MedicoActivo() {
   }, []);
 
   const toggleEstado = async () => {
-    const nuevoEstado = !activo;
     const { error } = await supabase
-      .from('estado_consultorio')
-      .update({ medico_activo: nuevoEstado })
-      .eq('id', 1);
-
+      .from("estado_consultorio")
+      .update({ medico_activo: !activo })
+      .eq("id", 1);
     if (error) console.error("Error al actualizar estado:", error);
   };
 
   return (
-    <div className={`floating-medico-status ${activo ? 'activo' : 'inactivo'}`}>
-      <button 
+    <div className={styles.floating}>
+      <button
         onClick={toggleEstado}
-        className="status-toggle"
-        aria-label={activo ? 'Desactivar consultas' : 'Activar consultas'}
+        className={`${styles.btn} ${activo ? styles.btnActivo : styles.btnInactivo}`}
+        aria-label={activo ? "Desactivar consultas" : "Activar consultas"}
       >
-        <div className="status-icon">
-          {activo ? '🩺' : '🚫'}
-        </div>
-        <span className="status-text">
-          {activo ? 'Consulta ACTIVA' : 'Consulta INACTIVA'}
-        </span>
+        {activo && <span className={styles.pulse} />}
+        <span className={styles.icon}>{activo ? "🩺" : "🚫"}</span>
+        <span>{activo ? "Consulta ACTIVA" : "Consulta INACTIVA"}</span>
       </button>
     </div>
   );

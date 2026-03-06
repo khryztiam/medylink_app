@@ -1,0 +1,367 @@
+/* =====================================================================
+   Paciente.module.css — MedyLink
+   Variables viven en globals.css — este módulo solo las consume.
+   ===================================================================== */
+
+/* ── Contenedor principal ─────────────────────────────────────────── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 22px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: pageFadeIn 0.3s ease both;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Saludo card ──────────────────────────────────────────────────── */
+.saludoCard {
+  background: linear-gradient(135deg, #e8f3fd 0%, #f0f8ff 70%, #fff 100%);
+  border-radius: 14px;
+  border: 1px solid #c3dff9;
+  box-shadow: 0 2px 10px rgba(63,145,232,0.10);
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.saludoTexto h2 {
+  margin: 0 0 5px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  line-height: 1.3;
+}
+
+.saludoFrase {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.btnSolicitar {
+  flex-shrink: 0;
+  background: #3f91e8;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 10px rgba(63,145,232,0.28);
+  font-family: 'Segoe UI', sans-serif;
+}
+.btnSolicitar:hover:not(:disabled) {
+  background: #1a5fa8;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(63,145,232,0.35);
+}
+.btnSolicitar:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Cita activa banner ───────────────────────────────────────────── */
+.citaActivaBanner {
+  border-radius: 12px;
+  border: 1.5px solid #93c5fd;
+  background: linear-gradient(90deg, #eff6ff 0%, #e0f2fe 100%);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(63,145,232,0.10);
+  animation: pageFadeIn 0.3s ease both;
+}
+
+.citaActivaIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3f91e8;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.citaActivaInfo { flex: 1; min-width: 0; }
+.citaActivaInfo strong {
+  display: block;
+  font-size: 0.85rem;
+  color: #1e3a5f;
+  font-weight: 700;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.citaActivaInfo span { font-size: 0.78rem; color: #64748b; }
+
+.citaActivaBadge {
+  background: #bfdbfe;
+  color: #1e40af;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* ── Telegram card ────────────────────────────────────────────────── */
+.telegramCard {
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #1a5fa8 60%, #2176cc 100%);
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(26,95,168,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  animation: pageFadeIn 0.3s ease both;
+}
+
+.telegramAccent {
+  width: 5px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #29b6f6, #0288d1);
+}
+
+.telegramBody {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+}
+
+.telegramIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.telegramSvg { width: 22px; height: 22px; fill: #fff; }
+
+.telegramTexts { flex: 1; min-width: 0; }
+.telegramTexts h3 { margin: 0 0 3px; font-size: 0.92rem; font-weight: 700; color: #fff; }
+.telegramTexts p  { margin: 0; font-size: 0.78rem; color: rgba(255,255,255,0.72); line-height: 1.4; }
+
+.telegramActions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.btnTelegramLater {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.75);
+  border-radius: 7px;
+  padding: 8px 13px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+.btnTelegramLater:hover { background: rgba(255,255,255,0.20); }
+
+.btnTelegramLink {
+  background: #29b6f6;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 15px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, transform 0.15s;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+.btnTelegramLink:hover { background: #0288d1; transform: translateY(-1px); }
+
+/* ── Mensaje feedback ─────────────────────────────────────────────── */
+.mensajeAlerta {
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  animation: pageFadeIn 0.25s ease both;
+}
+.exito  { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+.error  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+
+/* ── Historial card ───────────────────────────────────────────────── */
+.historialCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #d4e6f8;
+  box-shadow: 0 2px 10px rgba(63,145,232,0.08);
+  overflow: hidden;
+}
+
+.historialHeader {
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e8f0f8;
+  gap: 12px;
+}
+
+.historialTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.historialTitleIcon { color: #3f91e8; }
+
+/* ── Tabla desktop ────────────────────────────────────────────────── */
+.tablaWrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla thead tr { background: #f8fafd; border-bottom: 2px solid #e0ecf8; }
+.tabla th {
+  padding: 10px 16px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-align: left;
+  white-space: nowrap;
+}
+.tabla td {
+  padding: 13px 16px;
+  font-size: 0.83rem;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+.tabla tbody tr:last-child td { border-bottom: none; }
+.tabla tbody tr:hover td { background: #f8fafd; }
+
+.motivoText { font-weight: 600; color: #1e3a5f; font-size: 0.86rem; }
+
+/* ── Badges de estado ─────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 3px 11px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.badgeDot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.badgeAtendido   { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+.badgePendiente  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.badgeProgramado { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.badgeCancelado  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+
+/* ── Empty state ──────────────────────────────────────────────────── */
+.emptyState { padding: 36px 20px; text-align: center; color: #94a3b8; font-size: 0.88rem; }
+.emptyStateIcon { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+/* ── Cards móvil ──────────────────────────────────────────────────── */
+.cardsWrapper { display: none; }
+
+.citaCard {
+  margin: 10px 14px 0;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0ecf8;
+  border-left: 4px solid #3f91e8;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+.citaCard:last-child { margin-bottom: 14px; }
+.citaCard:hover { box-shadow: 0 3px 10px rgba(63,145,232,0.12); }
+
+.citaCard.pendiente  { border-left-color: #f59e0b; }
+.citaCard.programado { border-left-color: #3f91e8; }
+.citaCard.atendido   { border-left-color: #16a34a; }
+.citaCard.cancelado  { border-left-color: #dc2626; }
+
+.citaCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.citaCardMotivo {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e3a5f;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.citaCardFechas {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  border-top: 1px solid #f0f4f8;
+  padding-top: 10px;
+}
+
+.citaCardFechaItem { flex: 1; text-align: center; display: flex; flex-direction: column; gap: 3px; }
+.citaCardFechaLabel { font-size: 0.62rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.citaCardFechaIcono { font-size: 1rem; }
+.citaCardFechaValor { font-size: 0.72rem; color: #64748b; font-weight: 500; }
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .container { padding: 14px 10px 60px; gap: 14px; }
+
+  .saludoCard { flex-direction: column; align-items: flex-start; padding: 18px 16px; gap: 14px; }
+  .btnSolicitar { width: 100%; text-align: center; padding: 12px; }
+
+  .telegramBody { flex-wrap: wrap; gap: 12px; }
+  .telegramTexts h3 { font-size: 0.85rem; }
+  .telegramActions { width: 100%; justify-content: flex-end; }
+
+  .tablaWrapper { display: none; }
+  .cardsWrapper { display: block; }
+}
+
+@media (max-width: 480px) {
+  .telegramBody { padding: 14px; }
+  .telegramActions { flex-direction: column-reverse; }
+  .btnTelegramLink { width: 100%; justify-content: center; }
+  .btnTelegramLater { width: 100%; text-align: center; }
+}
