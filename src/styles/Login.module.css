@@ -1,94 +1,227 @@
 /* =====================================================================
-   Login.module.css — MedyLink
-   Cubre: página de login (/index) y página de registro (/register)
-   Sin dependencias de globals.css excepto react-modal si aplica
+   Login.module.css — MedyLink v2.2
+   Desktop: split layout | Mobile: degradado azul-teal + card flotante
    ===================================================================== */
 
-/* ── Fondo degradado compartido ──────────────────────────────────── */
 .bodyBg {
   min-height: 100vh;
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, #1a5fa8 0%, #3f91e8 40%, #38bfa1 100%);
+  align-items: stretch;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-/* ── Card compartida (login y registro) ──────────────────────────── */
-.card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 36px 32px 28px;
+/* ══ Panel izquierdo — ilustración ════════════════════════════════════ */
+.illustrationPanel {
+  flex: 1.1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(160deg, #0d3d6e 0%, #1a5fa8 45%, #2196a8 80%, #38bfa1 100%);
+}
+
+.illustrationOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(13,61,110,0.15) 0%,
+    rgba(13,61,110,0.0) 50%,
+    rgba(13,61,110,0.72) 100%
+  );
+  z-index: 1;
+}
+
+/* next/image genera un wrapper — necesitamos que el img ocupe todo */
+.illustrationImgWrap {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.illustrationContent {
+  position: relative;
+  z-index: 2;
+  padding: 28px 36px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-  animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  transition: box-shadow 0.3s ease;
-}
-.card:hover { box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22); }
-
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-/* ── Logo y cabecera ─────────────────────────────────────────────── */
+.illustrationBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.illustrationBadgeDot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #38bfa1;
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(56,191,161,0.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(56,191,161,0); }
+}
+
+.illustrationFeatures {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.featureChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  backdrop-filter: blur(6px);
+}
+
+/* ══ Panel derecho — formulario ══════════════════════════════════════ */
+.formPanel {
+  width: 440px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 44px;
+  background: #fff;
+  box-shadow: -6px 0 30px rgba(0,0,0,0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.formPanel::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56,191,161,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.formPanel::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -60px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,95,168,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.formInner {
+  width: 100%;
+  max-width: 340px;
+  position: relative;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────── */
+.formSlideIn {
+  animation: slideInRight 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.formSlideInLeft {
+  animation: slideInLeft 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Logo centrado ───────────────────────────────────────────────── */
 .logoWrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 24px;
+}
+.logoImgWrap {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin-bottom: 14px;
+}
+.cardTitle {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0d3d6e;
+  margin: 0 0 4px;
+  line-height: 1.2;
+  text-align: center;
+}
+.cardSubtitle {
+  font-size: 0.79rem;
+  color: #94a3b8;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────── */
+.formTabs {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 4px;
   margin-bottom: 20px;
   gap: 4px;
 }
-.logo {
-  width: 140px;
-  height: auto;
-  margin-bottom: 8px;
-}
-
-.cardTitle {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #1e293b;
-  text-align: center;
-  margin: 0 0 4px;
-}
-.cardSubtitle {
-  font-size: 0.82rem;
+.formTab {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 0.83rem;
+  font-weight: 600;
   color: #94a3b8;
-  text-align: center;
-  margin: 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+}
+.formTabActive {
+  background: #fff;
+  color: #1a5fa8;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
 }
 
 /* ── Formulario ──────────────────────────────────────────────────── */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 20px;
-}
+.form { display: flex; flex-direction: column; gap: 13px; }
 
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.formLabel {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #475569;
-  letter-spacing: 0.01em;
-}
+.formGroup { display: flex; flex-direction: column; gap: 5px; }
+.formLabel { font-size: 0.78rem; font-weight: 700; color: #334155; }
 
-/* Input estándar */
 .formControl {
   background: #f7fafc;
   border: 2px solid #e2e8f0;
   border-radius: 11px;
-  padding: 12px 14px;
-  font-size: 0.95rem;
+  padding: 11px 14px;
+  font-size: 0.92rem;
   color: #1e293b;
   width: 100%;
   box-sizing: border-box;
@@ -96,158 +229,111 @@
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 .formControl:focus {
-  border-color: #3f91e8;
+  border-color: #1a5fa8;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(63, 145, 232, 0.14);
+  box-shadow: 0 0 0 3px rgba(26,95,168,0.11);
   outline: none;
 }
 .formControl::placeholder { color: #b0bec5; }
 
-/* Wrapper para inputs con ícono (contraseña) */
-.inputWrap {
-  position: relative;
-}
+.inputWrap { position: relative; }
 .inputWrap .formControl { padding-right: 44px; }
 
 .togglePassword {
   position: absolute;
-  right: 12px;
-  top: 50%;
+  right: 12px; top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #94a3b8;
-  padding: 4px;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
+  background: none; border: none;
+  cursor: pointer; color: #94a3b8;
+  padding: 4px; font-size: 1rem;
+  display: flex; align-items: center;
   transition: color 0.2s;
 }
 .togglePassword:hover { color: #475569; }
 
-/* ── Botón primario ──────────────────────────────────────────────── */
+/* ── Botón ───────────────────────────────────────────────────────── */
 .btnSubmit {
   width: 100%;
   padding: 13px;
   border-radius: 11px;
   border: none;
-  background: #1a73e8;
+  background: linear-gradient(135deg, #1a5fa8 0%, #2196a8 100%);
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.93rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(26,95,168,0.28);
   font-family: 'Segoe UI', sans-serif;
   margin-top: 4px;
-  position: relative;
-  overflow: hidden;
 }
 .btnSubmit:hover:not(:disabled) {
-  background: #1557b0;
+  opacity: 0.91;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(26, 115, 232, 0.38);
+  box-shadow: 0 6px 20px rgba(26,95,168,0.36);
 }
-.btnSubmit:disabled {
-  background: #b0bec5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
+.btnSubmit:disabled { background: #b0bec5; cursor: not-allowed; box-shadow: none; }
 
-/* Ripple on focus */
-.btnSubmit::after {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 5px; height: 5px;
-  background: rgba(255,255,255,0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1,1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-.btnSubmit:focus:not(:active)::after { animation: ripple 0.6s ease-out; }
-@keyframes ripple {
-  0%   { transform: scale(0,0); opacity: 0.5; }
-  100% { transform: scale(20,20); opacity: 0; }
-}
-
-/* ── Spinner de carga ────────────────────────────────────────────── */
-.spinnerWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+/* ── Spinner ─────────────────────────────────────────────────────── */
+.spinnerWrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .spinner {
-  width: 16px; height: 16px;
+  width: 15px; height: 15px;
   border: 2px solid rgba(255,255,255,0.35);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.spinnerText { font-size: 0.88rem; }
 
-/* ── Error ───────────────────────────────────────────────────────── */
+/* ── Alertas ─────────────────────────────────────────────────────── */
 .errorBox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #fef2f2;
-  color: #dc2626;
+  display: flex; align-items: center; gap: 8px;
+  background: #fef2f2; color: #dc2626;
   border: 1px solid #fca5a5;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 0.86rem;
-  font-weight: 600;
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 0.82rem; font-weight: 600;
   animation: shake 0.45s ease;
 }
-.errorIcon { width: 18px; height: 18px; flex-shrink: 0; }
-
+.successBox {
+  display: flex; align-items: center; gap: 8px;
+  background: #f0fdf4; color: #16a34a;
+  border: 1px solid #86efac;
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 0.82rem; font-weight: 600;
+}
 @keyframes shake {
   0%,100% { transform: translateX(0); }
   20%,60% { transform: translateX(-5px); }
   40%,80% { transform: translateX(5px); }
 }
 
-/* ── Footer del card ─────────────────────────────────────────────── */
-.cardFooter {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 0.84rem;
-  color: #94a3b8;
-}
-.cardFooter p { margin: 0 0 4px; }
-.footerLink {
-  color: #1a73e8;
-  font-weight: 700;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footerLink:hover { color: #1557b0; text-decoration: underline; }
-
-/* ── Divider (opcional para separar secciones) ───────────────────── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 0;
-  color: #cbd5e1;
-  font-size: 0.76rem;
-}
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e2e8f0;
+/* ══ Mobile — degradado de fondo + card flotante ═════════════════════ */
+@media (max-width: 900px) {
+  .formPanel { width: 400px; padding: 40px 32px; }
 }
 
-/* ── Responsive ──────────────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .card { padding: 28px 20px 22px; border-radius: 16px; }
-  .cardTitle { font-size: 1.2rem; }
-  .logo { width: 110px; }
+@media (max-width: 700px) {
+  .bodyBg {
+    /* degradado original que gustaba */
+    background: linear-gradient(135deg, #1a5fa8 0%, #2196a8 55%, #38bfa1 100%);
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+
+  .illustrationPanel { display: none; }
+
+  .formPanel {
+    width: 100%;
+    max-width: 390px;
+    border-radius: 22px;
+    /* glassmorphism sutil */
+    background: rgba(255,255,255,0.97);
+    box-shadow: 0 12px 40px rgba(13,61,110,0.25), 0 2px 8px rgba(0,0,0,0.08);
+    padding: 36px 28px 32px;
+    /* quitar pseudo-elementos decorativos en mobile */
+  }
+  .formPanel::before, .formPanel::after { display: none; }
+  .formInner { max-width: 100%; }
 }

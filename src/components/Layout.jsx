@@ -75,7 +75,7 @@ const DEFAULT_META = {
 };
 
 // Rutas sin layout
-const HIDDEN_ROUTES = ['/', '/login', '/register', '/turno'];
+const HIDDEN_ROUTES = ['/', '/login', '/turno'];
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 export default function Layout({ children }) {

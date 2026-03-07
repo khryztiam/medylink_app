@@ -3,13 +3,12 @@ import { useState, useEffect, useCallback } from "react";
 import Modal from "react-modal";
 import {
   FaUserShield, FaUserInjured, FaUserMd,
-  FaUserNurse, FaCalendarAlt, FaUserCog, FaPlus,
+  FaUserNurse, FaCalendarAlt, FaUserCog, FaPlus, FaKey,
 } from "react-icons/fa";
 import styles from "@/styles/Admin.module.css";
 
 Modal.setAppElement("#__next");
 
-// ─── Configuración de roles ───────────────────────────────────────────────────
 const ROLE_ICONS = {
   paciente:   <FaUserInjured />,
   medico:     <FaUserMd />,
@@ -28,7 +27,6 @@ const ROLE_NAMES = {
   admin:      "Administradores",
 };
 
-// Mapeo de rol → clase CSS del module
 const ROL_TAG_CLASS = {
   paciente:   styles.rolPaciente,
   medico:     styles.rolMedico,
@@ -46,17 +44,17 @@ const ROL_BADGE_CLASS = {
   turno:      styles.rolBadgeTurno,
 };
 
-// ─── Componente ───────────────────────────────────────────────────────────────
 export default function PanelUsuarios({ externalSelected }) {
-  const [users, setUsers]               = useState([]);
+  const [users,        setUsers]        = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [newPassword,  setNewPassword]  = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [loading, setLoading]           = useState(false);
-  const [newUser, setNewUser]           = useState({
+  const [loading,      setLoading]      = useState(false);
+  const [saveMsg,      setSaveMsg]      = useState(null);
+  const [newUser,      setNewUser]      = useState({
     email: "", password: "", role: "paciente", idsap: "",
   });
 
-  // Auto-generar email desde idsap
   useEffect(() => {
     setNewUser((prev) => ({
       ...prev,
@@ -66,12 +64,16 @@ export default function PanelUsuarios({ externalSelected }) {
     }));
   }, [newUser.idsap]);
 
-  // Si llega un usuario desde "Recientes", abrirlo en el modal
   useEffect(() => {
     if (externalSelected) setSelectedUser(externalSelected);
   }, [externalSelected]);
 
-  // ── fetchUsers — única definición ────────────────────────────────
+  const closeEditModal = () => {
+    setSelectedUser(null);
+    setNewPassword("");
+    setSaveMsg(null);
+  };
+
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -89,7 +91,6 @@ export default function PanelUsuarios({ externalSelected }) {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  // ── CRUD ─────────────────────────────────────────────────────────
   const handleUpdateUser = async (id, updates) => {
     try {
       const res  = await fetch(`/api/admin/users/${id}`, {
@@ -100,9 +101,10 @@ export default function PanelUsuarios({ externalSelected }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al actualizar");
       await fetchUsers();
+      setSaveMsg({ tipo: "exito", texto: "✅ Usuario actualizado correctamente." });
+      setTimeout(() => closeEditModal(), 1400);
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      setSaveMsg({ tipo: "error", texto: `❌ ${err.message}` });
     }
   };
 
@@ -112,10 +114,9 @@ export default function PanelUsuarios({ externalSelected }) {
       const res  = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al eliminar");
-      setSelectedUser(null);
+      closeEditModal();
       await fetchUsers();
     } catch (err) {
-      console.error(err);
       alert(err.message);
     }
   };
@@ -137,25 +138,22 @@ export default function PanelUsuarios({ externalSelected }) {
     }
   };
 
-  // Usuarios agrupados por rol
+  const passwordValida = newPassword.length === 0 || newPassword.length >= 6;
+
   const usersByRole = users.reduce((acc, u) => {
     if (!acc[u.role]) acc[u.role] = [];
     acc[u.role].push(u);
     return acc;
   }, {});
 
-  // ── JSX ──────────────────────────────────────────────────────────
   return (
     <div>
-      {/* Controles */}
       <div className={styles.controls}>
         <button className={styles.btnAgregar} onClick={() => setShowAddModal(true)}>
-          <FaPlus size={12} />
-          Agregar Usuario
+          <FaPlus size={12} /> Agregar Usuario
         </button>
       </div>
 
-      {/* Tablas por rol */}
       {loading ? (
         <div className={styles.loading}>Cargando usuarios...</div>
       ) : (
@@ -199,11 +197,10 @@ export default function PanelUsuarios({ externalSelected }) {
         ))
       )}
 
-      {/* ── Modal Editar usuario ──────────────────────────────────── */}
-      {/* medl-modal y medl-modal-overlay son clases globales en globals.css */}
+      {/* ── Modal Editar ─────────────────────────────────────────── */}
       <Modal
         isOpen={!!selectedUser}
-        onRequestClose={() => setSelectedUser(null)}
+        onRequestClose={closeEditModal}
         contentLabel="Editar Usuario"
         className="medl-modal"
         overlayClassName="medl-modal-overlay"
@@ -215,20 +212,21 @@ export default function PanelUsuarios({ externalSelected }) {
               <div className="medl-modal-icon medl-modal-icon-indigo">✏️</div>
               <h2>Editar Usuario</h2>
             </div>
+
             <div className="medl-modal-content">
+              {/* Info */}
               <div className="medl-info-row">
                 <div className="medl-info-item">Nombre: <strong>{selectedUser.nombre}</strong></div>
                 <div className="medl-info-item">ID SAP: <strong>{selectedUser.idsap}</strong></div>
               </div>
 
+              {/* Rol */}
               <div className="medl-form-group">
                 <label>Rol</label>
                 <select
                   className="medl-form-select"
                   value={selectedUser.role}
-                  onChange={(e) =>
-                    setSelectedUser({ ...selectedUser, role: e.target.value })
-                  }
+                  onChange={(e) => setSelectedUser({ ...selectedUser, role: e.target.value })}
                 >
                   <option value="paciente">Paciente</option>
                   <option value="enfermeria">Enfermería</option>
@@ -239,39 +237,74 @@ export default function PanelUsuarios({ externalSelected }) {
                 </select>
               </div>
 
+              {/* Estado */}
               <div className="medl-form-group">
                 <div className="medl-checkbox-container">
                   <input
                     type="checkbox"
                     id="userStatus"
                     checked={selectedUser.status || false}
-                    onChange={(e) =>
-                      setSelectedUser({ ...selectedUser, status: e.target.checked })
-                    }
+                    onChange={(e) => setSelectedUser({ ...selectedUser, status: e.target.checked })}
                   />
                   <label htmlFor="userStatus">Estado Activo</label>
                 </div>
               </div>
+
+              {/* Nueva contraseña */}
+              <div className="medl-form-group">
+                <label>
+                  <FaKey style={{ marginRight: 6, color: "#6366f1", fontSize: "0.8rem" }} />
+                  Nueva contraseña
+                  <span style={{ fontSize: "0.73rem", color: "#94a3b8", fontWeight: 400, marginLeft: 6 }}>
+                    (dejar vacío para no cambiar)
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  className="medl-form-control"
+                  placeholder="Mínimo 6 caracteres"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                />
+                {newPassword.length > 0 && newPassword.length < 6 && (
+                  <span style={{ fontSize: "0.76rem", color: "#dc2626", marginTop: 4, display: "block" }}>
+                    La contraseña debe tener al menos 6 caracteres
+                  </span>
+                )}
+              </div>
+
+              {/* Mensaje resultado */}
+              {saveMsg && (
+                <div style={{
+                  padding: "10px 14px",
+                  borderRadius: 9,
+                  fontSize: "0.84rem",
+                  fontWeight: 600,
+                  background: saveMsg.tipo === "exito" ? "#dcfce7" : "#fee2e2",
+                  color:      saveMsg.tipo === "exito" ? "#16a34a" : "#dc2626",
+                  border:     `1px solid ${saveMsg.tipo === "exito" ? "#86efac" : "#fca5a5"}`,
+                }}>
+                  {saveMsg.texto}
+                </div>
+              )}
             </div>
+
             <div className="medl-modal-actions">
-              <button className="medl-btn medl-btn-secondary" onClick={() => setSelectedUser(null)}>
+              <button className="medl-btn medl-btn-secondary" onClick={closeEditModal}>
                 Cancelar
               </button>
-              <button
-                className="medl-btn medl-btn-danger"
-                onClick={() => handleDeleteUser(selectedUser.id)}
-              >
+              <button className="medl-btn medl-btn-danger" onClick={() => handleDeleteUser(selectedUser.id)}>
                 Eliminar
               </button>
               <button
                 className="medl-btn medl-btn-primary"
-                onClick={() => {
-                  handleUpdateUser(selectedUser.id, {
-                    role: selectedUser.role,
-                    status: selectedUser.status,
-                  });
-                  setSelectedUser(null);
-                }}
+                disabled={!passwordValida}
+                onClick={() => handleUpdateUser(selectedUser.id, {
+                  role:     selectedUser.role,
+                  status:   selectedUser.status,
+                  password: newPassword.length >= 6 ? newPassword : undefined,
+                })}
               >
                 Guardar
               </button>
@@ -280,7 +313,7 @@ export default function PanelUsuarios({ externalSelected }) {
         )}
       </Modal>
 
-      {/* ── Modal Agregar usuario ─────────────────────────────────── */}
+      {/* ── Modal Agregar ─────────────────────────────────────────── */}
       <Modal
         isOpen={showAddModal}
         onRequestClose={() => setShowAddModal(false)}
