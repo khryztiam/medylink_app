@@ -1,7 +1,7 @@
 // components/admin/CSVImportPanel.jsx
 import { useState } from "react";
 import Papa from "papaparse";
-import { FaFileCsv, FaUpload } from "react-icons/fa";
+import { FaFileCsv, FaUpload, FaDownload } from "react-icons/fa";
 import styles from "@/styles/Admin.module.css";
 
 export default function CSVImportPanel() {
@@ -9,6 +9,26 @@ export default function CSVImportPanel() {
   const [isLoading, setLoading] = useState(false);
   const [error, setError]       = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
+
+  const downloadTemplate = async () => {
+    try {
+      const response = await fetch("/api/admin/template/download");
+      if (!response.ok) throw new Error("Error descargando plantilla");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "allowed_users_template.csv";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Error:", err);
+      alert("No se pudo descargar la plantilla");
+    }
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -76,6 +96,13 @@ export default function CSVImportPanel() {
           <FaFileCsv className={styles.cardTitleIcon} />
           Importar Lista Maestro
         </h3>
+        <button
+          onClick={downloadTemplate}
+          className={styles.downloadBtn}
+          title="Descargar plantilla CSV de ejemplo"
+        >
+          <FaDownload /> Plantilla
+        </button>
       </div>
 
       <div className={styles.importBody}>
