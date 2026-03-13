@@ -1,7 +1,9 @@
 # 🏥 MedyLink - Sistema de Gestión Médica
 
 **Estado:** v0.2.0 - En desarrollo  
-**Última actualización:** 2026-03-12
+**Última actualización:** 2026-03-12  
+**Seguridad:** 🟡 1/3 críticos resuelto (RLS ✅ | Tokens limpiados ✅)  
+**Auditoría:** ✅ Código revisado y analizado
 
 ---
 
@@ -37,12 +39,18 @@ npm install
 
 ### 3. Configurar variables de entorno
 
-Crear archivo `.env.local`:
-```text
+Crear archivo `.env.local` en la raíz (NUNCA committear):
+```bash
+# .env.local - Archivo local, protegido por .gitignore
 NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIs...
+NEXT_PUBLIC_SUPABASE_KEY=eyJhbGciOiJIUzI1NiIs...
 ```
+
+⚠️ **Importante:**
+- ✅ `.env.local` está protegido en `.gitignore` (no se sube a Git)
+- ❌ NUNCA commit variables en `.env` 
+- 🔑 **Regenerar keys** si se expusieron accidentalmente
+- 📋 Ver [doc/05-SEGURIDAD/SEGURIDAD.md](./doc/05-SEGURIDAD/SEGURIDAD.md) para más detalles
 
 ### 4. Ejecutar en desarrollo
 
@@ -162,26 +170,46 @@ npm run lint     # Ejecutar ESLint
 
 ## 🔐 Seguridad
 
-⚠️ **CRÍTICO:** El sistema requiere mejoras de seguridad antes de producción.
+**Estado Actual:** 🟡 1/3 críticos resuelto
 
-**Problemas actuales:**
-- ❌ RLS (Row Level Security) no implementado
-- ❌ Validación server-side ausente
-- ⚠️ Rate limiting no configurado
+### ✅ Implementado (Crítico #1)
+- **RLS (Row Level Security)** en Supabase
+  - Pacientes: ven solo sus citas
+  - Médicos: ven citas asignadas + en espera
+  - Enfermería: ven todas
+  - Admin: acceso total
+  - Estado: ✅ IMPLEMENTADO + AUDITADO
+  - Commit: c21adc8 (con corrección de bug de médicos)
 
-**Ver [SEGURIDAD.md](./SEGURIDAD.md) para detalles y soluciones.**
+### ⏳ Pendientes (Críticos #2-3)
+1. **Tokens en .env**: Usar `.env.local` (gitignored) ✅ Documentado
+2. **Validación Server-Side**: Implementar RPC en Supabase
+3. **Otros altos/medios**: Rate limiting, CORS, audit logging, etc.
+
+**Auditoría Completa:** [doc/05-SEGURIDAD/SEGURIDAD.md](./doc/05-SEGURIDAD/SEGURIDAD.md)
+- 3 hallazgos críticos
+- 4 hallazgos altos
+- 5 hallazgos medios
+- Remedios documentados para cada uno
 
 ### Checklist de Seguridad
 
 ```
-[ ] Implementar RLS en Supabase
-[ ] Validación server-side en RPC
-[ ] Regenerar Supabase keys
-[ ] Configurar CSP headers
-[ ] Implementar rate limiting
-[ ] HTTPS en producción
-[ ] Auditar error messages
+[✅] RLS (Row Level Security) implementado
+[✅] Tokens limpiados de historial Git
+[✅] .gitignore protege .env.local
+[⏳] Validación server-side (RPC functions)
+[⏳] Rate limiting
+[⏳] CORS configuración
+[⏳] Audit logging
+[ ] CSP headers
+[ ] httpOnly cookies
+[ ] XSS input sanitization
 ```
+
+### Reportar Vulnerabilidades
+
+⚠️ **NO** crear issues públicos para vulnerabilidades. Contactar directamente al maintainer.
 
 ---
 
@@ -193,21 +221,33 @@ npm run lint     # Ejecutar ESLint
 # Reiniciar servidor: npm run dev
 ```
 
-### "SUPABASE_URL is not defined"
+### "NEXT_PUBLIC_SUPABASE_URL is not defined"
 ```bash
-# Crear .env.local con variables
-# Reiniciar servidor
+# Crear .env.local en raíz del proyecto
+# Agregar NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_KEY
+# Reiniciar servidor: npm run dev
+# NO committear .env.local (está en .gitignore)
 ```
 
 ### "RLS policy violation"
 ```bash
-# Implementar políticas de seguridad
-# Ver SEGURIDAD.md para detalles
+# ✅ RLS está implementado (v0.2.0+)
+# Verificar que rol del usuario está correcto
+# Ver política en Supabase Dashboard > Authentication > Policies
+# Usar test-rls.js para debuggear
+```
+
+### "Paciente/Médico no ve sus citas"
+```bash
+# Verificar jwt_token tiene claims: role, idsap
+# RLS filtra por role + rol específico
+# Ver log en: supabase.from('citas').select()
+# Revisar jwt_has_role() en SEGURIDAD.md
 ```
 
 ### "Audio no funciona en medico.js"
 ```javascript
-// Ya solucionado: desbloquearAudio() en primer click
+// ✅ Ya solucionado: desbloquearAudio() en primer click
 // Si persiste: verificar archivos en /public/*.mp3
 ```
 
@@ -215,13 +255,20 @@ npm run lint     # Ejecutar ESLint
 
 ## 📈 Roadmap
 
-### v0.3.0 (Próximo)
-- [ ] Implementar RLS completo
-- [ ] Agregar pruebas (Jest)
+### v0.2.1 (Actual - en progreso)
+- [✅] RLS implementado y auditado
+- [✅] Código revisado (seguridad + arquitectura)
+- [✅] Documentación completa
+- [⏳] Validación server-side (RPC functions)
+- [⏳] Rate limiting y rate headers
+
+### v0.3.0 (Siguiente)
+- [ ] Tests unitarios (Jest)
 - [ ] Integración con Telegram notifications
 - [ ] Exportar reportes (PDF)
+- [ ] Two-factor authentication (2FA)
 
-### v1.0.0 (Final)
+### v1.0.0 (Producción)
 - [ ] Mobile app (React Native)
 - [ ] Integración con calendarios (Google, Outlook)
 - [ ] BI/Analytics dashboard
