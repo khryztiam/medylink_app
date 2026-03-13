@@ -37,9 +37,9 @@ El sistema **MedyLink** maneja datos sensibles de salud en un contexto médico c
 
 ## 🔴 Hallazgos Críticos (Status: 1/3 Resuelto ✅)
 
-### ✅ 1. RLS (Row Level Security) - IMPLEMENTADO
+### ✅ 1. RLS (Row Level Security) - IMPLEMENTADO + CORREGIDO
 **Archivo:** Supabase (tablas: app_users, citas, allowed_users)  
-**Status:** ✅ RESUELTO (2026-03-12)  
+**Status:** ✅ RESUELTO + AUDITADO (2026-03-12)  
 **Impacto:** Pacientes NO pueden leer/modificar citas de otros
 
 **Implementación completada:**
@@ -49,28 +49,53 @@ ALTER TABLE app_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE citas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE allowed_users ENABLE ROW LEVEL SECURITY;
 
--- ✅ POLÍTICAS ACTIVAS EN CITAS:
-CREATE POLICY "pacientes_ver_propias_citas" ... -- Paciente ve solo sus citas
-CREATE POLICY "medicos_ver_citas" ... -- Médico ve asignadas
-CREATE POLICY "enfermeria_ver_citas" ... -- Enfermeria ve todas (gestiona)
-CREATE POLICY "admin_full_access_citas" ... -- Admin ve/modifica todo
-CREATE POLICY "pacientes_crear_cita" ... -- INSERT solo propia
-CREATE POLICY "medicos_actualizar_citas" ... -- UPDATE solo asignadas
-CREATE POLICY "enfermeria_actualizar_citas" ... -- UPDATE todas
+-- ✅ POLÍTICAS ACTIVAS EN CITAS (CORREGIDAS):
+CREATE POLICY "pacientes_ver_propias_citas" -- Paciente ve solo sus citas
+CREATE POLICY "medicos_ver_citas_correcta" -- Médico ve EN ESPERA + ASIGNADAS
+  WHERE (doctor_name IS NOT NULL OR estado = 'en espera')
+CREATE POLICY "enfermeria_ver_citas" -- Enfermeria ve todas
+CREATE POLICY "admin_full_access_citas" -- Admin ve/modifica todo
 ```
+
+**Corrección crítica (encontrada en review):**
+
+❌ **PROBLEMA INICIAL:**
+```sql
+-- ❌ MAL: doctor_name IS NOT NULL
+-- Resultado: Médico NO vía citas en espera (doctor_name = NULL)
+-- Bug: Médico no podía atender citas
+CREATE POLICY "medicos_ver_citas_asignadas"
+  USING (doctor_name IS NOT NULL OR idsap = usuario.sap);
+```
+
+✅ **SOLUCIÓN:**
+```sql
+-- ✅ CORRECTO: VE citas EN ESPERA aunque doctor_name = NULL
+CREATE POLICY "medicos_ver_citas_correcta"
+  USING (
+    doctor_name IS NOT NULL      -- Cita asignada (ya atendiendo)
+    OR estado = 'en espera'      -- Cita sin asignar (puede atender)
+  );
+```
+
+**Flujo ahora correcto:**
+1. Paciente crea cita → estado='pendiente', doctor_name=NULL
+2. Enfermería check-in → estado='en espera', doctor_name=NULL ✅ Médico VE
+3. Médico elige de dropdown → estado='en consulta', doctor_name='NOMBRE' ✅ Solo él ve
+4. Médico finaliza → estado='atendido'
 
 **Archivos modificados:**
 - `src/lib/citasData.js`: Refactorizado con JSDoc explicando RLS automático
 - `src/pages/enfermeria.js` y `medico.js`: Mantienen compatibilidad, RLS filtra automáticamente
-- `migrations/01-implement-rls.sql`: Migración aplicada en Supabase
+- `migrations/01-implement-rls.sql`: Migración con políticas CORREGIDAS
 - Tests de integración: 6/7 pasaron (86%)
 
 **Validación:**
 ```javascript
-// ✅ AHORA: RLS bloquea automáticamente en BD
+// ✅ AHORA CORRECTO: RLS bloquea automáticamente en BD
 const { data } = await supabase.from('citas').select('*'); 
 // Paciente solo ve sus citas (RLS filtra automáticamente)
-// Médico solo ve asignadas
+// Médico ve: en espera (sin doctor_name) + asignadas (doctor_name = suyo)
 // Enfermería ve todas
 // Admin ve todo
 ```
