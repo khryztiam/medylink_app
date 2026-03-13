@@ -1,24 +1,24 @@
-﻿# ðŸš€ GuÃ­a de Setup y Flujo de Trabajo
+﻿# 🚀 Guía de Setup y Flujo de Trabajo
 
-**Ãšltima actualizaciÃ³n:** 2026-03-12  
+**Última actualización:** 2026-03-12  
 **Estado:** Listo para desarrollo
 
 ---
 
-## ðŸ“‹ Ãndice
+## 📋 Índice
 
 1. [Requisitos Previos](#requisitos-previos)
 2. [Setup Inicial](#setup-inicial)
-3. [ConfiguraciÃ³n de Supabase](#configuraciÃ³n-de-supabase)
+3. [Configuración de Supabase](#configuración-de-supabase)
 4. [Desarrollo Local](#desarrollo-local)
 5. [Flujo de Trabajo Git](#flujo-de-trabajo-git)
-6. [Deploy a ProducciÃ³n](#deploy-a-producciÃ³n)
+6. [Deploy a Producción](#deploy-a-producción)
 7. [Troubleshooting](#troubleshooting)
-8. [Mejores PrÃ¡cticas](#mejores-prÃ¡cticas)
+8. [Mejores Prácticas](#mejores-prácticas)
 
 ---
 
-## ðŸ“¦ Requisitos Previos
+## 📦 Requisitos Previos
 
 ### Sistema
 - **Node.js:** 18.17+ (verificar con `node -v`)
@@ -33,13 +33,13 @@
 
 ### Herramientas recomendadas
 - **VS Code:** Editor principal
-- **Prettier:** Formateo cÃ³digo
+- **Prettier:** Formateo código
 - **ESLint:** Linting
 - **GitKraken:** Cliente Git (opcional)
 
 ---
 
-## ðŸ”§ Setup Inicial
+## 🔧 Setup Inicial
 
 ### Paso 1: Clonar repositorio
 
@@ -61,7 +61,7 @@ yarn install
 ### Paso 3: Crear archivo `.env.local`
 
 ```bash
-# En raÃ­z del proyecto:
+# En raíz del proyecto:
 cat > .env.local << EOF
 NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs... [copiar del dashboard]
@@ -78,12 +78,12 @@ SUPABASE_SERVICE_ROLE_KEY=servicekey...
 
 **Verificar:** Archivo `.env.local` NO debe estar en git:
 ```bash
-# Confirmar que estÃ¡ en .gitignore:
+# Confirmar que está en .gitignore:
 cat .gitignore | grep "\.env\.local"
 # Output: .env.local
 ```
 
-### Paso 4: Verificar instalaciÃ³n
+### Paso 4: Verificar instalación
 
 ```bash
 npm run build
@@ -95,16 +95,16 @@ npm run dev
 
 ---
 
-## ðŸ”‘ ConfiguraciÃ³n de Supabase
+## 🔑 Configuración de Supabase
 
 ### 1. Obtener Credenciales
 
 1. Ir a [supabase.com/dashboard](https://supabase.com/dashboard)
 2. Seleccionar proyecto
-3. Settings â†’ API â†’ Copy URLs y Keys
-   - `NEXT_PUBLIC_SUPABASE_URL` (pÃºblico)
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (pÃºblico)
-4. Settings â†’ API â†’ Service Role Key
+3. Settings → API → Copy URLs y Keys
+   - `NEXT_PUBLIC_SUPABASE_URL` (público)
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (público)
+4. Settings → API → Service Role Key
    - `SUPABASE_SERVICE_ROLE_KEY` (secreto, solo backend)
 
 ### 2. Verificar Tablas (Schema)
@@ -155,7 +155,7 @@ WHERE table_schema = 'public'
 
 ### 3. Implementar RLS (Security)
 
-**CRÃTICO:** Sin RLS los datos estÃ¡n expuestos
+**CRÍTICO:** Sin RLS los datos están expuestos
 
 ```sql
 -- Habilitar RLS en tablas
@@ -166,7 +166,7 @@ ALTER TABLE allowed_users ENABLE ROW LEVEL SECURITY;
 -- (Ver detalles en SEGURIDAD.md)
 ```
 
-### 4. PolÃ­ticas de Acceso
+### 4. Políticas de Acceso
 
 ```sql
 -- Ejemplo: Usuario puede leer solo SUS citas
@@ -176,12 +176,12 @@ USING (
   (SELECT idsap FROM app_users WHERE id = auth.uid())::INT = idsap
 );
 
--- (Implementar todas las polÃ­ticas segÃºn SEGURIDAD.md)
+-- (Implementar todas las políticas según SEGURIDAD.md)
 ```
 
 ---
 
-## ðŸ’» Desarrollo Local
+## 💻 Desarrollo Local
 
 ### Iniciar servidor
 
@@ -195,14 +195,14 @@ Acceso en `http://localhost:3000`
 
 ```
 src/
-â”œâ”€â”€ pages/           â† Rutas principales (editar pÃ¡ginas aquÃ­)
-â”œâ”€â”€ components/      â† Componentes reutilizables
-â”œâ”€â”€ context/         â† Estado global (AuthContext)
-â”œâ”€â”€ lib/             â† LÃ³gica (citasData, supabase client)
-â””â”€â”€ styles/          â† CSS Modules (uno por pÃ¡gina)
+├── pages/           ← Rutas principales (editar páginas aquí)
+├── components/      ← Componentes reutilizables
+├── context/         ← Estado global (AuthContext)
+├── lib/             ← Lógica (citasData, supabase client)
+└── styles/          ← CSS Modules (uno por página)
 ```
 
-### Workflow tÃ­pico
+### Workflow típico
 
 #### 1. Crear feature nueva
 
@@ -227,7 +227,7 @@ export async function agregarCita({ nombre, motivo, idSAP, emergency, isss, aler
       estado: 'pendiente', 
       emergency: !!emergency, 
       isss: !!isss,
-      alergia: alergia || null  // â† Nuevo campo
+      alergia: alergia || null  // ← Nuevo campo
     }])
 }
 
@@ -242,7 +242,7 @@ const handleSubmit = async (e) => {
     idSAP,
     emergency,
     isss,
-    alergia  // â† Nuevo
+    alergia  // ← Nuevo
   })
 }
 
@@ -257,7 +257,7 @@ const handleSubmit = async (e) => {
 </div>
 
 // 3. pages/paciente.js - mostrar en historial
-<td>{cita.alergia || 'â€”'}</td>
+<td>{cita.alergia || '—'}</td>
 ```
 
 #### 3. Testing manual
@@ -267,7 +267,7 @@ const handleSubmit = async (e) => {
 - Acceder como paciente, crear cita, verificar que aparece en enfermeria
 - Acceder como enfermeria, registrar cita, verificar que aparece en medico
 - Acceder como medico, atender cita, finalizar
-- Ver en supervisor que aparece en estadÃ­sticas
+- Ver en supervisor que aparece en estadísticas
 ```
 
 #### 4. Commit y push
@@ -289,7 +289,7 @@ git push origin feature/mi-feature
 
 ---
 
-## ðŸŒ³ Flujo de Trabajo Git
+## 🌳 Flujo de Trabajo Git
 
 ### Convenciones de Commits
 
@@ -300,9 +300,9 @@ git commit -m "type(scope): descripcion"
 # Tipos:
 feat:   Nueva funcionalidad
 fix:    Arreglo de bug
-docs:   Cambios en documentaciÃ³n
-style:  Formateo de cÃ³digo (sin lÃ³gica)
-refactor: ReorganizaciÃ³n del cÃ³digo
+docs:   Cambios en documentación
+style:  Formateo de código (sin lógica)
+refactor: Reorganización del código
 perf:   Mejoras de performance
 test:   Agregar/modificar tests
 chore:  Actualizaciones de dependencias
@@ -316,7 +316,7 @@ git commit -m "docs: actualizar guia de setup"
 ### Rama principal: `main`
 
 ```bash
-# main siempre estÃ¡ en estado deployable
+# main siempre está en estado deployable
 # Nunca committear directamente a main
 
 # Solo mergear via PR con review
@@ -327,24 +327,24 @@ git commit -m "docs: actualizar guia de setup"
 ```bash
 # Si quieres staging antes de production:
 git checkout -b develop
-# Mergear PRs aquÃ­ primero
-# Luego mergear develop â†’ main
+# Mergear PRs aquí primero
+# Luego mergear develop → main
 ```
 
-### GestiÃ³n de conflictos
+### Gestión de conflictos
 
 ```bash
 # Si hay conflictos al mergear:
 git merge feature/mi-feature
 
-# (VerÃ¡s archivos con conflictos)
+# (Verás archivos con conflictos)
 # Abre los archivos y resuelve manualmente
 
 # Busca:
 <<<<<<< HEAD
-cÃ³digo actual
+código actual
 =======
-cÃ³digo entrante
+código entrante
 >>>>>>> feature/mi-feature
 
 # Resuelve eligiendo uno o combinando
@@ -356,20 +356,20 @@ git push
 
 ---
 
-## ðŸŒ Deploy a ProducciÃ³n
+## 🌐 Deploy a Producción
 
 ### Pre-deploy checklist
 
-- [ ] Todo en `main` estÃ¡ testeado
+- [ ] Todo en `main` está testeado
 - [ ] `npm run build` pasa sin errores
-- [ ] `npm run lint` pasa sin warnings crÃ­ticas
+- [ ] `npm run lint` pasa sin warnings críticas
 - [ ] Variables de env correctas en hosting
 - [ ] Base de datos migrada
 - [ ] RLS activado y configurado
 
 ### Opciones de Hosting
 
-#### OpciÃ³n 1: Vercel (Recomendado para Next.js)
+#### Opción 1: Vercel (Recomendado para Next.js)
 
 ```bash
 # 1. Instalar CLI
@@ -388,20 +388,20 @@ vercel deploy --prod
 ```
 
 **Ventajas:**
-- IntegraciÃ³n automÃ¡tica con GitHub
-- Deploys automÃ¡ticos en cada push a main
+- Integración automática con GitHub
+- Deploys automáticos en cada push a main
 - Preview URLs para PRs
 - Analytics incluido
 
-#### OpciÃ³n 2: App Platform de Supabase
+#### Opción 2: App Platform de Supabase
 
 ```bash
 # Supabase puede hospedar directamente
 # Ir a: https://supabase.com/dashboard
-# â†’ Deployments â†’ Connect GitHub
+# → Deployments → Connect GitHub
 ```
 
-#### OpciÃ³n 3: Servidor propio (VPS)
+#### Opción 3: Servidor propio (VPS)
 
 ```bash
 # 1. SSH al servidor
@@ -422,12 +422,12 @@ pm2 startup
 pm2 save
 
 # 5. Configurar Nginx como reverse proxy
-# (ver documentaciÃ³n de Nginx)
+# (ver documentación de Nginx)
 ```
 
 ---
 
-## ðŸ”§ Troubleshooting
+## 🔧 Troubleshooting
 
 ### Error: "Module not found"
 
@@ -435,7 +435,7 @@ pm2 save
 Error: Cannot find module '@/components/...'
 ```
 
-**SoluciÃ³n:**
+**Solución:**
 ```bash
 # Verificar que jsconfig.json tiene:
 {
@@ -453,9 +453,9 @@ npm run dev (CTRL+C y volver a iniciar)
 
 ### Error: "NEXT_PUBLIC_SUPABASE_URL is not defined"
 
-**SoluciÃ³n:**
+**Solución:**
 ```bash
-# Verificar que .env.local existe en raÃ­z:
+# Verificar que .env.local existe en raíz:
 ls -la .env.local  # Debe existir
 
 # Verificar contenido:
@@ -474,19 +474,19 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 Error: new row violates row-level security policy
 ```
 
-**SoluciÃ³n:**
+**Solución:**
 ```sql
--- Verificar que tienes RLS policy permitiendo la acciÃ³n:
+-- Verificar que tienes RLS policy permitiendo la acción:
 SELECT * FROM pg_policies 
 WHERE tablename = 'citas'
 
--- Si estÃ¡ vacÃ­o, agregar polÃ­ticas:
+-- Si está vacío, agregar políticas:
 CREATE POLICY "Allow own user actions" 
 ON citas 
 USING (true)  -- Temporal para debug
 WITH CHECK (true)
 
--- âš ï¸ NUNCA dejar asÃ­ en producciÃ³n
+-- ⚠️ NUNCA dejar así en producción
 -- Ver SEGURIDAD.md para policies correctas
 ```
 
@@ -496,12 +496,12 @@ WITH CHECK (true)
 Error: JWT expired
 ```
 
-**SoluciÃ³n:**
+**Solución:**
 ```bash
 # 1. Limpiar localStorage:
-# Abre DevTools â†’ Application â†’ localStorage â†’ Delete all
+# Abre DevTools → Application → localStorage → Delete all
 
-# 2. Refrescar pÃ¡gina
+# 2. Refrescar página
 # 3. Login de nuevo
 
 # Si persiste: regenerar Supabase keys
@@ -512,14 +512,14 @@ Error: JWT expired
 ```bash
 # 1. Revisar Network tab en DevTools
 # - Identificar requests lentos
-# - Verificar tamaÃ±o de assets
+# - Verificar tamaño de assets
 
 # 2. Ejecutar Lighthouse
-# - DevTools â†’ Lighthouse â†’ Generate report
+# - DevTools → Lighthouse → Generate report
 
 # 3. Comunes:
 # - Queries N+1 en Supabase
-# - ImÃ¡genes sin optimizar
+# - Imágenes sin optimizar
 # - Components sin useMemo/useCallback
 ```
 
@@ -527,31 +527,31 @@ Error: JWT expired
 
 ```javascript
 // En medico.js / enfermeria.js
-// Problema: Navegador bloquea audio hasta interacciÃ³n
+// Problema: Navegador bloquea audio hasta interacción
 
-// SoluciÃ³n ya implementada:
+// Solución ya implementada:
 // - desbloquearAudio() en primer click
 // - Reproducir silencio para desbloquear contexto
 
 // Debug:
-- Abre DevTools â†’ Console
+- Abre DevTools → Console
 - Verifica que archivo existe: /public/doorbell.mp3
 - Prueba: new Audio("/doorbell.mp3").play()
 ```
 
 ---
 
-## âœ… Mejores PrÃ¡cticas
+## ✅ Mejores Prácticas
 
 ### 1. Nomenclatura de Variables
 
 ```javascript
-// âœ… BUENO: nombres descriptivos
+// ✅ BUENO: nombres descriptivos
 const citaActiva = citas.find(c => c.estado === 'activo')
 const calcularTiempoConsulta = (checkIn, checkOut) => { ... }
 const [isLoading, setIsLoading] = useState(false)
 
-// âŒ MALO: nombres cortos o genÃ©ricos
+// ❌ MALO: nombres cortos o genéricos
 const ca = citas.find(c => c.estado === 'activo')
 const calc = (a, b) => { ... }
 const [loading, setLoading] = useState(false)
@@ -560,7 +560,7 @@ const [loading, setLoading] = useState(false)
 ### 2. Manejo de Errores
 
 ```javascript
-// âœ… BUENO: Try/catch especÃ­fico con logging
+// ✅ BUENO: Try/catch específico con logging
 try {
   const { data, error } = await supabase.from('citas').select('*')
   
@@ -576,15 +576,15 @@ try {
   setError('Error inesperado. Contacta support.')
 }
 
-// âŒ MALO: Ignorar errores
+// ❌ MALO: Ignorar errores
 const data = await supabase.from('citas').select('*')
-setCitas(data)  // Â¿QuÃ© si hay error?
+setCitas(data)  // ¿Qué si hay error?
 ```
 
 ### 3. Performance: useMemo y useCallback
 
 ```javascript
-// âœ… BUENO: Memoizar funciones y cÃ¡lculos costosos
+// ✅ BUENO: Memoizar funciones y cálculos costosos
 const load = useCallback(async () => {
   const todas = await getTodasLasCitas()
   setCitas(todas)
@@ -596,7 +596,7 @@ const citasFiltradasOrdenadas = useMemo(() => {
     .sort((a, b) => a.orden_llegada - b.orden_llegada)
 }, [citas])
 
-// âŒ MALO: Re-crear funciones en cada render
+// ❌ MALO: Re-crear funciones en cada render
 const load = async () => { ... }  // Se crea cada render
 
 const citasOrdenadas = citas.sort((a, b) => ...)  // En cada render
@@ -605,14 +605,14 @@ const citasOrdenadas = citas.sort((a, b) => ...)  // En cada render
 ### 4. Evitar Prop Drilling
 
 ```javascript
-// âŒ MALO: Pasar datos muchos niveles
+// ❌ MALO: Pasar datos muchos niveles
 <Page citas={citas}>
   <Section citas={citas}>
     <Table citas={citas} />
   </Section>
 </Page>
 
-// âœ… BUENO: Usar Context
+// ✅ BUENO: Usar Context
 <CitasProvider>
   <Page>
     <Section>
@@ -625,7 +625,7 @@ const citasOrdenadas = citas.sort((a, b) => ...)  // En cada render
 ### 5. Async/Await vs Promises
 
 ```javascript
-// âœ… BUENO: Async/await (mÃ¡s legible)
+// ✅ BUENO: Async/await (más legible)
 const handleSubmit = async (e) => {
   e.preventDefault()
   try {
@@ -636,7 +636,7 @@ const handleSubmit = async (e) => {
   }
 }
 
-// âš ï¸ TambiÃ©n vÃ¡lido pero menos legible:
+// ⚠️ También válido pero menos legible:
 const handleSubmit = (e) => {
   e.preventDefault()
   agregarCita(data)
@@ -648,7 +648,7 @@ const handleSubmit = (e) => {
 ### 6. Limpieza de Efectos
 
 ```javascript
-// âœ… BUENO: Cleanup en useEffect
+// ✅ BUENO: Cleanup en useEffect
 useEffect(() => {
   const canal = supabase
     .channel('realtime-citas')
@@ -656,11 +656,11 @@ useEffect(() => {
     .subscribe()
 
   return () => {
-    supabase.removeChannel(canal)  // â† CRÃTICO: cleanup
+    supabase.removeChannel(canal)  // ← CRÍTICO: cleanup
   }
 }, [])
 
-// âŒ MALO: Sin cleanup â†’ memory leaks
+// ❌ MALO: Sin cleanup → memory leaks
 useEffect(() => {
   const canal = supabase
     .channel('realtime-citas')
@@ -670,15 +670,15 @@ useEffect(() => {
 }, [])
 ```
 
-### 7. Comentarios Ãštiles
+### 7. Comentarios Útiles
 
 ```javascript
-// âœ… BUENO: Comentarios que explican el "por quÃ©"
+// ✅ BUENO: Comentarios que explican el "por qué"
 // Usar citasConocidasRef para detectar citas genuinamente nuevas
 // sin stale closure en Realtime subscriptions
 const citasConocidasRef = useRef(new Set())
 
-// âŒ MALO: Comentarios obvios
+// ❌ MALO: Comentarios obvios
 const user = null  // Inicializar user como null
 const [count, setCount] = useState(0)  // Estado de contador
 ```
@@ -700,16 +700,16 @@ npm run build
 # - Revisar console de DevTools (no errors)
 
 # 4. Revisar archivo
-# - CÃ³digo limpio sin console.log
+# - Código limpio sin console.log
 # - Sin typos
-# - IndentaciÃ³n correcta
+# - Indentación correcta
 ```
 
-### 9. DocumentaciÃ³n Inline
+### 9. Documentación Inline
 
 ```javascript
 /**
- * Obtiene todas las citas del dÃ­a actual
+ * Obtiene todas las citas del día actual
  * @returns {Promise<Cita[]>} Array de citas
  * @throws {Error} Si hay error en Supabase
  */
@@ -722,25 +722,24 @@ export async function getCitasHoy() {
 
 ```bash
 # NUNCA commitear valores reales
-NEXT_PUBLIC_SUPABASE_URL  â† PÃºblico (variable name)
-NEXT_PUBLIC_SUPABASE_ANON_KEY  â† PÃºblico (variable name)
-SUPABASE_SERVICE_ROLE_KEY  â† Secreto (NUNCA en .env.local en git)
+NEXT_PUBLIC_SUPABASE_URL  ← Público (variable name)
+NEXT_PUBLIC_SUPABASE_ANON_KEY  ← Público (variable name)
+SUPABASE_SERVICE_ROLE_KEY  ← Secreto (NUNCA en .env.local en git)
 
 # Usar .env.local (gitignored) para desarrollo local
-# En producciÃ³n: configurar en hosting (Vercel, etc)
+# En producción: configurar en hosting (Vercel, etc)
 ```
 
 ---
 
-## ðŸ“ž Contacto y Soporte
+## 📞 Contacto y Soporte
 
-- **DocumentaciÃ³n:** Ver README.md
+- **Documentación:** Ver README.md
 - **Issues:** GitHub Issues (con labels)
 - **Security:** security@medylink.local
 - **General:** slack #medylink-dev
 
 ---
 
-**Ãšltima actualizaciÃ³n:** 2026-03-12  
-**Siguiente revisiÃ³n:** 2026-04-12
-
+**Última actualización:** 2026-03-12  
+**Siguiente revisión:** 2026-04-12

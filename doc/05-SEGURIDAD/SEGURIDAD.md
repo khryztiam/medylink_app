@@ -1,50 +1,50 @@
-﻿# ðŸ”’ Audit de Seguridad - MedyLink
+﻿# 🔒 Audit de Seguridad - MedyLink
 
-**Fecha de revisiÃ³n:** 2026-03-12  
-**Nivel de criticidad:** âš ï¸ ALTO (Personal mÃ©dico + Datos de salud)  
-**Status:** ðŸ”´ Requiere mejoras
+**Fecha de revisión:** 2026-03-12  
+**Nivel de criticidad:** ⚠️ ALTO (Personal médico + Datos de salud)  
+**Status:** 🔴 Requiere mejoras
 
 ---
 
-## ðŸ“‹ Ãndice
+## 📋 Índice
 1. [Resumen Ejecutivo](#resumen-ejecutivo)
-2. [Hallazgos CrÃ­ticos](#hallazgos-crÃ­ticos)
+2. [Hallazgos Críticos](#hallazgos-críticos)
 3. [Hallazgos de Alto Riesgo](#hallazgos-de-alto-riesgo)
 4. [Hallazgos de Riesgo Medio](#hallazgos-de-riesgo-medio)
 5. [Hallazgos de Riesgo Bajo](#hallazgos-de-riesgo-bajo)
 6. [Checklist de Seguridad](#checklist-de-seguridad)
-7. [Plan de RemediaciÃ³n](#plan-de-remediaciÃ³n)
+7. [Plan de Remediación](#plan-de-remediación)
 
 ---
 
-## ðŸŽ¯ Resumen Ejecutivo
+## 🎯 Resumen Ejecutivo
 
-El sistema **MedyLink** maneja datos sensibles de salud en un contexto mÃ©dico corporativo. El anÃ¡lisis identifica **3 hallazgos crÃ­ticos, 4 altos, 5 medios** que deben resolverse antes de uso en producciÃ³n.
+El sistema **MedyLink** maneja datos sensibles de salud en un contexto médico corporativo. El análisis identifica **3 hallazgos críticos, 4 altos, 5 medios** que deben resolverse antes de uso en producción.
 
 | Severidad | Cantidad | Estado |
 |-----------|----------|--------|
-| ðŸ”´ CRÃTICA | 3 | âš ï¸ Bloqueante |
-| ðŸŸ  ALTO | 4 | âš ï¸ Urgente |
-| ðŸŸ¡ MEDIO | 5 | âš ï¸ Importante |
-| ðŸŸ¢ BAJO | 3 | â³ Considerar |
+| 🔴 CRÍTICA | 3 | ⚠️ Bloqueante |
+| 🟠 ALTO | 4 | ⚠️ Urgente |
+| 🟡 MEDIO | 5 | ⚠️ Importante |
+| 🟢 BAJO | 3 | ⏳ Considerar |
 
 ---
 
-## ðŸ”´ Hallazgos CrÃ­ticos
+## 🔴 Hallazgos Críticos
 
-### âŒ 1. Falta de RLS (Row Level Security)
+### ❌ 1. Falta de RLS (Row Level Security)
 **Archivo:** Supabase (tablas)  
 **Riesgo:** Usuario autenticado puede leer/modificar citas de otros usuarios
 
-**CÃ³digo actual - SIN PROTECCIÃ“N:**
+**Código actual - SIN PROTECCIÓN:**
 ```javascript
-// citasData.js - lÃ­nea ~20
+// citasData.js - línea ~20
 const { data, error } = await supabase
   .from('citas')
   .select('*')
   .eq('idsap', idSAP)
-  // âŒ Client confÃ­a en client-side filter
-  // âŒ SIN polÃ­tica RLS = cualquier usuario autenticado puede cambiar idSAP en request
+  // ❌ Client confía en client-side filter
+  // ❌ SIN política RLS = cualquier usuario autenticado puede cambiar idSAP en request
 ```
 
 **Escenario de ataque:**
@@ -54,25 +54,25 @@ supabase.from('citas').select('*') // obtiene TODAS las citas
 supabase.from('citas').update({doctor_name: 'Juan'}).eq('id', id) // modifica sin validar idsap
 ```
 
-**SoluciÃ³n (URGENTE):**
+**Solución (URGENTE):**
 ```sql
 -- En Supabase dashboard, ir a SQL Editor y ejecutar:
 
--- PolÃ­tica para SELECT
+-- Política para SELECT
 CREATE POLICY "Users can read own citas" ON citas
   FOR SELECT
   USING (
     auth.uid()::text = (SELECT id FROM app_users WHERE idsap = citas.idsap)
   );
 
--- PolÃ­tica para INSERT
+-- Política para INSERT
 CREATE POLICY "Only admin and enfermeria can insert" ON citas
   FOR INSERT
   WITH CHECK (
     (SELECT role FROM app_users WHERE id = auth.uid()) IN ('admin', 'enfermeria')
   );
 
--- PolÃ­tica para UPDATE
+-- Política para UPDATE
 CREATE POLICY "Only own doctor or enfermeria can update" ON citas
   FOR UPDATE
   USING (
@@ -80,60 +80,60 @@ CREATE POLICY "Only own doctor or enfermeria can update" ON citas
   );
 ```
 
-**Impacto:** âš ï¸ BLOQUEANTE - Implementar ANTES de producciÃ³n
+**Impacto:** ⚠️ BLOQUEANTE - Implementar ANTES de producción
 
 ---
 
-### âŒ 2. Tokens PÃºblicos Expuestos
+### ❌ 2. Tokens Públicos Expuestos
 **Archivo:** `src/lib/supabase.js`  
-**Riesgo:** Clave pÃºblica de Supabase visible en cliente (esperado en Supabase, pero mal configurada)
+**Riesgo:** Clave pública de Supabase visible en cliente (esperado en Supabase, pero mal configurada)
 
 **Problema:**
 ```javascript
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
-// âœ… Esta DEBE ser pÃºblica (anon key)
-// âŒ PERO estÃ¡ mal: deberÃ­a estar en .env.local, NO en .env
+// ✅ Esta DEBE ser pública (anon key)
+// ❌ PERO está mal: debería estar en .env.local, NO en .env
 ```
 
 **Verificar environment:**
 ```bash
-# âŒ MAL - Expone credenciales:
+# ❌ MAL - Expone credenciales:
 echo "NEXT_PUBLIC_SUPABASE_KEY=eyJhbGciOiJIUzI1NiIs..." > .env
 
-# âœ… BIEN - En .env.local (gitignored):
+# ✅ BIEN - En .env.local (gitignored):
 echo "NEXT_PUBLIC_SUPABASE_KEY=..." >> .env.local
 ```
 
 **Verificar commits:**
 ```bash
-# Revisar si keys estÃ¡n en git history:
+# Revisar si keys están en git history:
 git log --all -S "NEXT_PUBLIC_SUPABASE_KEY" --oneline
-# Si aparecen con valores reales = riesgo crÃ­tico
+# Si aparecen con valores reales = riesgo crítico
 ```
 
-**SoluciÃ³n:**
-1. âœ… Regenerar Supabase Key en dashboard (invalidar actual)
-2. âœ… Crear `.env.local` con valores reales
-3. âœ… Agregar a `.gitignore`
-4. âœ… Usar `NEXT_PUBLIC_*` SOLO para valores pÃºblicos
+**Solución:**
+1. ✅ Regenerar Supabase Key en dashboard (invalidar actual)
+2. ✅ Crear `.env.local` con valores reales
+3. ✅ Agregar a `.gitignore`
+4. ✅ Usar `NEXT_PUBLIC_*` SOLO para valores públicos
 
-**Impacto:** âš ï¸ CRÃTICA - Regenerar keys inmediatamente
+**Impacto:** ⚠️ CRÍTICA - Regenerar keys inmediatamente
 
 ---
 
-### âŒ 3. ValidaciÃ³n Server-Side Ausente
-**Archivo:** MÃºltiples (enfermeria.js, paciente.js, etc.)  
+### ❌ 3. Validación Server-Side Ausente
+**Archivo:** Múltiples (enfermeria.js, paciente.js, etc.)  
 **Riesgo:** Validaciones solo client-side, usuario malicioso puede bypassear
 
-**Ejemplos problemÃ¡ticos:**
+**Ejemplos problemáticos:**
 
 ```javascript
-// 1ï¸âƒ£ CitaForm.js lÃ­nea ~35
+// 1️⃣ CitaForm.js línea ~35
 const handleSubmit = async (e) => {
-  // âŒ ValidaciÃ³n SOLO aquÃ­ (client)
+  // ❌ Validación SOLO aquí (client)
   if (!nombre.trim() || !motivo.trim() || isNaN(sapNumerico)) return;
 
-  // âŒ Supabase recibe sin validaciÃ³n server
+  // ❌ Supabase recibe sin validación server
   await onSubmit({ nombre, motivo, idSAP: sapNumerico, ... });
 }
 ```
@@ -142,14 +142,14 @@ const handleSubmit = async (e) => {
 ```javascript
 // Hacker abre DevTools y ejecuta:
 supabase.from('citas').insert([{
-  idsap: 999999,           // âŒ Sin verificar que existe
-  nombre: "Juan",          // âŒ Sin verificar contra BD
+  idsap: 999999,           // ❌ Sin verificar que existe
+  nombre: "Juan",          // ❌ Sin verificar contra BD
   motivo: "Malware",
   // omite check_in, estado, etc.
 }])
 ```
 
-**SoluciÃ³n - Agregar RPC/FunciÃ³n en Supabase:**
+**Solución - Agregar RPC/Función en Supabase:**
 ```sql
 CREATE FUNCTION insert_cita_seguro(
   p_idsap INT,
@@ -194,49 +194,49 @@ const { error } = await supabase.rpc('insert_cita_seguro', {
 });
 ```
 
-**Impacto:** âš ï¸ CRÃTICA - Implementar validaciÃ³n server-side
+**Impacto:** ⚠️ CRÍTICA - Implementar validación server-side
 
 ---
 
-## ðŸŸ  Hallazgos de Alto Riesgo
+## 🟠 Hallazgos de Alto Riesgo
 
-### âš ï¸ 1. InformaciÃ³n de Usuario en LocalStorage
+### ⚠️ 1. Información de Usuario en LocalStorage
 **Archivo:** `src/context/AuthContext.js`  
-**Riesgo:** Datos de sesiÃ³n en localStorage accesible a XSS
+**Riesgo:** Datos de sesión en localStorage accesible a XSS
 
-**CÃ³digo:**
+**Código:**
 ```javascript
-// contexts/AuthContext.js - lÃ­nea ~50
+// contexts/AuthContext.js - línea ~50
 persistSession: true,
 storage: {
   getItem: (key) => (typeof window !== "undefined" ? localStorage.getItem(key) : null),
   setItem: (key, value) => localStorage.setItem(key) value),
-  // âŒ userData, roles guardados aquÃ­ sin encriptaciÃ³n
+  // ❌ userData, roles guardados aquí sin encriptación
 }
 ```
 
 **Ataque XSS posible:**
 ```javascript
-// Inyectado en pÃ¡gina via CDN comprometido
+// Inyectado en página via CDN comprometido
 localStorage.getItem('sb-auth-token')  // Obtiene token
-localStorage.getItem('sb-session')     // Obtiene sesiÃ³n
-// EnvÃ­a a servidor atacante
+localStorage.getItem('sb-session')     // Obtiene sesión
+// Envía a servidor atacante
 ```
 
-**MitigaciÃ³n:**
+**Mitigación:**
 ```javascript
-// OpciÃ³n 1: Usar sessionStorage en lugar de localStorage
+// Opción 1: Usar sessionStorage en lugar de localStorage
 sessionStorage.setItem(key, value)  // Se borra al cerrar tab
 
-// OpciÃ³n 2: Supabase Auth handles esto internamente
+// Opción 2: Supabase Auth handles esto internamente
 // No almacenar userData sensible, solo solicitar al servidor
 ```
 
-**Impacto:** ðŸŸ  ALTO - Implementar CSP headers + HTTPS obligatorio
+**Impacto:** 🟠 ALTO - Implementar CSP headers + HTTPS obligatorio
 
 ---
 
-### âš ï¸ 2. Funciones Admin Sin RLS Propias
+### ⚠️ 2. Funciones Admin Sin RLS Propias
 **Archivo:** `src/lib/supabaseAdmin.js`
 
 **Riesgo:** Cliente puede acceder a funciones admin si descubre el endpoint
@@ -244,49 +244,49 @@ sessionStorage.setItem(key, value)  // Se borra al cerrar tab
 ```javascript
 // supabaseAdmin.js
 const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
-// âŒ NUNCA enviar esto al cliente
-// âŒ NUNCA usar en pages/
+// ❌ NUNCA enviar esto al cliente
+// ❌ NUNCA usar en pages/
 ```
 
 **Verificar uso:**
 ```bash
 grep -r "supabaseAdmin" src/pages/
-# Si aparece algo = CRÃTICA
+# Si aparece algo = CRÍTICA
 ```
 
-**CorrecciÃ³n esperada:**
+**Corrección esperada:**
 ```
-âœ… supabaseAdmin.js â†’ API ROUTES ONLY
-âŒ NUNCA en components/ o contexto
+✅ supabaseAdmin.js → API ROUTES ONLY
+❌ NUNCA en components/ o contexto
 ```
 
-**Impacto:** ðŸŸ  ALTO - Auditar dÃ³nde se usa supabaseAdmin
+**Impacto:** 🟠 ALTO - Auditar dónde se usa supabaseAdmin
 
 ---
 
-### âš ï¸ 3. Error Messages Revelan InformaciÃ³n
-**Archivo:** MÃºltiples  
+### ⚠️ 3. Error Messages Revelan Información
+**Archivo:** Múltiples  
 **Riesgo:** Mensajes de error revelan estructura de BD
 
 **Ejemplos:**
 ```javascript
-// AuthContext.js lÃ­nea ~45
+// AuthContext.js línea ~45
 try {
   await supabase.auth.signInWithPassword({ email, password });
 } catch (err) {
-  setError(err.message) // âŒ Muestra error Supabase crudo
-  // Error: "Invalid login credentials" â† OK
-  // Pero otros errores podrÃ­an revelar BD schema
+  setError(err.message) // ❌ Muestra error Supabase crudo
+  // Error: "Invalid login credentials" ← OK
+  // Pero otros errores podrían revelar BD schema
 }
 ```
 
-**Mejor prÃ¡ctica:**
+**Mejor práctica:**
 ```javascript
 catch (err) {
   // Log error real servidor-side
   console.error('Auth error:', err);
   
-  // Mostrar al user mensaje genÃ©rico
+  // Mostrar al user mensaje genérico
   setError(
     err.message?.includes('invalid') 
       ? 'Credenciales incorrectas'
@@ -295,11 +295,11 @@ catch (err) {
 }
 ```
 
-**Impacto:** ðŸŸ  ALTO - Sanitizar messages pÃºblicos
+**Impacto:** 🟠 ALTO - Sanitizar messages públicos
 
 ---
 
-### âš ï¸ 4. No Hay Rate Limiting
+### ⚠️ 4. No Hay Rate Limiting
 **Archivo:** API routes (api/telegram-webhook.js, api/admin/*)  
 **Riesgo:** Brute force, DDoS posible
 
@@ -307,13 +307,13 @@ catch (err) {
 ```javascript
 // pages/api/admin/importarAllowed.js
 export default async function handler(req, res) {
-  // âŒ SIN rate limiting
-  // âŒ Usuario puede hacer 1000 requests/segundo
-  // âŒ Bloquear BD
+  // ❌ SIN rate limiting
+  // ❌ Usuario puede hacer 1000 requests/segundo
+  // ❌ Bloquear BD
 }
 ```
 
-**SoluciÃ³n recomendada:**
+**Solución recomendada:**
 ```javascript
 import rateLimit from 'express-rate-limit';
 
@@ -327,22 +327,22 @@ export default limiter(handler);
 
 **O usar Supabase Edge Functions** (mejor, outsourced)
 
-**Impacto:** ðŸŸ  ALTO - Implementar rate limiting en APIs
+**Impacto:** 🟠 ALTO - Implementar rate limiting en APIs
 
 ---
 
-## ðŸŸ¡ Hallazgos de Riesgo Medio
+## 🟡 Hallazgos de Riesgo Medio
 
-### âš¡ 1. Falta de HTTPS en Desarrollo
-**Archivo:** ConfiguraciÃ³n  
+### ⚡ 1. Falta de HTTPS en Desarrollo
+**Archivo:** Configuración  
 **Riesgo:** Credenciales viajan en HTTP
 
 ```bash
 # En desarrollo:
 npm run dev  # http://localhost:3000
-# âŒ LocalStorage + credenciales en plaintext
+# ❌ LocalStorage + credenciales en plaintext
 
-# RecomendaciÃ³n:
+# Recomendación:
 # Usar HTTPS incluso en dev con mkcert
 npm install -D mkcert
 mkcert -install
@@ -351,13 +351,13 @@ mkcert localhost
 
 ---
 
-### âš¡ 2. Falta CORS ExplÃ­cito
+### ⚡ 2. Falta CORS Explícito
 **Archivo:** next.config.mjs  
-**Riesgo:** Supabase requiere CORS para producciÃ³n
+**Riesgo:** Supabase requiere CORS para producción
 
 ```javascript
-// next.config.mjs estÃ¡ vacÃ­o
-// DeberÃ­a tener:
+// next.config.mjs está vacío
+// Debería tener:
 const nextConfig = {
   headers: async () => [
     {
@@ -374,16 +374,16 @@ const nextConfig = {
 
 ---
 
-### âš¡ 3. Datos Sensibles en Console.log
+### ⚡ 3. Datos Sensibles en Console.log
 **Archivos:** medico.js, paciente.js, etc.  
-**Riesgo:** DevTools abierto = exposiciÃ³n
+**Riesgo:** DevTools abierto = exposición
 
 ```javascript
-// medico.js lÃ­nea ~85
+// medico.js línea ~85
 const load = useCallback(async () => {
   const todas = await getTodasLasCitas();
-  // âŒ Si error, no hay logging
-  // âœ… Pero revisar todos los console.error()
+  // ❌ Si error, no hay logging
+  // ✅ Pero revisar todos los console.error()
 }, []);
 ```
 
@@ -395,36 +395,36 @@ grep -r "console\." src/ | grep -v "console.warn\|console.error"
 
 ---
 
-### âš¡ 4. Session Hijacking Posible
+### ⚡ 4. Session Hijacking Posible
 **Archivo:** AuthContext.js  
-**Riesgo:** Sin validaciÃ³n de CSRF
+**Riesgo:** Sin validación de CSRF
 
 **El problema:**
 ```javascript
 // Si un atacante conoce session token, puede:
 // 1. Cambiar citas de otros usuarios
 // 2. Ver historial ajeno
-// 3. Actuar como mÃ©dico
+// 3. Actuar como médico
 ```
 
-**MitigaciÃ³n:**
-- âœ… Supabase maneja CSRF automÃ¡ticamente (JWT expira)
-- âœ… Tokens se rotan cada 60min
-- âš ï¸ PERO: agregar refresh token rotation
+**Mitigación:**
+- ✅ Supabase maneja CSRF automáticamente (JWT expira)
+- ✅ Tokens se rotan cada 60min
+- ⚠️ PERO: agregar refresh token rotation
 
 ---
 
-### âš¡ 5. Falta ValidaciÃ³n de Entrada (XSS)
+### ⚡ 5. Falta Validación de Entrada (XSS)
 **Archivo:** CitaForm.js  
-**Riesgo:** InyecciÃ³n XSS en campo "motivo"
+**Riesgo:** Inyección XSS en campo "motivo"
 
 ```javascript
-// CitaForm.js lÃ­nea ~100
+// CitaForm.js línea ~100
 <textarea
   value={motivo}
   onChange={(e) => setMotivo(e.target.value)}
-  // âŒ Si motivo contiene: <script>alert('xss')</script>
-  // React escapa automÃ¡ticamente âœ…
+  // ❌ Si motivo contiene: <script>alert('xss')</script>
+  // React escapa automáticamente ✅
   // PERO en server puede renderizarse crudo
 />
 ```
@@ -443,9 +443,9 @@ $$ LANGUAGE plpgsql;
 
 ---
 
-## ðŸŸ¢ Hallazgos de Riesgo Bajo
+## 🟢 Hallazgos de Riesgo Bajo
 
-### â„¹ï¸ 1. Dependencias Outdated
+### ℹ️ 1. Dependencias Outdated
 ```bash
 npm outdated
 # Revisar que no haya vulns criticas
@@ -454,16 +454,16 @@ npm audit
 
 ---
 
-### â„¹ï¸ 2. Archivo .env Expuesto
+### ℹ️ 2. Archivo .env Expuesto
 ```bash
-# Verificar que .env NO estÃ¡ en git:
+# Verificar que .env NO está en git:
 git ls-files | grep .env
-# DeberÃ­a estar vacÃ­o
+# Debería estar vacío
 ```
 
 ---
 
-### â„¹ï¸ 3. Comentarios en CÃ³digo con Datos Sensibles
+### ℹ️ 3. Comentarios en Código con Datos Sensibles
 ```bash
 grep -r "TODO\|FIXME\|HACK\|XXX" src/
 # Revisar si hay secretos mencionados
@@ -471,29 +471,29 @@ grep -r "TODO\|FIXME\|HACK\|XXX" src/
 
 ---
 
-## âœ… Checklist de Seguridad
+## ✅ Checklist de Seguridad
 
-- [ ] **CrÃ­tica 1:** Implementar RLS en todas las tablas
-- [ ] **CrÃ­tica 2:** Regenerar Supabase keys (ambiente limpio)
-- [ ] **CrÃ­tica 3:** ValidaciÃ³n server-side en RPC Supabase
+- [ ] **Crítica 1:** Implementar RLS en todas las tablas
+- [ ] **Crítica 2:** Regenerar Supabase keys (ambiente limpio)
+- [ ] **Crítica 3:** Validación server-side en RPC Supabase
 - [ ] **Alto 1:** Configurar CSP headers + HTTPS obligatorio
-- [ ] **Alto 2:** Auditar dÃ³nde se usa supabaseAdmin
-- [ ] **Alto 3:** Sanitizar error messages pÃºblicos
+- [ ] **Alto 2:** Auditar dónde se usa supabaseAdmin
+- [ ] **Alto 3:** Sanitizar error messages públicos
 - [ ] **Alto 4:** Implementar rate limiting en APIs
 - [ ] **Medio 1:** HTTPS + mkcert en desarrollo
 - [ ] **Medio 2:** Agregar CORS headers en next.config.mjs
-- [ ] **Medio 3:** Auditar console.log en producciÃ³n
-- [ ] **Medio 4:** ValidaciÃ³n de entrada (XSS)
+- [ ] **Medio 3:** Auditar console.log en producción
+- [ ] **Medio 4:** Validación de entrada (XSS)
 - [ ] **Bajo 1:** npm audit fix (solo si no breaking changes)
 - [ ] **Bajo 2:** Verificar .env en .gitignore
 - [ ] **Bajo 3:** Revisar comentarios sensibles
 
 ---
 
-## ðŸ”§ Plan de RemediaciÃ³n (Prioridad)
+## 🔧 Plan de Remediación (Prioridad)
 
 ### Fase 1: INMEDIATO (Semana 1)
-**Bloqueante:** No ir a producciÃ³n sin esto
+**Bloqueante:** No ir a producción sin esto
 1. Implementar RLS en Supabase
 2. Regenerar todas las keys
 3. Configurar validaciones server-side
@@ -515,16 +515,15 @@ grep -r "TODO\|FIXME\|HACK\|XXX" src/
 
 ---
 
-## ðŸ“ž Contacto y EscalaciÃ³n
+## 📞 Contacto y Escalación
 
 Si encuentras una **vulnerabilidad de seguridad:**
 
-ðŸš¨ **NO** abrir issue pÃºblica  
-âœ… **SÃ** enviar a: security@medylink.local
+🚨 **NO** abrir issue pública  
+✅ **SÍ** enviar a: security@medylink.local
 
 ---
 
-**Ãšltima revisiÃ³n:** 2026-03-12  
-**PrÃ³xima auditorÃ­a:** 2026-06-12  
-**Status:** ðŸ”´ Requiere acciÃ³n inmediata
-
+**Última revisión:** 2026-03-12  
+**Próxima auditoría:** 2026-06-12  
+**Status:** 🔴 Requiere acción inmediata

@@ -1,298 +1,298 @@
-﻿# ðŸ“‚ ESTRUCTURA DEL CÃ“DIGO - GuÃ­a Visual
+﻿# 📂 ESTRUCTURA DEL CÓDIGO - Guía Visual
 
-**Para:** Desarrolladores nuevos que quieren entender dÃ³nde estÃ¡ cada cosa  
-**Ãšltima actualizaciÃ³n:** 2026-03-12
+**Para:** Desarrolladores nuevos que quieren entender dónde está cada cosa  
+**Última actualización:** 2026-03-12
 
 ---
 
-## ðŸŒ³ Ãrbol Completo Comentado
+## 🌳 Árbol Completo Comentado
 
 ```
 control_medico/
-â”‚
-â”œâ”€â”€ ðŸ“„ DOCUMENTACIÃ“N (Lee primero)
-â”‚   â”œâ”€â”€ README.md              â† Punto de entrada (10 min)
-â”‚   â”œâ”€â”€ ÃNDICE.md              â† Mapa de documentos (5 min)
-â”‚   â”œâ”€â”€ RESUMEN.md             â† Resumen ejecutivo (5 min)
-â”‚   â”œâ”€â”€ ARQUITECTURA.md         â† AnÃ¡lisis tÃ©cnico (45 min)
-â”‚   â”œâ”€â”€ SEGURIDAD.md            â† AuditorÃ­a de seguridad (45 min)
-â”‚   â”œâ”€â”€ PAGES.md                â† GuÃ­a de vistas (45 min)
-â”‚   â”œâ”€â”€ COMPONENTES.md          â† Referencia componentes (45 min)
-â”‚   â””â”€â”€ SETUP.md                â† GuÃ­a de desarrollo (90 min)
-â”‚
-â”œâ”€â”€ ðŸ”§ CONFIGURACIÃ“N
-â”‚   â”œâ”€â”€ package.json            â† Dependencias y scripts
-â”‚   â”œâ”€â”€ next.config.mjs         â† ConfiguraciÃ³n Next.js
-â”‚   â”œâ”€â”€ jsconfig.json           â† Alias de imports (@/)
-â”‚   â”œâ”€â”€ eslint.config.mjs       â† Linting rules
-â”‚   â”œâ”€â”€ .env.local              â† Variables (NO commitear)
-â”‚   â”œâ”€â”€ .env.example            â† Template de .env
-â”‚   â”œâ”€â”€ .gitignore              â† Archivos ignorados en git
-â”‚   â””â”€â”€ .gitattributes          â† Atributos git
-â”‚
-â”œâ”€â”€ ðŸ“„ src/ (CÃ“DIGO PRINCIPAL)
-â”‚   â”‚
-â”‚   â”œâ”€â”€ ðŸ“„ pages/ (RUTAS Y VISTAS)
-â”‚   â”‚   â”œâ”€â”€ index.js            â† LOGIN/REGISTRO (public)
-â”‚   â”‚   â”‚                        Flujo: SAP + password â†’ crear cuenta o login
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ paciente.js         â† PORTAL PACIENTE (role: paciente)
-â”‚   â”‚   â”‚                        Flujo: Ver citas, crear nuevas, historial
-â”‚   â”‚   â”‚                        Componentes: CitaForm, ConsultaCita, EstadoConsulta
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ medico.js           â† PANEL MÃ‰DICO (role: medico)
-â”‚   â”‚   â”‚                        Flujo: Atender citas, finalizar consulta
-â”‚   â”‚   â”‚                        Audio: Doorbell cuando cita en espera
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ enfermeria.js       â† GESTIÃ“N ENFERMERÃA (role: enfermeria)
-â”‚   â”‚   â”‚                        Flujo: Registrar entrada, programar, asignar
-â”‚   â”‚   â”‚                        Tabs: Pendientes, En Espera, Programadas, MÃ©dico Activo
-â”‚   â”‚   â”‚                        Audio: Nueva cita notification
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ supervisor.js       â† DASHBOARD SUPERVISOR (role: supervisor)
-â”‚   â”‚   â”‚                        Flujo: Ver estadÃ­sticas (tiempos, cupos, eficiencia)
-â”‚   â”‚   â”‚                        No tiene actions, solo display
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ turno.js            â† PANTALLA PÃšBLICA (TV Display)
-â”‚   â”‚   â”‚                        Flujo: Mostrar prÃ³ximos pacientes (grande, legible)
-â”‚   â”‚   â”‚                        Sidebar: Fila de espera
-â”‚   â”‚   â”‚                        Main: Ahora atendiendo
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ _app.js             â† WRAPPER GLOBAL
-â”‚   â”‚   â”‚                        Estructura: <AuthProvider><AuthGate><Layout><Page/></Layout></AuthGate></AuthProvider>
-â”‚   â”‚   â”‚                        AquÃ­ se configura: Head, meta tags, provider global
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ _document.js        â† HTML base (Next.js)
-â”‚   â”‚   â”‚                        Si existe, define <html><body> structure
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ 404.js              â† PÃ¡gina no encontrada
-â”‚   â”‚   â”œâ”€â”€ 500.js              â† Error server
-â”‚   â”‚   â”‚
-â”‚   â”‚   â””â”€â”€ api/ (ENDPOINTS BACKEND)
-â”‚   â”‚       â”œâ”€â”€ telegram-webhook.js    â† Webhook de Telegram (recibirNotificaciones)
-â”‚   â”‚       â”‚                          Format: POST /api/telegram-webhook
-â”‚   â”‚       â”‚                          Body: { message, user_id }
-â”‚   â”‚       â”‚
-â”‚   â”‚       â””â”€â”€ admin/
-â”‚   â”‚           â”œâ”€â”€ importarAllowed.js â† Importar usuarios desde CSV
-â”‚   â”‚           â”‚                       Format: POST /api/admin/importarAllowed
-â”‚   â”‚           â”‚                       Body: FormData con file CSV
-â”‚   â”‚           â”‚
-â”‚   â”‚           â””â”€â”€ users/
-â”‚   â”‚               â”œâ”€â”€ index.js       â† GET/POST /api/admin/users
-â”‚   â”‚               â”‚                  GET: lista usuarios
-â”‚   â”‚               â”‚                  POST: crear usuario
-â”‚   â”‚               â”‚
-â”‚   â”‚               â”œâ”€â”€ [id].js        â† GET/PUT/DELETE /api/admin/users/[id]
-â”‚   â”‚               â”‚                  GET: obtener usuario
-â”‚   â”‚               â”‚                  PUT: actualizar usuario
-â”‚   â”‚               â”‚                  DELETE: eliminar usuario
-â”‚   â”‚               â”‚
-â”‚   â”‚               â””â”€â”€ recent.js      â† GET /api/admin/users/recent
-â”‚   â”‚                                  Ãšltimas creaciones
-â”‚   â”‚
-â”‚   â”œâ”€â”€ ðŸ§© components/ (COMPONENTES REUTILIZABLES)
-â”‚   â”‚   â”œâ”€â”€ Layout.jsx           â† Layout principal (nav sidebar)
-â”‚   â”‚   â”‚                         Props: children
-â”‚   â”‚   â”‚                         Usa: useAuth(), useRouter()
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ AuthGate.js          â† Control de acceso (HOC)
-â”‚   â”‚   â”‚                         Props: children
-â”‚   â”‚   â”‚                         Verifica: user + role + ruta permitida
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ NoAuth.js            â† Alert de "Acceso Denegado"
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ CitaForm.js          â† FORMA CREAR CITA
-â”‚   â”‚   â”‚                         Props: onSubmit, onClose
-â”‚   â”‚   â”‚                         Validaciones: SAP, nombre, motivo
-â”‚   â”‚   â”‚                         BÃºsqueda SAP: async con debounce 500ms
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ ConsultaCita.js      â† Detalle de cita (display)
-â”‚   â”‚   â”‚                         Props: cita, onClose
-â”‚   â”‚   â”‚                         Muestra: Timeline, mÃ©dico, estado
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ EstadoConsulta.js    â† Badge de estado (pending/programado/atendido/etc)
-â”‚   â”‚   â”‚                         Props: estado
-â”‚   â”‚   â”‚                         Retorna: <span> coloreado
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ DoctorPanel.js       â† Card de cita para mÃ©dico
-â”‚   â”‚   â”‚                         Props: cita, onAtender, onFinalizar, isLoading
-â”‚   â”‚   â”‚                         Muestra: Nombre, turno, motivo, botones
-â”‚   â”‚   â”‚                         Timer de espera calculado
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ TurnoDisplay.js      â† Card grande para pantalla TV
-â”‚   â”‚   â”‚                         Props: cita, esConsulta
-â”‚   â”‚   â”‚                         Font: Grande (28+ px)
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ MedicoActivo.js      â† Monitor de mÃ©dico en consulta
-â”‚   â”‚   â”‚                         Props: medico, cita
-â”‚   â”‚   â”‚                         Muestra: Dr. [nombre], paciente, tiempo
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ FechaHoraInput.js    â† Input fecha + hora (datetime-local)
-â”‚   â”‚   â”‚                         Props: value, onChange, minDate, disabled
-â”‚   â”‚   â”‚                         Output: ISO string "2026-03-12T14:30"
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ HoraInput.js         â† Input solo hora (time)
-â”‚   â”‚   â”‚                         Props: value, onChange, disabled
-â”‚   â”‚   â”‚                         Output: "14:30"
-â”‚   â”‚   â”‚
-â”‚   â”‚   â””â”€â”€ admin/
-â”‚   â”‚       â”œâ”€â”€ UsersPanel.js    â† Tabla de usuarios (CRUD)
-â”‚   â”‚       â”‚                    Props: users, onUpdate, onDelete
-â”‚   â”‚       â”‚
-â”‚   â”‚       â”œâ”€â”€ CSVImportPanel.js â† Subir CSV de usuarios
-â”‚   â”‚       â”‚                      Props: onImport
-â”‚   â”‚       â”‚                      Parser: PapaParse
-â”‚   â”‚       â”‚
-â”‚   â”‚       â”œâ”€â”€ ResumenUsuarios.js â† Resumen de usuarios
-â”‚   â”‚       â”‚
-â”‚   â”‚       â””â”€â”€ UserRecents.js    â† Ãšltimos usuarios creados
-â”‚   â”‚
-â”‚   â”œâ”€â”€ ðŸŒ context/ (ESTADO GLOBAL)
-â”‚   â”‚   â””â”€â”€ AuthContext.js       â† CONTEXTO AUTENTICACIÃ“N
-â”‚   â”‚                             Provee: user, userName, idsap, role, status, loading
-â”‚   â”‚                             MÃ©todos: login(email, password), logout()
-â”‚   â”‚                             Hooks: useAuth()
-â”‚   â”‚                             Listener en: onAuthStateChange
-â”‚   â”‚
-â”‚   â”œâ”€â”€ ðŸ“š lib/ (LÃ“GICA REUTILIZABLE)
-â”‚   â”‚   â”œâ”€â”€ supabase.js          â† CLIENT SUPABASE (pÃºblico)
-â”‚   â”‚   â”‚                         createClient con clave anon
-â”‚   â”‚                         Autorefresh token, persistSession
-â”‚   â”‚                         Storage: localStorage
-â”‚   â”‚                         Uso: import { supabase } from '@/lib/supabase'
-â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ supabaseAdmin.js     â† CLIENT SUPABASE ADMIN (secreto)
-â”‚   â”‚                         âš ï¸ NUNCA usar en componentes
-â”‚   â”‚                         âš ï¸ SOLO en API routes
-â”‚   â”‚                         Usa service role key (admin)
-â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ citasData.js         â† CRUD DE CITAS (funciones)
-â”‚   â”‚   â”‚                         Exporta:
-â”‚   â”‚   â”‚                         - getCitasHoy()
-â”‚   â”‚   â”‚                         - getCitasPorPaciente(idSAP, limit=15)
-â”‚   â”‚   â”‚                         - agregarCita({nombre, motivo, idSAP, emergency, isss})
-â”‚   â”‚   â”‚                         - actualizarCita(id, cambios)
-â”‚   â”‚   â”‚                         - registrarCheckIn(id)
-â”‚   â”‚   â”‚                         - registrarCheckOut(id)
-â”‚   â”‚   â”‚                         - finalizarCita(id)
-â”‚   â”‚   â”‚                         - cancelarCita(id)
-â”‚   â”‚   â”‚                         - subscribeToCitas(callback)
-â”‚   â”‚   â”‚
-â”‚   â”‚   â”œâ”€â”€ notify.js            â† NOTIFICACIONES (Telegram)
-â”‚   â”‚   â”‚                         EnvÃ­a mensajes a usuarios vÃ­a Telegram
-â”‚   â”‚   â”‚
-â”‚   â”‚   â””â”€â”€ helpers.js           â† FUNCIONES UTILITARIAS (si existe)
-â”‚   â”‚
-â”‚   â””â”€â”€ ðŸŽ¨ styles/ (CSS MODULES)
-â”‚       â”œâ”€â”€ globals.css          â† Estilos globales
-â”‚       â”‚                         Colors, fonts, resets
-â”‚       â”‚
-â”‚       â”œâ”€â”€ Login.module.css     â† Estilos para index.js
-â”‚       â”œâ”€â”€ Layout.module.css    â† Estilos para Layout
-â”‚       â”œâ”€â”€ Paciente.module.css  â† Estilos para paciente.js
-â”‚       â”œâ”€â”€ Doctor.module.css    â† Estilos para medico.js
-â”‚       â”œâ”€â”€ Enfermeria.module.css â† Estilos para enfermeria.js
-â”‚       â”œâ”€â”€ Supervisor.module.css â† Estilos para supervisor.js
-â”‚       â”œâ”€â”€ Turno.module.css     â† Estilos para turno.js
-â”‚       â”œâ”€â”€ Admin.module.css     â† Estilos para admin
-â”‚       â”œâ”€â”€ EstadoConsulta.module.css
-â”‚       â”œâ”€â”€ MedicoActivo.module.css
-â”‚       â”œâ”€â”€ NoAuth.module.css
-â”‚       â””â”€â”€ Sidebar.module.css
-â”‚
-â”œâ”€â”€ ðŸ“¦ public/ (ASSETS ESTÃTICOS)
-â”‚   â”œâ”€â”€ favicon.ico              â† Icono del browser
-â”‚   â”œâ”€â”€ robots.txt               â† Para SEO
-â”‚   â”œâ”€â”€ sitemap.xml              â† Mapa del sitio
-â”‚   â”œâ”€â”€ login-illustration.png   â† Imagen en pÃ¡gina login
-â”‚   â”‚
-â”‚   â”œâ”€â”€ icons/                   â† Iconos PWA
-â”‚   â”‚   â”œâ”€â”€ icon-192.png         â† Apple touch icon
-â”‚   â”‚   â”œâ”€â”€ icon-512.png
-â”‚   â”‚   â””â”€â”€ ...
-â”‚   â”‚
-â”‚   â”œâ”€â”€ doorbell.mp3             â† Audio: Nueva cita para mÃ©dico
-â”‚   â”‚                             Se reproduce cuando: cita â†’ "en espera"
-â”‚   â”‚
-â”‚   â””â”€â”€ nueva_cita.mp3           â† Audio: Nueva cita para enfermerÃ­a
-â”‚                                 Se reproduce cuando: cita creada
-â”‚
-â”œâ”€â”€ ðŸ”§ NODE MODULES/ (IGNORAR)
-â”‚   â””â”€â”€ @supabase/
-â”‚       â””â”€â”€ supabase-js/         â† Cliente Supabase (no editar)
-â”‚
-â””â”€â”€ ðŸ“ PUBLIC DOCS (RaÃ­z)
-    â”œâ”€â”€ README.md
-    â”œâ”€â”€ ÃNDICE.md
-    â”œâ”€â”€ RESUMEN.md
-    â”œâ”€â”€ ARQUITECTURA.md
-    â”œâ”€â”€ SEGURIDAD.md
-    â”œâ”€â”€ PAGES.md
-    â”œâ”€â”€ COMPONENTES.md
-    â””â”€â”€ SETUP.md
+│
+├── 📄 DOCUMENTACIÓN (Lee primero)
+│   ├── README.md              ← Punto de entrada (10 min)
+│   ├── ÍNDICE.md              ← Mapa de documentos (5 min)
+│   ├── RESUMEN.md             ← Resumen ejecutivo (5 min)
+│   ├── ARQUITECTURA.md         ← Análisis técnico (45 min)
+│   ├── SEGURIDAD.md            ← Auditoría de seguridad (45 min)
+│   ├── PAGES.md                ← Guía de vistas (45 min)
+│   ├── COMPONENTES.md          ← Referencia componentes (45 min)
+│   └── SETUP.md                ← Guía de desarrollo (90 min)
+│
+├── 🔧 CONFIGURACIÓN
+│   ├── package.json            ← Dependencias y scripts
+│   ├── next.config.mjs         ← Configuración Next.js
+│   ├── jsconfig.json           ← Alias de imports (@/)
+│   ├── eslint.config.mjs       ← Linting rules
+│   ├── .env.local              ← Variables (NO commitear)
+│   ├── .env.example            ← Template de .env
+│   ├── .gitignore              ← Archivos ignorados en git
+│   └── .gitattributes          ← Atributos git
+│
+├── 📄 src/ (CÓDIGO PRINCIPAL)
+│   │
+│   ├── 📄 pages/ (RUTAS Y VISTAS)
+│   │   ├── index.js            ← LOGIN/REGISTRO (public)
+│   │   │                        Flujo: SAP + password → crear cuenta o login
+│   │   │
+│   │   ├── paciente.js         ← PORTAL PACIENTE (role: paciente)
+│   │   │                        Flujo: Ver citas, crear nuevas, historial
+│   │   │                        Componentes: CitaForm, ConsultaCita, EstadoConsulta
+│   │   │
+│   │   ├── medico.js           ← PANEL MÉDICO (role: medico)
+│   │   │                        Flujo: Atender citas, finalizar consulta
+│   │   │                        Audio: Doorbell cuando cita en espera
+│   │   │
+│   │   ├── enfermeria.js       ← GESTIÓN ENFERMERÍA (role: enfermeria)
+│   │   │                        Flujo: Registrar entrada, programar, asignar
+│   │   │                        Tabs: Pendientes, En Espera, Programadas, Médico Activo
+│   │   │                        Audio: Nueva cita notification
+│   │   │
+│   │   ├── supervisor.js       ← DASHBOARD SUPERVISOR (role: supervisor)
+│   │   │                        Flujo: Ver estadísticas (tiempos, cupos, eficiencia)
+│   │   │                        No tiene actions, solo display
+│   │   │
+│   │   ├── turno.js            ← PANTALLA PÚBLICA (TV Display)
+│   │   │                        Flujo: Mostrar próximos pacientes (grande, legible)
+│   │   │                        Sidebar: Fila de espera
+│   │   │                        Main: Ahora atendiendo
+│   │   │
+│   │   ├── _app.js             ← WRAPPER GLOBAL
+│   │   │                        Estructura: <AuthProvider><AuthGate><Layout><Page/></Layout></AuthGate></AuthProvider>
+│   │   │                        Aquí se configura: Head, meta tags, provider global
+│   │   │
+│   │   ├── _document.js        ← HTML base (Next.js)
+│   │   │                        Si existe, define <html><body> structure
+│   │   │
+│   │   ├── 404.js              ← Página no encontrada
+│   │   ├── 500.js              ← Error server
+│   │   │
+│   │   └── api/ (ENDPOINTS BACKEND)
+│   │       ├── telegram-webhook.js    ← Webhook de Telegram (recibirNotificaciones)
+│   │       │                          Format: POST /api/telegram-webhook
+│   │       │                          Body: { message, user_id }
+│   │       │
+│   │       └── admin/
+│   │           ├── importarAllowed.js ← Importar usuarios desde CSV
+│   │           │                       Format: POST /api/admin/importarAllowed
+│   │           │                       Body: FormData con file CSV
+│   │           │
+│   │           └── users/
+│   │               ├── index.js       ← GET/POST /api/admin/users
+│   │               │                  GET: lista usuarios
+│   │               │                  POST: crear usuario
+│   │               │
+│   │               ├── [id].js        ← GET/PUT/DELETE /api/admin/users/[id]
+│   │               │                  GET: obtener usuario
+│   │               │                  PUT: actualizar usuario
+│   │               │                  DELETE: eliminar usuario
+│   │               │
+│   │               └── recent.js      ← GET /api/admin/users/recent
+│   │                                  Últimas creaciones
+│   │
+│   ├── 🧩 components/ (COMPONENTES REUTILIZABLES)
+│   │   ├── Layout.jsx           ← Layout principal (nav sidebar)
+│   │   │                         Props: children
+│   │   │                         Usa: useAuth(), useRouter()
+│   │   │
+│   │   ├── AuthGate.js          ← Control de acceso (HOC)
+│   │   │                         Props: children
+│   │   │                         Verifica: user + role + ruta permitida
+│   │   │
+│   │   ├── NoAuth.js            ← Alert de "Acceso Denegado"
+│   │   │
+│   │   ├── CitaForm.js          ← FORMA CREAR CITA
+│   │   │                         Props: onSubmit, onClose
+│   │   │                         Validaciones: SAP, nombre, motivo
+│   │   │                         Búsqueda SAP: async con debounce 500ms
+│   │   │
+│   │   ├── ConsultaCita.js      ← Detalle de cita (display)
+│   │   │                         Props: cita, onClose
+│   │   │                         Muestra: Timeline, médico, estado
+│   │   │
+│   │   ├── EstadoConsulta.js    ← Badge de estado (pending/programado/atendido/etc)
+│   │   │                         Props: estado
+│   │   │                         Retorna: <span> coloreado
+│   │   │
+│   │   ├── DoctorPanel.js       ← Card de cita para médico
+│   │   │                         Props: cita, onAtender, onFinalizar, isLoading
+│   │   │                         Muestra: Nombre, turno, motivo, botones
+│   │   │                         Timer de espera calculado
+│   │   │
+│   │   ├── TurnoDisplay.js      ← Card grande para pantalla TV
+│   │   │                         Props: cita, esConsulta
+│   │   │                         Font: Grande (28+ px)
+│   │   │
+│   │   ├── MedicoActivo.js      ← Monitor de médico en consulta
+│   │   │                         Props: medico, cita
+│   │   │                         Muestra: Dr. [nombre], paciente, tiempo
+│   │   │
+│   │   ├── FechaHoraInput.js    ← Input fecha + hora (datetime-local)
+│   │   │                         Props: value, onChange, minDate, disabled
+│   │   │                         Output: ISO string "2026-03-12T14:30"
+│   │   │
+│   │   ├── HoraInput.js         ← Input solo hora (time)
+│   │   │                         Props: value, onChange, disabled
+│   │   │                         Output: "14:30"
+│   │   │
+│   │   └── admin/
+│   │       ├── UsersPanel.js    ← Tabla de usuarios (CRUD)
+│   │       │                    Props: users, onUpdate, onDelete
+│   │       │
+│   │       ├── CSVImportPanel.js ← Subir CSV de usuarios
+│   │       │                      Props: onImport
+│   │       │                      Parser: PapaParse
+│   │       │
+│   │       ├── ResumenUsuarios.js ← Resumen de usuarios
+│   │       │
+│   │       └── UserRecents.js    ← Últimos usuarios creados
+│   │
+│   ├── 🌍 context/ (ESTADO GLOBAL)
+│   │   └── AuthContext.js       ← CONTEXTO AUTENTICACIÓN
+│   │                             Provee: user, userName, idsap, role, status, loading
+│   │                             Métodos: login(email, password), logout()
+│   │                             Hooks: useAuth()
+│   │                             Listener en: onAuthStateChange
+│   │
+│   ├── 📚 lib/ (LÓGICA REUTILIZABLE)
+│   │   ├── supabase.js          ← CLIENT SUPABASE (público)
+│   │   │                         createClient con clave anon
+│   │                         Autorefresh token, persistSession
+│   │                         Storage: localStorage
+│   │                         Uso: import { supabase } from '@/lib/supabase'
+│   │
+│   │   ├── supabaseAdmin.js     ← CLIENT SUPABASE ADMIN (secreto)
+│   │                         ⚠️ NUNCA usar en componentes
+│   │                         ⚠️ SOLO en API routes
+│   │                         Usa service role key (admin)
+│   │
+│   │   ├── citasData.js         ← CRUD DE CITAS (funciones)
+│   │   │                         Exporta:
+│   │   │                         - getCitasHoy()
+│   │   │                         - getCitasPorPaciente(idSAP, limit=15)
+│   │   │                         - agregarCita({nombre, motivo, idSAP, emergency, isss})
+│   │   │                         - actualizarCita(id, cambios)
+│   │   │                         - registrarCheckIn(id)
+│   │   │                         - registrarCheckOut(id)
+│   │   │                         - finalizarCita(id)
+│   │   │                         - cancelarCita(id)
+│   │   │                         - subscribeToCitas(callback)
+│   │   │
+│   │   ├── notify.js            ← NOTIFICACIONES (Telegram)
+│   │   │                         Envía mensajes a usuarios vía Telegram
+│   │   │
+│   │   └── helpers.js           ← FUNCIONES UTILITARIAS (si existe)
+│   │
+│   └── 🎨 styles/ (CSS MODULES)
+│       ├── globals.css          ← Estilos globales
+│       │                         Colors, fonts, resets
+│       │
+│       ├── Login.module.css     ← Estilos para index.js
+│       ├── Layout.module.css    ← Estilos para Layout
+│       ├── Paciente.module.css  ← Estilos para paciente.js
+│       ├── Doctor.module.css    ← Estilos para medico.js
+│       ├── Enfermeria.module.css ← Estilos para enfermeria.js
+│       ├── Supervisor.module.css ← Estilos para supervisor.js
+│       ├── Turno.module.css     ← Estilos para turno.js
+│       ├── Admin.module.css     ← Estilos para admin
+│       ├── EstadoConsulta.module.css
+│       ├── MedicoActivo.module.css
+│       ├── NoAuth.module.css
+│       └── Sidebar.module.css
+│
+├── 📦 public/ (ASSETS ESTÁTICOS)
+│   ├── favicon.ico              ← Icono del browser
+│   ├── robots.txt               ← Para SEO
+│   ├── sitemap.xml              ← Mapa del sitio
+│   ├── login-illustration.png   ← Imagen en página login
+│   │
+│   ├── icons/                   ← Iconos PWA
+│   │   ├── icon-192.png         ← Apple touch icon
+│   │   ├── icon-512.png
+│   │   └── ...
+│   │
+│   ├── doorbell.mp3             ← Audio: Nueva cita para médico
+│   │                             Se reproduce cuando: cita → "en espera"
+│   │
+│   └── nueva_cita.mp3           ← Audio: Nueva cita para enfermería
+│                                 Se reproduce cuando: cita creada
+│
+├── 🔧 NODE MODULES/ (IGNORAR)
+│   └── @supabase/
+│       └── supabase-js/         ← Cliente Supabase (no editar)
+│
+└── 📝 PUBLIC DOCS (Raíz)
+    ├── README.md
+    ├── ÍNDICE.md
+    ├── RESUMEN.md
+    ├── ARQUITECTURA.md
+    ├── SEGURIDAD.md
+    ├── PAGES.md
+    ├── COMPONENTES.md
+    └── SETUP.md
 
 ```
 
 ---
 
-## ðŸŽ¯ Flujos por Archivo
+## 🎯 Flujos por Archivo
 
 ### Flujo: Crear Cita (Paciente)
 
 ```
 1. paciente.js
-   â”œâ”€ handleNuevaCita() recibe datos
-   â””â”€ llama agregarCita(data)
-      â””â”€ 2. lib/citasData.js
-         â””â”€ agregarCita() hace INSERT
-            â””â”€ 3. Supabase
-               â””â”€ INSERT en tabla citas
-                  â””â”€ Realtime notifica
-                     â””â”€ 4. components/CitaForm.js
-                        â””â”€ Modal se cierra
-                        â””â”€ Mensje "Cita creada"
-                           â””â”€ 5. paciente.js
-                              â””â”€ cargarHistorial()
+   ├─ handleNuevaCita() recibe datos
+   └─ llama agregarCita(data)
+      └─ 2. lib/citasData.js
+         └─ agregarCita() hace INSERT
+            └─ 3. Supabase
+               └─ INSERT en tabla citas
+                  └─ Realtime notifica
+                     └─ 4. components/CitaForm.js
+                        └─ Modal se cierra
+                        └─ Mensje "Cita creada"
+                           └─ 5. paciente.js
+                              └─ cargarHistorial()
 ```
 
-### Flujo: Atender Cita (MÃ©dico)
+### Flujo: Atender Cita (Médico)
 
 ```
 1. medico.js
-   â”œâ”€ <DoctorPanel onAtender={atender} />
-   â””â”€ atender() 
-      â””â”€ 2. lib/citasData.js
-         â””â”€ actualizarCita(id, { estado: "en consulta", doctor_name })
-            â””â”€ 3. Supabase
-               â””â”€ UPDATE citas
-                  â””â”€ Realtime notifica
-                     â””â”€ 4. medico.js + turno.js
-                        â””â”€ Card cambia estado visually
+   ├─ <DoctorPanel onAtender={atender} />
+   └─ atender() 
+      └─ 2. lib/citasData.js
+         └─ actualizarCita(id, { estado: "en consulta", doctor_name })
+            └─ 3. Supabase
+               └─ UPDATE citas
+                  └─ Realtime notifica
+                     └─ 4. medico.js + turno.js
+                        └─ Card cambia estado visually
 ```
 
 ### Flujo: Realtime Subscription
 
 ```
 1. pages/medico.js
-   â”œâ”€ useEffect(() => {
-   â”‚  â”œâ”€ supabase.channel("realtime-citas")
-   â”‚  â”œâ”€ .on("postgres_changes", ..., handler)
-   â”‚  â”œâ”€ .subscribe()
-   â”‚  â””â”€ cleanup: removeChannel()
-   â”‚  })
-   â””â”€ handler actualiza state localmente
-      â””â”€ Componentes re-render automÃ¡ticamente
+   ├─ useEffect(() => {
+   │  ├─ supabase.channel("realtime-citas")
+   │  ├─ .on("postgres_changes", ..., handler)
+   │  ├─ .subscribe()
+   │  └─ cleanup: removeChannel()
+   │  })
+   └─ handler actualiza state localmente
+      └─ Componentes re-render automáticamente
 ```
 
 ---
 
-## ðŸ”€ QuÃ© Importar de DÃ³nde
+## 🔀 Qué Importar de Dónde
 
 ### En un Componente
 
 ```javascript
-// AutenticaciÃ³n
+// Autenticación
 import { useAuth } from '@/context/AuthContext'
 const { user, role, userName } = useAuth()
 
@@ -317,7 +317,7 @@ import styles from '@/styles/Paciente.module.css'
 import CitaForm from '@/components/CitaForm'
 ```
 
-### En una PÃ¡gina
+### En una Página
 
 ```javascript
 // IGUAL que en componentes +
@@ -328,7 +328,7 @@ import Head from 'next/head'
   <title>Paciente - MedyLink</title>
 </Head>
 
-// Componentes que usan esa pÃ¡gina
+// Componentes que usan esa página
 import CitaForm from '@/components/CitaForm'
 import ConsultaCita from '@/components/ConsultaCita'
 ```
@@ -337,13 +337,13 @@ import ConsultaCita from '@/components/ConsultaCita'
 
 ```javascript
 // NUNCA client-side supabase
-import { supabaseAdmin } from '@/lib/supabaseAdmin'  // AquÃ­ SÃ se permite
+import { supabaseAdmin } from '@/lib/supabaseAdmin'  // Aquí SÍ se permite
 const { data } = await supabaseAdmin.from('app_users').select('*')
 
 // Req/Res de Next.js
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    // LÃ³gica
+    // Lógica
     res.status(200).json({ message: 'Ok' })
   }
 }
@@ -351,7 +351,7 @@ export default async function handler(req, res) {
 
 ---
 
-## ðŸ“Š Dependencias Principales
+## 📊 Dependencias Principales
 
 ```json
 {
@@ -359,44 +359,44 @@ export default async function handler(req, res) {
   "next": "^16.1.6",                      // Framework
   "react": "^19.2.4",                     // UI
   "react-dom": "^19.2.4",                 // DOM
-  "react-icons": "^5.5.0",                // IconografÃ­a
+  "react-icons": "^5.5.0",                // Iconografía
   "react-modal": "^3.16.3",               // Modales
   "react-tabs": "^6.1.0",                 // Tabs
   "papaparse": "^5.5.2",                  // CSV parser
-  "uuid": "^11.1.0"                       // IDs Ãºnicos
+  "uuid": "^11.1.0"                       // IDs únicos
 }
 ```
 
 ---
 
-## ðŸš€ Scripts
+## 🚀 Scripts
 
 ```bash
 npm run dev      # Iniciar servidor dev (http://localhost:3000)
-npm run build    # Build para producciÃ³n (Next.js)
+npm run build    # Build para producción (Next.js)
 npm run start    # Ejecutar build (requiere npm run build primero)
 npm run lint     # Ejecutar ESLint
 ```
 
 ---
 
-## ðŸ“¦ Estructura de una Cita en BD
+## 📦 Estructura de una Cita en BD
 
 ```javascript
 {
   id: "uuid",              // PK
   idsap: 12345678,         // SAP del paciente
-  nombre: "Juan GarcÃ­a",
-  motivo: "RevisiÃ³n general",
+  nombre: "Juan García",
+  motivo: "Revisión general",
   estado: "pendiente",     // pendiente, programado, en espera, en consulta, atendido, cancelado
-  check_in: "2026-03-12T10:30:00",     // Cuando entrÃ³ a esperar
-  check_out: "2026-03-12T10:42:00",    // Cuando finalizÃ³
-  cita_programada: "2026-03-12T14:00:00",  // CuÃ¡ndo se programÃ³
-  programmer_at: "2026-03-12T09:00:00",    // CuÃ¡ndo se creÃ³ la programaciÃ³n
-  emergency: false,        // Â¿Es urgente?
-  isss: false,            // Â¿Es consulta ISSS?
-  doctor_name: "Dr. Juan", // MÃ©dico asignado
-  orden_llegada: 3,        // NÃºmero de turno
+  check_in: "2026-03-12T10:30:00",     // Cuando entró a esperar
+  check_out: "2026-03-12T10:42:00",    // Cuando finalizó
+  cita_programada: "2026-03-12T14:00:00",  // Cuándo se programó
+  programmer_at: "2026-03-12T09:00:00",    // Cuándo se creó la programación
+  emergency: false,        // ¿Es urgente?
+  isss: false,            // ¿Es consulta ISSS?
+  doctor_name: "Dr. Juan", // Médico asignado
+  orden_llegada: 3,        // Número de turno
   created_at: "2026-03-12T10:00:00",
   updated_at: "2026-03-12T10:42:00"
 }
@@ -404,18 +404,18 @@ npm run lint     # Ejecutar ESLint
 
 ---
 
-## âœ… Checklist de Estructura
+## ✅ Checklist de Estructura
 
-- âœ… pages/ - Todos los archivos (.js)
-- âœ… components/ - Componentes reutilizables
-- âœ… context/ - AuthContext.js
-- âœ… lib/ - supabase.js, citasData.js, etc
-- âœ… styles/ - MÃ³dulos CSS por pÃ¡gina
-- âœ… public/ - Assets + audio
+- ✅ pages/ - Todos los archivos (.js)
+- ✅ components/ - Componentes reutilizables
+- ✅ context/ - AuthContext.js
+- ✅ lib/ - supabase.js, citasData.js, etc
+- ✅ styles/ - Módulos CSS por página
+- ✅ public/ - Assets + audio
 
 ---
 
-## ðŸŽ“ Resumen RÃ¡pido
+## 🎓 Resumen Rápido
 
 | Necesito... | Archivo |
 |-------------|---------|
@@ -424,13 +424,12 @@ npm run lint     # Ejecutar ESLint
 | Supabase | lib/supabase.js (client) o lib/supabaseAdmin.js (admin) |
 | Mostrar cita | components/ConsultaCita.js |
 | Estilos | src/styles/\*.module.css |
-| Nueva pÃ¡gina | src/pages/nombre.js |
+| Nueva página | src/pages/nombre.js |
 | Nuevo componente | src/components/Nombre.js |
-| Audio | public/*.mp3 + reproducir en pÃ¡ginas |
+| Audio | public/*.mp3 + reproducir en páginas |
 | API endpoint | src/pages/api/endpoint.js |
 
 ---
 
-**Ãšltima actualizaciÃ³n:** 2026-03-12  
-**Status:** Completa âœ…
-
+**Última actualización:** 2026-03-12  
+**Status:** Completa ✅

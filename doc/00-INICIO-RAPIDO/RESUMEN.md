@@ -1,85 +1,85 @@
-﻿# ðŸ“‹ RESUMEN EJECUTIVO - MedyLink v0.2.0
+﻿# 📋 RESUMEN EJECUTIVO - MedyLink v0.2.0
 
 **Preparado para:** Terceros, inversionistas, nuevos miembros del equipo  
 **Fecha:** 2026-03-12  
-**DuraciÃ³n de lectura:** 5 minutos
+**Duración de lectura:** 5 minutos
 
 ---
 
-## Â¿QuÃ© es MedyLink?
+## ¿Qué es MedyLink?
 
-**MedyLink** es un sistema de gestiÃ³n mÃ©dica moderno que simplifica la organizaciÃ³n de citas, el flujo de pacientes y el control de turnos en entornos mÃ©dicos corporativos.
+**MedyLink** es un sistema de gestión médica moderno que simplifica la organización de citas, el flujo de pacientes y el control de turnos en entornos médicos corporativos.
 
-### ðŸŽ¯ Objetivo Principal
-Proporcionar a mÃ©dicos, enfermeras y administradores una herramienta integral para gestionar citas en tiempo real, mejorando la experiencia del paciente y la eficiencia operativa.
+### 🎯 Objetivo Principal
+Proporcionar a médicos, enfermeras y administradores una herramienta integral para gestionar citas en tiempo real, mejorando la experiencia del paciente y la eficiencia operativa.
 
 ---
 
-## ðŸ‘¥ A QuiÃ©n Beneficia
+## 👥 A Quién Beneficia
 
 | Rol | Beneficio |
 |-----|----------|
-| **ðŸ‘¨â€âš•ï¸ MÃ©dicos** | Panel limpio para atender pacientes, ver prÃ³ximos, registrar consultas |
-| **ðŸ‘©â€âš•ï¸ EnfermerÃ­a** | GestiÃ³n central: crear citas, registrar entrada, asignar consultorios |
-| **ðŸ“‹ Supervisor** | Dashboard con mÃ©tricas en tiempo real (tiempos, eficiencia) |
-| **ðŸ› ï¸ Admin** | Importar usuarios, configurar roles, auditorÃ­a |
-| **ðŸ¤’ Pacientes** | Crear citas online, ver estado, historial de consultas |
+| **👨‍⚕️ Médicos** | Panel limpio para atender pacientes, ver próximos, registrar consultas |
+| **👩‍⚕️ Enfermería** | Gestión central: crear citas, registrar entrada, asignar consultorios |
+| **📋 Supervisor** | Dashboard con métricas en tiempo real (tiempos, eficiencia) |
+| **🛠️ Admin** | Importar usuarios, configurar roles, auditoría |
+| **🤒 Pacientes** | Crear citas online, ver estado, historial de consultas |
 
 ---
 
-## âš¡ CaracterÃ­sticas Clave
+## ⚡ Características Clave
 
 ### 1. **Tiempo Real**
-- Cambios de citas se sincronizan instantÃ¡neamente
-- MÃ©dicos escuchan alert cuando paciente llega
-- Pantalla pÃºblica muestra turnos actualizados
+- Cambios de citas se sincronizan instantáneamente
+- Médicos escuchan alert cuando paciente llega
+- Pantalla pública muestra turnos actualizados
 
 ### 2. **Multi-rol**
-- Interfaz diferenciada segÃºn quien accede
+- Interfaz diferenciada según quien accede
 - Control de acceso por rol (no ve pacientes ajenos)
 - Permisos granulares
 
 ### 3. **Simple pero Poderoso**
-- UI limpia y sin fricciÃ³n
-- Flujo pensado para velocidad (atenciÃ³n rÃ¡pida)
-- Reportes y estadÃ­sticas automÃ¡ticas
+- UI limpia y sin fricción
+- Flujo pensado para velocidad (atención rápida)
+- Reportes y estadísticas automáticas
 
 ### 4. **Seguro**
-- AutenticaciÃ³n Supabase (bcrypt + JWT)
+- Autenticación Supabase (bcrypt + JWT)
 - Datos en PostgreSQL encriptado
 - Validaciones en cliente y servidor
 
 ---
 
-## ðŸ“Š Estado TÃ©cnico
+## 📊 Estado Técnico
 
 | Aspecto | Estado |
 |--------|--------|
 | **Completitud** | 70% (funcionalidades core) |
 | **Estabilidad** | Beta / Testing |
-| **Performance** | âœ… Buen (< 200ms carga) |
-| **Seguridad** | âš ï¸ Requiere RLS + validaciÃ³n server |
-| **Testing** | âŒ Sin cobertura (prioridad) |
+| **Performance** | ✅ Buen (< 200ms carga) |
+| **Seguridad** | ⚠️ Requiere RLS + validación server |
+| **Testing** | ❌ Sin cobertura (prioridad) |
 
 ---
 
-## ðŸ’¾ Stack TecnolÃ³gico
+## 💾 Stack Tecnológico
 
 ### Frontend
 ```
 React 19.2.4 + Next.js 16.1.6
-â”œâ”€â”€ UI Responsiva (Mobile/Desktop)
-â”œâ”€â”€ CSS Modules (estilos encapsulados)
-â””â”€â”€ Audio Feedback (alertas para mÃ©dicos)
+├── UI Responsiva (Mobile/Desktop)
+├── CSS Modules (estilos encapsulados)
+└── Audio Feedback (alertas para médicos)
 ```
 
 ### Backend/Infraestructura
 ```
 Supabase (BaaS)
-â”œâ”€â”€ PostgreSQL (datos)
-â”œâ”€â”€ Auth (usuarios)
-â”œâ”€â”€ Realtime (WebSockets)
-â””â”€â”€ API REST (CRUD)
+├── PostgreSQL (datos)
+├── Auth (usuarios)
+├── Realtime (WebSockets)
+└── API REST (CRUD)
 ```
 
 ### Tooling
@@ -90,29 +90,29 @@ npm / Node.js 18+
 
 ---
 
-## ðŸ”„ CÃ³mo Funciona (Flujo TÃ­pico)
+## 🔄 Cómo Funciona (Flujo Típico)
 
 ### Escenario: Paciente crea cita
 
 ```
 1. Usuario abre app
-   â†“
-2. Login con SAP (nÃºmero empleado)
-   â†“
+   ↓
+2. Login con SAP (número empleado)
+   ↓
 3. Click "Nueva cita"
-   â†“
-4. Completa: Motivo, Â¿urgencia?, etc.
-   â†“
+   ↓
+4. Completa: Motivo, ¿urgencia?, etc.
+   ↓
 5. Cita se crea (estado="pendiente")
-   â†“
-6. EnfermerÃ­a ve notificaciÃ³n en tiempo real
-   â†“
-7. EnfermerÃ­a registra entrada (check-in)
-   â†“
-8. MÃ©dico ve cita en su panel con sonido
-   â†“
-9. MÃ©dico atiende y completa consulta
-   â†“
+   ↓
+6. Enfermería ve notificación en tiempo real
+   ↓
+7. Enfermería registra entrada (check-in)
+   ↓
+8. Médico ve cita en su panel con sonido
+   ↓
+9. Médico atiende y completa consulta
+   ↓
 10. Paciente ve "Atendido" en su historial
 ```
 
@@ -120,144 +120,144 @@ npm / Node.js 18+
 
 ---
 
-## ðŸ“ˆ Alcance Actual
+## 📈 Alcance Actual
 
-### Vistas Operativas âœ…
+### Vistas Operativas ✅
 
 | Vista | Usuarios | Status |
 |-------|----------|--------|
-| Login/Registro | PÃºblico | âœ… Funcional |
-| Portal Paciente | Pacientes | âœ… Funcional |
-| Panel MÃ©dico | MÃ©dicos | âœ… Funcional |
-| GestiÃ³n EnfermerÃ­a | EnfermerÃ­a | âœ… Funcional |
-| Dashboard Supervisor | Supervisores | âœ… Funcional |
-| Pantalla Turnos (TV) | PÃºblico | âœ… Funcional |
-| Admin Panel | Admins | ðŸŸ¡ Parcial |
+| Login/Registro | Público | ✅ Funcional |
+| Portal Paciente | Pacientes | ✅ Funcional |
+| Panel Médico | Médicos | ✅ Funcional |
+| Gestión Enfermería | Enfermería | ✅ Funcional |
+| Dashboard Supervisor | Supervisores | ✅ Funcional |
+| Pantalla Turnos (TV) | Público | ✅ Funcional |
+| Admin Panel | Admins | 🟡 Parcial |
 
 ### Integraciones
 
-| IntegraciÃ³n | Estado |
+| Integración | Estado |
 |-------------|--------|
-| Supabase | âœ… Activo |
-| Telegram | ðŸŸ¡ En progreso |
-| Calendarios | âŒ Planeado |
-| PACS/HistÃ³ricos | âŒ Planeado |
+| Supabase | ✅ Activo |
+| Telegram | 🟡 En progreso |
+| Calendarios | ❌ Planeado |
+| PACS/Históricos | ❌ Planeado |
 
 ---
 
-## ðŸ”’ Consideraciones de Seguridad
+## 🔒 Consideraciones de Seguridad
 
-### âœ… Implementado
-- AutenticaciÃ³n con Supabase Auth (JWT)
-- HTTPS en producciÃ³n (requerido)
+### ✅ Implementado
+- Autenticación con Supabase Auth (JWT)
+- HTTPS en producción (requerido)
 - Validaciones client-side
-- Tokens con expiraciÃ³n (1 hora)
+- Tokens con expiración (1 hora)
 
-### âš ï¸ Requiere AcciÃ³n
-- **RLS (Row Level Security):** Implementar polÃ­ticas en BD
-- **ValidaciÃ³n Server-side:** Agregar RPC en Supabase
+### ⚠️ Requiere Acción
+- **RLS (Row Level Security):** Implementar políticas en BD
+- **Validación Server-side:** Agregar RPC en Supabase
 - **Rate Limiting:** Cloudflare o middleware
 - **CORS:** Configurar headers de seguridad
 
-**Impacto:** ðŸ”´ Bloqueante para producciÃ³n  
-**Tiempo estimado:** 3-5 dÃ­as de desarrollo
+**Impacto:** 🔴 Bloqueante para producción  
+**Tiempo estimado:** 3-5 días de desarrollo
 
 ---
 
-## ðŸ“š DocumentaciÃ³n Disponible
+## 📚 Documentación Disponible
 
-Este proyecto incluye documentaciÃ³n completa:
+Este proyecto incluye documentación completa:
 
 1. **README.md** - Punto de entrada
-2. **ARQUITECTURA.md** - AnÃ¡lisis tÃ©cnico profundo
-3. **SEGURIDAD.md** - AuditorÃ­a y remedios
-4. **PAGES.md** - GuÃ­a de cada vista
+2. **ARQUITECTURA.md** - Análisis técnico profundo
+3. **SEGURIDAD.md** - Auditoría y remedios
+4. **PAGES.md** - Guía de cada vista
 5. **COMPONENTES.md** - Referencia de componentes
-6. **SETUP.md** - GuÃ­a de desarrollo
+6. **SETUP.md** - Guía de desarrollo
 
 **Tiempo para entender todo:** 4-6 horas
 
 ---
 
-## ðŸ’° InversiÃ³n (Estimado)
+## 💰 Inversión (Estimado)
 
 ### Desarrollo Completado
 - Arquitectura core: 80 horas
-- PÃ¡ginas principales: 60 horas
-- IntegraciÃ³n Supabase: 40 horas
+- Páginas principales: 60 horas
+- Integración Supabase: 40 horas
 - Testing/QA: 20 horas
 - **Total:** ~200 horas
 
-### InversiÃ³n Pendiente (para ProducciÃ³n)
-- Seguridad (RLS, validaciÃ³n): 20 horas
-- Testing automÃ¡tico: 30 horas
-- OptimizaciÃ³n/Performance: 15 horas
-- DocumentaciÃ³n final: 10 horas
+### Inversión Pendiente (para Producción)
+- Seguridad (RLS, validación): 20 horas
+- Testing automático: 30 horas
+- Optimización/Performance: 15 horas
+- Documentación final: 10 horas
 - **Total:** ~75 horas
 
 ### Costo Operacional Mensual
 - Supabase (Free tier): $0-50
 - Hosting (Vercel): $0-50
-- **Total:** ~$50-100/mes (mÃ­nimo)
+- **Total:** ~$50-100/mes (mínimo)
 
 Escala a $200-500/mes a mayor uso.
 
 ---
 
-## âœ… Checklist para ProducciÃ³n
+## ✅ Checklist para Producción
 
 ```
-SEGURIDAD (CrÃ­tica)
+SEGURIDAD (Crítica)
 [ ] Implementar RLS en Supabase
-[ ] ValidaciÃ³n server-side para CRUDs
+[ ] Validación server-side para CRUDs
 [ ] Regenerar SDK keys
 [ ] HTTPS + headers de seguridad
 [ ] Rate limiting en APIs
 
 TESTING (Alta)
 [ ] Tests unitarios (componentes)
-[ ] Tests de integraciÃ³n (flujos)
+[ ] Tests de integración (flujos)
 [ ] Test manual completo (roles)
 [ ] Load testing (100+ users)
 
 PERFORMANCE (Media)
-[ ] Lighthouse auditorÃ­a
-[ ] Optimizar imÃ¡genes
+[ ] Lighthouse auditoría
+[ ] Optimizar imágenes
 [ ] Lazy loading de componentes
-[ ] CachÃ© en cliente
+[ ] Caché en cliente
 
 OPERACIONES (Media)
 [ ] Logging/Monitoring (Sentry)
-[ ] Backup automÃ¡tico de BD
+[ ] Backup automático de BD
 [ ] Plan de disaster recovery
-[ ] DocumentaciÃ³n operativa para support
+[ ] Documentación operativa para support
 ```
 
 ---
 
-## ðŸš€ Roadmap
+## 🚀 Roadmap
 
-### Fase 1: Asegurar (PrÃ³ximas 2 semanas)
+### Fase 1: Asegurar (Próximas 2 semanas)
 - Implementar RLS y validaciones
-- Testing bÃ¡sico
-- Deploy a producciÃ³n
+- Testing básico
+- Deploy a producción
 
-### Fase 2: Escalar (PrÃ³ximo mes)
+### Fase 2: Escalar (Próximo mes)
 - Performance optimizations
-- IntegraciÃ³n Telegram
+- Integración Telegram
 - Mobile app
 
 ### Fase 3: Expandir (3-6 meses)
 - BI/Analytics avanzado
-- IntegraciÃ³n con calendarios externos
+- Integración con calendarios externos
 - Certificados digitales
 
 ---
 
-## ðŸŽ“ Contacto y PrÃ³ximos Pasos
+## 🎓 Contacto y Próximos Pasos
 
 ### Para Terceros/Partners
-1. **Revisar documentaciÃ³n:** Empezar por README.md
+1. **Revisar documentación:** Empezar por README.md
 2. **Hacer preguntas:** security@medylink.local
 3. **Entender modelo:** Ver ARQUITECTURA.md
 
@@ -269,11 +269,11 @@ OPERACIONES (Media)
 ### Para Inversores/Ejecutivos
 1. **Demo:** Disponible bajo demanda
 2. **Referencias:** Contactar a team leads
-3. **Due diligence:** DocumentaciÃ³n completa disponible
+3. **Due diligence:** Documentación completa disponible
 
 ---
 
-## ðŸ“ž Contacto
+## 📞 Contacto
 
 - **Desarrollo:** dev@medylink.local
 - **Seguridad:** security@medylink.local (confidencial)
@@ -282,9 +282,9 @@ OPERACIONES (Media)
 
 ---
 
-## ðŸ“„ Resumen de Documentos
+## 📄 Resumen de Documentos
 
-| Documento | Audiencia | TamaÃ±o | Tiempo |
+| Documento | Audiencia | Tamaño | Tiempo |
 |-----------|-----------|--------|--------|
 | README.md | Todos | 3 KB | 5 min |
 | **ESTE RESUMEN** | Ejecutivos | 2 KB | 5 min |
@@ -302,27 +302,26 @@ OPERACIONES (Media)
 
 ---
 
-## ðŸ”— Quick Links
+## 🔗 Quick Links
 
-- ðŸ  [README.md](./README.md) - Inicio rÃ¡pido
-- ðŸ—ï¸ [ARQUITECTURA.md](./ARQUITECTURA.md) - AnÃ¡lisis tÃ©cnico
-- ðŸ” [SEGURIDAD.md](./SEGURIDAD.md) - AuditorÃ­a de seguridad
-- ðŸ“– [PAGES.md](./PAGES.md) - GuÃ­a de vistas
-- ðŸ§© [COMPONENTES.md](./COMPONENTES.md) - Referencia tÃ©cnica
-- ðŸš€ [SETUP.md](./SETUP.md) - GuÃ­a de desarrollo
+- 🏠 [README.md](./README.md) - Inicio rápido
+- 🏗️ [ARQUITECTURA.md](./ARQUITECTURA.md) - Análisis técnico
+- 🔐 [SEGURIDAD.md](./SEGURIDAD.md) - Auditoría de seguridad
+- 📖 [PAGES.md](./PAGES.md) - Guía de vistas
+- 🧩 [COMPONENTES.md](./COMPONENTES.md) - Referencia técnica
+- 🚀 [SETUP.md](./SETUP.md) - Guía de desarrollo
 
 ---
 
 **Documento:** RESUMEN EJECUTIVO  
-**VersiÃ³n:** 1.0  
+**Versión:** 1.0  
 **Fecha:** 2026-03-12  
 **Estado:** Final
 
 ---
 
-### ðŸŽ¯ ConclusiÃ³n
+### 🎯 Conclusión
 
-MedyLink es un **producto funcional y moderno** con arquitectura sÃ³lida. Requiere mejoras de seguridad antes de producciÃ³n, pero el nÃºcleo del sistema es robusto y escalable. Estimamos 75 horas adicionales para pasar a producciÃ³n con confianza.
+MedyLink es un **producto funcional y moderno** con arquitectura sólida. Requiere mejoras de seguridad antes de producción, pero el núcleo del sistema es robusto y escalable. Estimamos 75 horas adicionales para pasar a producción con confianza.
 
-**RecomendaciÃ³n:** Proceder con implementaciÃ³n de seguridad (RLS) en la prÃ³xima sprint.
-
+**Recomendación:** Proceder con implementación de seguridad (RLS) en la próxima sprint.

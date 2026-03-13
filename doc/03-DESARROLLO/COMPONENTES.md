@@ -1,11 +1,11 @@
-﻿# ðŸ§© DocumentaciÃ³n de Componentes
+﻿# 🧩 Documentación de Componentes
 
 **Stack:** React 19.2.4 + CSS Modules  
-**Ãšltima actualizaciÃ³n:** 2026-03-12
+**Última actualización:** 2026-03-12
 
 ---
 
-## ðŸ“‹ Ãndice de Componentes
+## 📋 Índice de Componentes
 
 ### Componentes Principales
 1. [AuthGate](#1-authgate)
@@ -29,9 +29,9 @@
 
 ## 1. AuthGate
 
-**UbicaciÃ³n:** `src/components/AuthGate.js`  
+**Ubicación:** `src/components/AuthGate.js`  
 **Tipo:** HOC (Higher Order Component)  
-**PropÃ³sito:** Control de acceso por rol
+**Propósito:** Control de acceso por rol
 
 ### Props
 
@@ -44,12 +44,12 @@
 ### Comportamiento
 
 ```javascript
-// Si loading â†’ renderiza null (espera)
-// Si NO user + ruta pÃºblica (/, /register) â†’ renderiza children
-// Si NO user + otra ruta â†’ redirige a /
-// Si user + ruta pÃºblica â†’ redirige a home del role
-// Si user + ruta no autorizada â†’ muestra <NoAuth />
-// Si user + ruta autorizada â†’ renderiza children
+// Si loading → renderiza null (espera)
+// Si NO user + ruta pública (/, /register) → renderiza children
+// Si NO user + otra ruta → redirige a /
+// Si user + ruta pública → redirige a home del role
+// Si user + ruta no autorizada → muestra <NoAuth />
+// Si user + ruta autorizada → renderiza children
 ```
 
 ### Mapa de Rutas por Rol
@@ -75,19 +75,19 @@ const roleRoutes = {
 </AuthGate>
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
 - Verifica `router.pathname` exactamente (no fuzzy match)
-- `loading` state es crÃ­tico para evitar flickering
+- `loading` state es crítico para evitar flickering
 - Uso de `shallow: true` en redirect es innecesario (Next.js 12+)
 
 ---
 
 ## 2. Layout
 
-**UbicaciÃ³n:** `src/components/Layout.jsx`  
-**Tipo:** Componente de composiciÃ³n  
-**PropÃ³sito:** NavegaciÃ³n lateral + estructura global
+**Ubicación:** `src/components/Layout.jsx`  
+**Tipo:** Componente de composición  
+**Propósito:** Navegación lateral + estructura global
 
 ### Props
 
@@ -103,14 +103,14 @@ const roleRoutes = {
 <div className="layout">
   <Sidebar>
     Logo
-    [Nav segÃºn role]
+    [Nav según role]
     [User info]
     [Logout]
   </Sidebar>
   
   <main>
     <Header>
-      TÃ­tulo pÃ¡gina
+      Título página
       [Notificaciones]
     </Header>
     {children}
@@ -118,20 +118,20 @@ const roleRoutes = {
 </div>
 ```
 
-### NavegaciÃ³n por Role
+### Navegación por Role
 
 ```javascript
 import { useAuth } from '@/context/AuthContext';
 
-// Cada role tiene menÃº diferente
+// Cada role tiene menú diferente
 const menuItems = {
   paciente: [
-    { label: 'Mis citas', href: '/paciente', icon: 'ðŸ“‹' },
-    { label: 'Historial', href: '/paciente#historial', icon: 'ðŸ“Š' },
+    { label: 'Mis citas', href: '/paciente', icon: '📋' },
+    { label: 'Historial', href: '/paciente#historial', icon: '📊' },
   ],
   medico: [
-    { label: 'Atender citas', href: '/medico', icon: 'ðŸ‘¨â€âš•ï¸' },
-    { label: 'Programadas', href: '/medico#programadas', icon: 'ðŸ“…' },
+    { label: 'Atender citas', href: '/medico', icon: '👨‍⚕️' },
+    { label: 'Programadas', href: '/medico#programadas', icon: '📅' },
   ],
   // ... etc
 }
@@ -143,7 +143,7 @@ const menuItems = {
 - Mobile: Sidebar hamburger collapsible
 - Tablets: Sidebar narrower
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
 - `<Sidebar>` es componente externo (verificar import)
 - `useRouter()` para detectar ruta activa
@@ -153,9 +153,9 @@ const menuItems = {
 
 ## 3. CitaForm
 
-**UbicaciÃ³n:** `src/components/CitaForm.js`  
+**Ubicación:** `src/components/CitaForm.js`  
 **Tipo:** Form component con modal  
-**PropÃ³sito:** Crear o editar citas
+**Propósito:** Crear o editar citas
 
 ### Props
 
@@ -171,10 +171,10 @@ const menuItems = {
 ```javascript
 {
   nombre: string,        // Nombre del paciente
-  motivo: string,        // RazÃ³n de visita
+  motivo: string,        // Razón de visita
   idSAP: number,        // Identificador laboral
-  emergency: boolean,    // Â¿Es urgente?
-  isss: boolean         // Â¿Es consulta ISSS?
+  emergency: boolean,    // ¿Es urgente?
+  isss: boolean         // ¿Es consulta ISSS?
 }
 ```
 
@@ -193,10 +193,10 @@ setRole('paciente')
 - Acciones: [Crear] [Cancelar]
 ```
 
-#### EnfermerÃ­a/Admin/Supervisor
+#### Enfermería/Admin/Supervisor
 ```javascript
 // Estado al cargar:
-setNombre('')  // VacÃ­o
+setNombre('')  // Vacío
 setIdSAP('')   // Editable
 setRole('enfermeria')
 
@@ -205,7 +205,7 @@ setRole('enfermeria')
 - Campo nombre: readonly (se rellena al escribir SAP)
 - Acciones: [Crear] [Cancelar]
 
-// Lo bÃºsqueda:
+// Lo búsqueda:
 - Busca en allowed_users por SAP
 - Debounce 500ms
 - Muestra error si no existe
@@ -215,13 +215,13 @@ setRole('enfermeria')
 
 ```javascript
 if (!idsap.trim())
-  throw new Error("Ingresa tu nÃºmero SAP.")
+  throw new Error("Ingresa tu número SAP.")
 
 if (password.length < 6)
-  throw new Error("La contraseÃ±a debe tener al menos 6 caracteres.")
+  throw new Error("La contraseña debe tener al menos 6 caracteres.")
 
 if (password !== confirmPassword)
-  throw new Error("Las contraseÃ±as no coinciden.")
+  throw new Error("Las contraseñas no coinciden.")
 
 if (!nombre.trim() || !motivo.trim() || isNaN(sapNumerico))
   return
@@ -252,28 +252,28 @@ const [errorSAP, setErrorSAP] = useState(null)
 const handleNuevaCita = async (data) => {
   try {
     await agregarCita(data)
-    setMensaje({ texto: 'âœ… Cita creada', tipo: 'exito' })
+    setMensaje({ texto: '✅ Cita creada', tipo: 'exito' })
     setIsModalOpen(false)
   } catch (err) {
-    setMensaje({ texto: 'âŒ Error: ' + err.message, tipo: 'error' })
+    setMensaje({ texto: '❌ Error: ' + err.message, tipo: 'error' })
   }
 }
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
-- Debounce en bÃºsqueda evita spam a BD
-- SAP debe tener 8+ dÃ­gitos para buscar
-- Email construcciÃ³n: `SAP@yazaki.com` es hardcoded
+- Debounce en búsqueda evita spam a BD
+- SAP debe tener 8+ dígitos para buscar
+- Email construcción: `SAP@yazaki.com` es hardcoded
 - Toggle ISSS: verificar que se usa (nuevo campo)
 
 ---
 
 ## 4. DoctorPanel
 
-**UbicaciÃ³n:** `src/components/DoctorPanel.js`  
+**Ubicación:** `src/components/DoctorPanel.js`  
 **Tipo:** Display component  
-**PropÃ³sito:** Card de cita para mÃ©dico
+**Propósito:** Card de cita para médico
 
 ### Props
 
@@ -289,8 +289,8 @@ const handleNuevaCita = async (data) => {
     orden_llegada: number,
     emergency: boolean
   },
-  onAtender: () => void,      // BotÃ³n "Atender"
-  onFinalizar: () => void,    // BotÃ³n "Finalizar"
+  onAtender: () => void,      // Botón "Atender"
+  onFinalizar: () => void,    // Botón "Finalizar"
   isLoading?: boolean         // Estado de carga
 }
 ```
@@ -302,7 +302,7 @@ const handleNuevaCita = async (data) => {
   <div className={styles.header}>
     <span className={styles.numero}># {cita.orden_llegada}</span>
     <span className={styles.nombre}>{cita.nombre}</span>
-    {cita.emergency && <span className={styles.emergencia}>ðŸš¨</span>}
+    {cita.emergency && <span className={styles.emergencia}>🚨</span>}
   </div>
   
   <div className={styles.body}>
@@ -331,11 +331,11 @@ if (cita.estado === 'en consulta') {
 
 if (isLoading) {
   buttons.disabled = true
-  buttons.innerHTML = 'â³ Procesando...'
+  buttons.innerHTML = '⏳ Procesando...'
 }
 ```
 
-### CÃ¡lculo de Tiempo
+### Cálculo de Tiempo
 
 ```javascript
 function calcularTiempo() {
@@ -361,7 +361,7 @@ function calcularTiempo() {
 ))}
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
 - Tiempo se actualiza cada render (puede ser ineficiente)
 - Mejor: usar `setInterval` si render es constante
@@ -371,9 +371,9 @@ function calcularTiempo() {
 
 ## 5. ConsultaCita
 
-**UbicaciÃ³n:** `src/components/ConsultaCita.js`  
+**Ubicación:** `src/components/ConsultaCita.js`  
 **Tipo:** Display component  
-**PropÃ³sito:** Detalle completo de una cita
+**Propósito:** Detalle completo de una cita
 
 ### Props
 
@@ -393,7 +393,7 @@ function calcularTiempo() {
     emergency: boolean,
     isss: boolean
   },
-  onClose?: () => void        // Si estÃ¡ en modal
+  onClose?: () => void        // Si está en modal
 }
 ```
 
@@ -412,8 +412,8 @@ function calcularTiempo() {
     <h3>Cita</h3>
     <p>Motivo: {cita.motivo}</p>
     <p>Estado: <Badge estado={cita.estado} /></p>
-    {cita.emergency && <p>âš ï¸ EMERGENCIA</p>}
-    {cita.isss && <p>ðŸ¥ Consulta ISSS</p>}
+    {cita.emergency && <p>⚠️ EMERGENCIA</p>}
+    {cita.isss && <p>🏥 Consulta ISSS</p>}
   </section>
   
   <section>
@@ -425,8 +425,8 @@ function calcularTiempo() {
   </section>
   
   <section>
-    <h3>MÃ©dico</h3>
-    <p>{cita.doctor_name || 'Pendiente de asignaciÃ³n'}</p>
+    <h3>Médico</h3>
+    <p>{cita.doctor_name || 'Pendiente de asignación'}</p>
   </section>
 </div>
 ```
@@ -435,7 +435,7 @@ function calcularTiempo() {
 
 ```javascript
 function formatFecha(fechaStr) {
-  if (!fechaStr) return "â€”";
+  if (!fechaStr) return "—";
   return new Date(fechaStr).toLocaleString("es-SV", {
     day: "2-digit", month: "2-digit", year: "2-digit",
     hour: "2-digit", minute: "2-digit",
@@ -455,19 +455,19 @@ function formatFecha(fechaStr) {
 <ConsultaCita cita={selectedCita} />
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
 - No es interactivo (display only)
-- Campos vacÃ­os â†’ "â€”"
+- Campos vacíos → "—"
 - Formato de fecha locale-aware (es-SV = El Salvador)
 
 ---
 
 ## 6. EstadoConsulta
 
-**UbicaciÃ³n:** `src/components/EstadoConsulta.js`  
+**Ubicación:** `src/components/EstadoConsulta.js`  
 **Tipo:** Badge/label component  
-**PropÃ³sito:** Mostrar estado visual de cita
+**Propósito:** Mostrar estado visual de cita
 
 ### Props
 
@@ -481,12 +481,12 @@ function formatFecha(fechaStr) {
 
 ```javascript
 const estadoMap = {
-  "atendido": { color: "verde", icono: "âœ“", label: "Atendido" },
-  "pendiente": { color: "amarillo", icono: "â³", label: "Pendiente" },
-  "programado": { color: "azul", icono: "ðŸ“…", label: "Programado" },
-  "en espera": { color: "naranja", icono: "â¸ï¸", label: "En espera" },
-  "en consulta": { color: "rojo", icono: "ðŸ‘¨â€âš•ï¸", label: "En consulta" },
-  "cancelado": { color: "gris", icono: "âœ—", label: "Cancelado" }
+  "atendido": { color: "verde", icono: "✓", label: "Atendido" },
+  "pendiente": { color: "amarillo", icono: "⏳", label: "Pendiente" },
+  "programado": { color: "azul", icono: "📅", label: "Programado" },
+  "en espera": { color: "naranja", icono: "⏸️", label: "En espera" },
+  "en consulta": { color: "rojo", icono: "👨‍⚕️", label: "En consulta" },
+  "cancelado": { color: "gris", icono: "✗", label: "Cancelado" }
 }
 ```
 
@@ -539,19 +539,19 @@ const estadoMap = {
 </div>
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
 - Componente "tonto" (no tiene estado)
 - Super reutilizable
-- Considerar internacionalizaciÃ³n (i18n) para labels
+- Considerar internacionalización (i18n) para labels
 
 ---
 
 ## 7. TurnoDisplay
 
-**UbicaciÃ³n:** `src/components/TurnoDisplay.js`  
+**Ubicación:** `src/components/TurnoDisplay.js`  
 **Tipo:** Display component  
-**PropÃ³sito:** Card de cita en pantalla de turnos
+**Propósito:** Card de cita en pantalla de turnos
 
 ### Props
 
@@ -566,7 +566,7 @@ const estadoMap = {
     orden_llegada: number,
     emergency: boolean
   },
-  esConsulta?: boolean  // Si estÃ¡ en consulta (vs en espera)
+  esConsulta?: boolean  // Si está en consulta (vs en espera)
 }
 ```
 
@@ -576,7 +576,7 @@ const estadoMap = {
 <div className={`${styles.card} ${esConsulta ? styles.consulta : styles.espera}`}>
   <div className={styles.numero}>#{cita.orden_llegada}</div>
   <div className={styles.nombre}>{cita.nombre}</div>
-  {cita.emergency && <div className={styles.emergencia}>ðŸš¨</div>}
+  {cita.emergency && <div className={styles.emergencia}>🚨</div>}
   <div className={styles.motivo}>{cita.motivo}</div>
   <div className={styles.sap}>SAP: {cita.idsap}</div>
 </div>
@@ -619,25 +619,25 @@ const estadoMap = {
 }
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
-- DiseÃ±o optimizado para lectura a distancia
-- NÃºmeros grandes y contrastantes
-- AnimaciÃ³n de emergencia llamativa
+- Diseño optimizado para lectura a distancia
+- Números grandes y contrastantes
+- Animación de emergencia llamativa
 
 ---
 
 ## 8. MedicoActivo
 
-**UbicaciÃ³n:** `src/components/MedicoActivo.js`  
+**Ubicación:** `src/components/MedicoActivo.js`  
 **Tipo:** Display component  
-**PropÃ³sito:** Monitor de mÃ©dico actual en consulta
+**Propósito:** Monitor de médico actual en consulta
 
 ### Props
 
 ```javascript
 {
-  medico?: string,  // Nombre del mÃ©dico
+  medico?: string,  // Nombre del médico
   cita?: {
     nombre: string,
     motivo: string,
@@ -666,7 +666,7 @@ const estadoMap = {
 </div>
 ```
 
-### âš ï¸ Consideraciones
+### ⚠️ Consideraciones
 
 - Se actualiza via Realtime
 - Timer puede actualizarse cada segundo (considerar performance)
@@ -675,9 +675,9 @@ const estadoMap = {
 
 ## 9. FechaHoraInput
 
-**UbicaciÃ³n:** `src/components/FechaHoraInput.js`  
+**Ubicación:** `src/components/FechaHoraInput.js`  
 **Tipo:** Input component  
-**PropÃ³sito:** Selector de fecha + hora
+**Propósito:** Selector de fecha + hora
 
 ### Props
 
@@ -717,9 +717,9 @@ const estadoMap = {
 
 ## 10. HoraInput
 
-**UbicaciÃ³n:** `src/components/HoraInput.js`  
+**Ubicación:** `src/components/HoraInput.js`  
 **Tipo:** Input component  
-**PropÃ³sito:** Selector de solo hora
+**Propósito:** Selector de solo hora
 
 ### Props
 
@@ -744,9 +744,9 @@ const estadoMap = {
 
 ## 11. UsersPanel
 
-**UbicaciÃ³n:** `src/components/admin/UsersPanel.js`  
+**Ubicación:** `src/components/admin/UsersPanel.js`  
 **Tipo:** Management component  
-**PropÃ³sito:** CRUD de usuarios admin
+**Propósito:** CRUD de usuarios admin
 
 ### Props
 
@@ -762,12 +762,12 @@ const estadoMap = {
 
 ```
 Tabla de usuarios:
-â”Œâ”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”
-â”‚ SAP â”‚ Nombre       â”‚ Role  â”‚ Status   â”‚ Acciones â”‚
-â”œâ”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”¤
-â”‚ 123 â”‚ Juan GarcÃ­a  â”‚ MÃ©dicoâ”‚ Activo   â”‚ Edit â”‚
-â”‚     â”‚              â”‚       â”‚          â”‚ Del  â”‚
-â””â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”˜
+┌─────┬──────────────┬───────┬──────────┬──────┐
+│ SAP │ Nombre       │ Role  │ Status   │ Acciones │
+├─────┼──────────────┼───────┼──────────┼──────┤
+│ 123 │ Juan García  │ Médico│ Activo   │ Edit │
+│     │              │       │          │ Del  │
+└─────┴──────────────┴───────┴──────────┴──────┘
 
 [+ Nuevo usuario]
 ```
@@ -776,9 +776,9 @@ Tabla de usuarios:
 
 ## 12. CSVImportPanel
 
-**UbicaciÃ³n:** `src/components/admin/CSVImportPanel.js`  
+**Ubicación:** `src/components/admin/CSVImportPanel.js`  
 **Tipo:** File upload component  
-**PropÃ³sito:** Importar usuarios desde CSV
+**Propósito:** Importar usuarios desde CSV
 
 ### Props
 
@@ -796,8 +796,8 @@ Formato esperado:
   idsap,nombre,email
 
 Ejemplo:
-  12345678,Juan GarcÃ­a,juan@gmail.com
-  87654321,MarÃ­a LÃ³pez,maria@gmail.com
+  12345678,Juan García,juan@gmail.com
+  87654321,María López,maria@gmail.com
 ```
 
 ### Parsing
@@ -816,7 +816,7 @@ Papa.parse(file, {
 
 ---
 
-## ðŸŽ¨ Patrones de Estilos
+## 🎨 Patrones de Estilos
 
 ### CSS Modules
 
@@ -827,11 +827,11 @@ import styles from '@/styles/Paciente.module.css'
 // Usar:
 <div className={styles.badge}>Contenido</div>
 
-// MÃºltiples clases:
+// Múltiples clases:
 <div className={`${styles.badge} ${styles.badgeAtendido}`}>
 ```
 
-### Colores EstÃ¡ndar
+### Colores Estándar
 
 ```css
 --color-primary: #3f91e8;        /* Azul MedyLink */
@@ -859,19 +859,19 @@ import styles from '@/styles/Paciente.module.css'
 
 ---
 
-## ðŸ”„ Estado y Props Patterns
+## 🔄 Estado y Props Patterns
 
 ### Props Drilling
 
 ```javascript
-// âŒ MALO: Pasar datos muchos niveles
+// ❌ MALO: Pasar datos muchos niveles
 <Page datos={datos}>
   <Section datos={datos}>
     <Component datos={datos} />
   </Section>
 </Page>
 
-// âœ… BUENO: Usar Context
+// ✅ BUENO: Usar Context
 <AuthProvider>
   <Component /> // Accede directamente con useAuth()
 </AuthProvider>
@@ -880,9 +880,9 @@ import styles from '@/styles/Paciente.module.css'
 ### useCallback para Callbacks
 
 ```javascript
-// âœ… BUENO: evita re-renders innecesarios
+// ✅ BUENO: evita re-renders innecesarios
 const handleClick = useCallback(() => {
-  // acciÃ³n
+  // acción
 }, [dependencies])
 
 <Component onClick={handleClick} />
@@ -890,7 +890,7 @@ const handleClick = useCallback(() => {
 
 ---
 
-## ðŸ“š Recursos de Terceros
+## 📚 Recursos de Terceros
 
 ### Para usar estos componentes:
 
@@ -916,6 +916,5 @@ const handleClick = useCallback(() => {
 
 ---
 
-**Ãšltima actualizaciÃ³n:** 2026-03-12  
-**VersiÃ³n de componentes:** 1.0
-
+**Última actualización:** 2026-03-12  
+**Versión de componentes:** 1.0

@@ -1,46 +1,46 @@
-﻿# ðŸ—ï¸ Arquitectura del Sistema - Control MÃ©dico MedyLink
+﻿# 🏗️ Arquitectura del Sistema - Control Médico MedyLink
 
-**VersiÃ³n:** 0.2.0  
+**Versión:** 0.2.0  
 **Stack:** Next.js 16.1.6 + React 19.2.4 + Supabase (PostgreSQL)  
-**Ãšltima actualizaciÃ³n:** 2026-03-12
+**Última actualización:** 2026-03-12
 
 ---
 
-## ðŸ“‹ Ãndice
-1. [DescripciÃ³n General](#descripciÃ³n-general)
-2. [Stack TecnolÃ³gico](#stack-tecnolÃ³gico)
+## 📋 Índice
+1. [Descripción General](#descripción-general)
+2. [Stack Tecnológico](#stack-tecnológico)
 3. [Estructura del Proyecto](#estructura-del-proyecto)
-4. [Flujo de AutenticaciÃ³n](#flujo-de-autenticaciÃ³n)
+4. [Flujo de Autenticación](#flujo-de-autenticación)
 5. [Modelos de Datos](#modelos-de-datos)
 6. [Flujos Principales](#flujos-principales)
-7. [AnÃ¡lisis de CÃ³digo](#anÃ¡lisis-de-cÃ³digo)
+7. [Análisis de Código](#análisis-de-código)
 
 ---
 
-## ðŸŽ¯ DescripciÃ³n General
+## 🎯 Descripción General
 
-**MedyLink** es un sistema integral de gestiÃ³n mÃ©dica diseÃ±ado para facilitar:
-- **GestiÃ³n de citas mÃ©dicas** en tiempo real
-- **Control de turnos** y asignaciÃ³n de pacientes
-- **Interfaz diferenciada** por rol de usuario (Paciente, MÃ©dico, EnfermerÃ­a, Supervisor, Admin)
-- **ComunicaciÃ³n en tiempo real** mediante WebSockets (Supabase Realtime)
-- **IntegraciÃ³n con bases de datos de empleados** (tabla `allowed_users`)
+**MedyLink** es un sistema integral de gestión médica diseñado para facilitar:
+- **Gestión de citas médicas** en tiempo real
+- **Control de turnos** y asignación de pacientes
+- **Interfaz diferenciada** por rol de usuario (Paciente, Médico, Enfermería, Supervisor, Admin)
+- **Comunicación en tiempo real** mediante WebSockets (Supabase Realtime)
+- **Integración con bases de datos de empleados** (tabla `allowed_users`)
 
-**PÃºblicos objetivo:**
+**Públicos objetivo:**
 - Pacientes: Solicitar y consultar citas
-- EnfermerÃ­a: Registrar entrada de pacientes y crear citas
-- MÃ©dicos: Atender pacientes en consulta
-- Supervisores: Monitorear flujo y estadÃ­sticas
-- Administradores: GestiÃ³n global y importaciÃ³n de datos
+- Enfermería: Registrar entrada de pacientes y crear citas
+- Médicos: Atender pacientes en consulta
+- Supervisores: Monitorear flujo y estadísticas
+- Administradores: Gestión global y importación de datos
 
 ---
 
-## ðŸ”§ Stack TecnolÃ³gico
+## 🔧 Stack Tecnológico
 
 ### Frontend
 - **Next.js 16.1.6**: Framework React con SSR/SSG
-- **React 19.2.4**: LibrerÃ­a UI con hooks
-- **React Icons 5.5.0**: IconografÃ­a Material Design
+- **React 19.2.4**: Librería UI con hooks
+- **React Icons 5.5.0**: Iconografía Material Design
 - **React Modal 3.16.3**: Modales accesibles
 - **React Tabs 6.1.0**: Componentes tabulares
 - **CSS Modules**: Estilos con scope local
@@ -48,118 +48,118 @@
 ### Backend / Infraestructura
 - **Supabase**: Backend as a Service (PostgreSQL + Auth)
   - PostgreSQL para persistencia
-  - Supabase Auth para autenticaciÃ³n
+  - Supabase Auth para autenticación
   - Realtime (WebSockets) para actualizaciones en vivo
-  - API REST JSON automÃ¡tica
+  - API REST JSON automática
 
 ### Build & Dev
-- **ESLint 9**: Linting de cÃ³digo
+- **ESLint 9**: Linting de código
 - **Node.js**: Runtime
 - **npm**: Gestor de paquetes
 
-### LibrerÃ­as auxiliares
+### Librerías auxiliares
 - **PapaParse 5.5.2**: Parseo de CSV (import de datos)
-- **UUID 11.1.0**: GeneraciÃ³n de IDs Ãºnicos
-- **Next.js Image**: OptimizaciÃ³n de imÃ¡genes
+- **UUID 11.1.0**: Generación de IDs únicos
+- **Next.js Image**: Optimización de imágenes
 
 ---
 
-## ðŸ“ Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
 control_medico/
-â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ pages/              # Rutas/vistas principales del app
-â”‚   â”‚   â”œâ”€â”€ _app.js         # Wrapper global (Auth + Layout)
-â”‚   â”‚   â”œâ”€â”€ index.js        # PÃ¡gina de login/registro
-â”‚   â”‚   â”œâ”€â”€ paciente.js     # Vista del paciente
-â”‚   â”‚   â”œâ”€â”€ medico.js       # Panel del mÃ©dico
-â”‚   â”‚   â”œâ”€â”€ enfermeria.js   # GestiÃ³n de entrada/citas
-â”‚   â”‚   â”œâ”€â”€ supervisor.js   # Monitor de estadÃ­sticas
-â”‚   â”‚   â”œâ”€â”€ turno.js        # Pantalla pÃºblica de turnos
-â”‚   â”‚   â”œâ”€â”€ admin/
-â”‚   â”‚   â”‚   â””â”€â”€ control.js  # Panel administrativo
-â”‚   â”‚   â””â”€â”€ api/            # Endpoints backend
-â”‚   â”‚
-â”‚   â”œâ”€â”€ components/         # Componentes React reutilizables
-â”‚   â”‚   â”œâ”€â”€ Layout.jsx      # NavegaciÃ³n + estructura principal
-â”‚   â”‚   â”œâ”€â”€ AuthGate.js     # Control de acceso por rol
-â”‚   â”‚   â”œâ”€â”€ CitaForm.js     # Formulario crear/editar citas
-â”‚   â”‚   â”œâ”€â”€ DoctorPanel.js  # Panel de atenciÃ³n mÃ©dica
-â”‚   â”‚   â”œâ”€â”€ ConsultaCita.js # Detalle de cita
-â”‚   â”‚   â””â”€â”€ admin/          # Componentes admin
-â”‚   â”‚
-â”‚   â”œâ”€â”€ context/            # React Context API
-â”‚   â”‚   â””â”€â”€ AuthContext.js  # Estado global de autenticaciÃ³n
-â”‚   â”‚
-â”‚   â”œâ”€â”€ lib/                # Utilidades y APIs
-â”‚   â”‚   â”œâ”€â”€ supabase.js     # Cliente Supabase (pÃºblico)
-â”‚   â”‚   â”œâ”€â”€ supabaseAdmin.js# Cliente Supabase (admin)
-â”‚   â”‚   â”œâ”€â”€ citasData.js    # CRUD de citas
-â”‚   â”‚   â””â”€â”€ notify.js       # Notificaciones
-â”‚   â”‚
-â”‚   â””â”€â”€ styles/             # CSS Modules por pÃ¡gina
-â”‚       â”œâ”€â”€ globals.css     # Estilos globales
-â”‚       â”œâ”€â”€ Paciente.module.css
-â”‚       â”œâ”€â”€ Doctor.module.css
-â”‚       â””â”€â”€ ...
-â”‚
-â”œâ”€â”€ public/                 # Assets estÃ¡ticos
-â”‚   â”œâ”€â”€ icons/
-â”‚   â””â”€â”€ *.mp3              # Archivos de audio (estÃ­mulos)
-â”‚
-â”œâ”€â”€ package.json
-â”œâ”€â”€ next.config.mjs
-â”œâ”€â”€ eslint.config.mjs
-â””â”€â”€ jsconfig.json
+├── src/
+│   ├── pages/              # Rutas/vistas principales del app
+│   │   ├── _app.js         # Wrapper global (Auth + Layout)
+│   │   ├── index.js        # Página de login/registro
+│   │   ├── paciente.js     # Vista del paciente
+│   │   ├── medico.js       # Panel del médico
+│   │   ├── enfermeria.js   # Gestión de entrada/citas
+│   │   ├── supervisor.js   # Monitor de estadísticas
+│   │   ├── turno.js        # Pantalla pública de turnos
+│   │   ├── admin/
+│   │   │   └── control.js  # Panel administrativo
+│   │   └── api/            # Endpoints backend
+│   │
+│   ├── components/         # Componentes React reutilizables
+│   │   ├── Layout.jsx      # Navegación + estructura principal
+│   │   ├── AuthGate.js     # Control de acceso por rol
+│   │   ├── CitaForm.js     # Formulario crear/editar citas
+│   │   ├── DoctorPanel.js  # Panel de atención médica
+│   │   ├── ConsultaCita.js # Detalle de cita
+│   │   └── admin/          # Componentes admin
+│   │
+│   ├── context/            # React Context API
+│   │   └── AuthContext.js  # Estado global de autenticación
+│   │
+│   ├── lib/                # Utilidades y APIs
+│   │   ├── supabase.js     # Cliente Supabase (público)
+│   │   ├── supabaseAdmin.js# Cliente Supabase (admin)
+│   │   ├── citasData.js    # CRUD de citas
+│   │   └── notify.js       # Notificaciones
+│   │
+│   └── styles/             # CSS Modules por página
+│       ├── globals.css     # Estilos globales
+│       ├── Paciente.module.css
+│       ├── Doctor.module.css
+│       └── ...
+│
+├── public/                 # Assets estáticos
+│   ├── icons/
+│   └── *.mp3              # Archivos de audio (estímulos)
+│
+├── package.json
+├── next.config.mjs
+├── eslint.config.mjs
+└── jsconfig.json
 
 ```
 
 ---
 
-## ðŸ” Flujo de AutenticaciÃ³n
+## 🔐 Flujo de Autenticación
 
-### 1ï¸âƒ£ Signup (Registro)
+### 1️⃣ Signup (Registro)
 ```
 Usuario intenta registrarse
-    â†“
-Valida SAP (debe ser 8+ dÃ­gitos)
-    â†“
+    ↓
+Valida SAP (debe ser 8+ dígitos)
+    ↓
 Valida que no existe usuario con ese SAP
-    â†“
+    ↓
 Crea auth.user en Supabase Auth (email: SAP@yazaki.com)
-    â†“
+    ↓
 Inserta en tabla app_users con role="paciente", status=false
-    â†“
-Verifica si SAP estÃ¡ en allowed_users
-    â”œâ”€ SÃ­ â†’ Actualiza status=true (usuario activo)
-    â””â”€ No â†’ status=false (requiere aprobaciÃ³n)
+    ↓
+Verifica si SAP está en allowed_users
+    ├─ Sí → Actualiza status=true (usuario activo)
+    └─ No → status=false (requiere aprobación)
 ```
 
-### 2ï¸âƒ£ Login
+### 2️⃣ Login
 ```
-Usuario ingresa SAP + contraseÃ±a
-    â†“
+Usuario ingresa SAP + contraseña
+    ↓
 Supabase Auth valida y retorna session
-    â†“
+    ↓
 AuthContext.login() fetchea datos de tabla app_users
-    â†“
+    ↓
 Verifica status = true
-    â”œâ”€ SÃ­ â†’ Autentica y redirecciona segÃºn role
-    â””â”€ No â†’ Logout y lanza error "Usuario inactivo"
-        â†“
+    ├─ Sí → Autentica y redirecciona según role
+    └─ No → Logout y lanza error "Usuario inactivo"
+        ↓
     Retorna { role, userName } para routing
 ```
 
-### 3ï¸âƒ£ Session Persistence
+### 3️⃣ Session Persistence
 - **Storage:** `localStorage` (lado cliente)
-- **Auto-refresh:** Token se renueva automÃ¡ticamente
+- **Auto-refresh:** Token se renueva automáticamente
 - **SSR-safe:** Detecta window antes de acceder a localStorage
 - **Listener:** `onAuthStateChange` sincroniza logout en tabs
 
 ---
 
-## ðŸ“Š Modelos de Datos (Tablas Supabase)
+## 📊 Modelos de Datos (Tablas Supabase)
 
 ### Tabla: `app_users`
 ```sql
@@ -178,14 +178,14 @@ idsap              integer NOT NULL
 nombre             text
 motivo             text
 estado             text (pendiente|programado|en espera|en consulta|atendido|cancelado)
-check_in           timestamp (cuando entrÃ³ a esperar)
-check_out          timestamp (cuando finalizÃ³)
-cita_programada    timestamp (datetime de programaciÃ³n)
+check_in           timestamp (cuando entró a esperar)
+check_out          timestamp (cuando finalizó)
+cita_programada    timestamp (datetime de programación)
 programmer_at      timestamp
 emergency          boolean (urgencia)
 isss               boolean (consulta ISSS)
-doctor_name        text (mÃ©dico asignado)
-orden_llegada      integer (nÃºmero de turno)
+doctor_name        text (médico asignado)
+orden_llegada      integer (número de turno)
 created_at         timestamp
 updated_at         timestamp
 ```
@@ -200,64 +200,64 @@ role    text (opcional)
 
 ---
 
-## ðŸ”„ Flujos Principales
+## 🔄 Flujos Principales
 
-### A) CreaciÃ³n de Cita (Paciente/EnfermerÃ­a)
+### A) Creación de Cita (Paciente/Enfermería)
 
-**Participantes:** Paciente, EnfermerÃ­a, Sistema
+**Participantes:** Paciente, Enfermería, Sistema
 
 **Flujo:**
 ```
-1. Paciente abre modal en /paciente o EnfermerÃ­a en /enfermeria
-2. Completa: Nombre (auto), Motivo, Â¿Emergencia?, Â¿ISSS?
+1. Paciente abre modal en /paciente o Enfermería en /enfermeria
+2. Completa: Nombre (auto), Motivo, ¿Emergencia?, ¿ISSS?
 3. Valida que SAP existe en allowed_users
-4. INSERT en tabla citas â†’ estado="pendiente"
-5. Supabase Realtime notifica a enfermerÃ­a
+4. INSERT en tabla citas → estado="pendiente"
+5. Supabase Realtime notifica a enfermería
 6. Supabase Realtime notifica al paciente (modal se cierra)
 ```
 
-**DuraciÃ³n esperada:** 2-3 segundos
+**Duración esperada:** 2-3 segundos
 
 ---
 
-### B) Flujo de AtenciÃ³n (EnfermerÃ­a â†’ MÃ©dico â†’ Fin)
+### B) Flujo de Atención (Enfermería → Médico → Fin)
 
-**Participantes:** Paciente, EnfermerÃ­a, MÃ©dico
+**Participantes:** Paciente, Enfermería, Médico
 
 **Estados y transiciones:**
 ```
 PENDIENTE (cita nueva)
-    â†“ [EnfermerÃ­a presiona "Check-in"]
+    ↓ [Enfermería presiona "Check-in"]
 EN ESPERA (paciente espera, aparece en turno.js)
-    â†“ [MÃ©dico presiona "Atender"]
+    ↓ [Médico presiona "Atender"]
 EN CONSULTA (en la sala, tiempo se mide)
-    â†“ [MÃ©dico presiona "Finalizar"]
+    ↓ [Médico presiona "Finalizar"]
 ATENDIDO (cita completada)
-    â””â”€ Timestamps: check_in + check_out = duraciÃ³n consulta
+    └─ Timestamps: check_in + check_out = duración consulta
 ```
 
 **Triggers de audio:**
-- Cuando cita pasa a "en espera" â†’ doorbell.mp3 (mÃ©dico)
-- Cuando cita creada â†’ nueva_cita.mp3 (enfermerÃ­a)
+- Cuando cita pasa a "en espera" → doorbell.mp3 (médico)
+- Cuando cita creada → nueva_cita.mp3 (enfermería)
 
 ---
 
-### C) Flujo de SupervisiÃ³n (Supervisor)
+### C) Flujo de Supervisión (Supervisor)
 
 **Datos que ve:**
 - Citas **programadas** (futuro)
 - Citas **en consulta** (hoy)
 - Citas **atendidas** (hoy)
-- EstadÃ­sticas: tiempo promedio, cupos disponibles
+- Estadísticas: tiempo promedio, cupos disponibles
 
-**CÃ¡lculos:**
-- DuraciÃ³n = check_out - check_in
+**Cálculos:**
+- Duración = check_out - check_in
 - Promedio = suma(duraciones) / total_atendidas
 - Cupos = COUNT(estado=['programado','en espera'])
 
 ---
 
-## ðŸ” AnÃ¡lisis de CÃ³digo
+## 🔍 Análisis de Código
 
 ### Patrones Utilizados
 
@@ -265,18 +265,18 @@ ATENDIDO (cita completada)
 ```javascript
 // AuthContext.js
 // Centraliza: user, userName, role, idsap, status
-// MÃ©todos: login(), logout(), fetchUserData()
+// Métodos: login(), logout(), fetchUserData()
 ```
-âœ… **Ventaja:** Evita prop drilling  
-âš ï¸ **ConsideraciÃ³n:** No escala bien si hay muchos contextos
+✅ **Ventaja:** Evita prop drilling  
+⚠️ **Consideración:** No escala bien si hay muchos contextos
 
 #### 2. **Custom Hooks con useCallback + useRef**
 ```javascript
 // En medico.js: citasConocidasRef.current
 // Detecta citas genuinamente nuevas sin stale closure
 ```
-âœ… **Ventaja:** Evita mÃºltiples notificaciones de audio  
-âš ï¸ **Riesgo:** useRef NO causa re-render (puede ser confuso)
+✅ **Ventaja:** Evita múltiples notificaciones de audio  
+⚠️ **Riesgo:** useRef NO causa re-render (puede ser confuso)
 
 #### 3. **Supabase Realtime Subscriptions**
 ```javascript
@@ -284,32 +284,32 @@ supabase.channel("realtime-citas-*")
   .on("postgres_changes", { ... }, handler)
   .subscribe()
 ```
-âœ… **Ventaja:** Actualizaciones en tiempo real  
-âš ï¸ **Riesgo:** Canales sin cleanup = memory leaks
+✅ **Ventaja:** Actualizaciones en tiempo real  
+⚠️ **Riesgo:** Canales sin cleanup = memory leaks
 
-#### 4. **Debounce en bÃºsquedas**
+#### 4. **Debounce en búsquedas**
 ```javascript
 // CitaForm.js: setTimeout(buscarNombre, 500)
 ```
-âœ… **Ventaja:** Reduce queries a BD  
-âš ï¸ **Mejora:** Usar una librerÃ­a como lodash debounce
+✅ **Ventaja:** Reduce queries a BD  
+⚠️ **Mejora:** Usar una librería como lodash debounce
 
-#### 5. **CSS Modules para encapsulaciÃ³n**
+#### 5. **CSS Modules para encapsulación**
 ```javascript
 import styles from '@/styles/Paciente.module.css'
 // Evita conflictos de clases globales
 ```
-âœ… **Ventaja:** Scope local, sin colisiones  
-âœ… **Ventaja:** DevTools muestran nombres Ãºnicos
+✅ **Ventaja:** Scope local, sin colisiones  
+✅ **Ventaja:** DevTools muestran nombres únicos
 
 ---
 
-### Fortalezas del CÃ³digo
+### Fortalezas del Código
 
-1. **SeparaciÃ³n de responsabilidades**
-   - PÃ¡ginas manejan lÃ³gica de negocio
+1. **Separación de responsabilidades**
+   - Páginas manejan lógica de negocio
    - Componentes reutilizables (CitaForm, ConsultaCita)
-   - LibrerÃ­a `citasData.js` centraliza CRUD
+   - Librería `citasData.js` centraliza CRUD
 
 2. **Manejo de realtime**
    - Listeners en useEffect con cleanup
@@ -317,64 +317,64 @@ import styles from '@/styles/Paciente.module.css'
 
 3. **UX responsiva**
    - Indicadores de carga (buscando, loading)
-   - Mensajes de error/Ã©xito
+   - Mensajes de error/éxito
    - Audio feedback
 
 4. **Control de acceso**
    - AuthGate valida rutas por rol
-   - CitaForm comportamiento diferente segÃºn role
+   - CitaForm comportamiento diferente según role
 
 ---
 
-### Ãreas de Mejora
+### Áreas de Mejora
 
-1. **ðŸ” Validaciones Server-side**
-   - Actualmente: mayorÃ­a client-side
+1. **🔐 Validaciones Server-side**
+   - Actualmente: mayoría client-side
    - Riesgo: usuario malicioso puede manipular requests
 
-2. **âš¡ Performance**
+2. **⚡ Performance**
    - No hay lazy loading de componentes
-   - Sessions pueden crecer sin lÃ­mite
+   - Sessions pueden crecer sin límite
 
-3. **ðŸ§ª Testing**
+3. **🧪 Testing**
    - Sin tests unitarios
-   - Sin tests de integraciÃ³n
+   - Sin tests de integración
 
-4. **ðŸ“ DocumentaciÃ³n inline**
+4. **📝 Documentación inline**
    - Algunos componentes carecen de JSDoc
    - Estructura de datos no documentada
 
-5. **ðŸ›¡ï¸ Error handling**
-   - Muchos `.catch()` genÃ©ricos
+5. **🛡️ Error handling**
+   - Muchos `.catch()` genéricos
    - Algunos errores no se propagan
 
-6. **â™¿ Accesibilidad**
+6. **♿ Accesibilidad**
    - Falta ARIA labels en algunos inputs
-   - Colores contrastantes OK pero podrÃ­a mejorarse
+   - Colores contrastantes OK pero podría mejorarse
 
 ---
 
-## ðŸ“ˆ Escalabilidad
+## 📈 Escalabilidad
 
 **Actual:**
-- ~50-100 usuarios simultÃ¡neos (estimado)
+- ~50-100 usuarios simultáneos (estimado)
 - Single Next.js instance
 - Supabase Free/Pro tier
 
 **Cuello de botella:**
-- Realtime subscriptions (lÃ­mite Supabase)
+- Realtime subscriptions (límite Supabase)
 - Query N+1 en historial de citas
-- Sem cachÃ© de usuarios permitidos
+- Sem caché de usuarios permitidos
 
 **Mejoras sugeridas:**
 1. Agregar pagination a historial
 2. Cachear `allowed_users` en memoria
-3. Ãndices en `citas.idsap`, `citas.estado`
+3. Índices en `citas.idsap`, `citas.estado`
 4. SWR/TanStack Query para manejo de estado
 
 ---
 
-## ðŸš€ PrÃ³ximos Pasos Recomendados
+## 🚀 Próximos Pasos Recomendados
 
 1. **Seguridad:** Implementar RLS (Row Level Security) en Supabase
 2. **Testing:** Agregar Jest + Testing Library
@@ -384,6 +384,5 @@ import styles from '@/styles/Paciente.module.css'
 
 ---
 
-**Ãšltima revisiÃ³n:** Marzo 2026  
+**Última revisión:** Marzo 2026  
 **Estado:** En desarrollo activo
-
