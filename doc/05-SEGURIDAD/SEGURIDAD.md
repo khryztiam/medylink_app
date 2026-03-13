@@ -110,25 +110,25 @@ const { data } = await supabase.from('citas').select('*');
 
 **Problema:**
 ```javascript
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+// NEXT_PUBLIC_SUPABASE_KEY se carga desde variables de entorno
 // ✅ Esta DEBE ser pública (anon key)
-// ❌ PERO está mal: debería estar en .env.local, NO en .env
+// ❌ PERO debe estar en .env.local, NO en .env cometido
 ```
 
-**Verificar environment:**
+**Configuración segura:**
 ```bash
-# ❌ MAL - Expone credenciales:
-echo "NEXT_PUBLIC_SUPABASE_KEY=eyJhbGciOiJIUzI1NiIs..." > .env
+# ❌ MAL - Expone credenciales en .env cometido:
+# echo "NEXT_PUBLIC_SUPABASE_KEY=..." > .env
 
 # ✅ BIEN - En .env.local (gitignored):
-echo "NEXT_PUBLIC_SUPABASE_KEY=..." >> .env.local
+# echo "NEXT_PUBLIC_SUPABASE_KEY=..." >> .env.local
 ```
 
-**Verificar commits:**
+**Verificar seguridad:**
 ```bash
-# Revisar si keys están en git history:
-git log --all -S "NEXT_PUBLIC_SUPABASE_KEY" --oneline
-# Si aparecen con valores reales = riesgo crítico
+# Revisar que .gitignore incluya .env:
+cat .gitignore | grep "\.env"
+# ✅ Debe estar presente para proteger variables locales
 ```
 
 **Solución:**
