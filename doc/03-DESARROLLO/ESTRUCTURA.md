@@ -168,16 +168,23 @@ control_medico/
 │   │                         Usa service role key (admin)
 │   │
 │   │   ├── citasData.js         ← CRUD DE CITAS (funciones)
+│   │   │                         ⚠️ RLS ACTIVO: Supabase filtra automáticamente
 │   │   │                         Exporta:
-│   │   │                         - getCitasHoy()
-│   │   │                         - getCitasPorPaciente(idSAP, limit=15)
-│   │   │                         - agregarCita({nombre, motivo, idSAP, emergency, isss})
-│   │   │                         - actualizarCita(id, cambios)
-│   │   │                         - registrarCheckIn(id)
-│   │   │                         - registrarCheckOut(id)
-│   │   │                         - finalizarCita(id)
-│   │   │                         - cancelarCita(id)
-│   │   │                         - subscribeToCitas(callback)
+│   │   │                         - getCitasHoy() → RLS filtra por rol
+│   │   │                         - getCitasPorPaciente(idSAP) → Solo propia (RLS)
+│   │   │                         - agregarCita({...}) → RLS valida permisos
+│   │   │                         - actualizarCita(id, cambios) → RLS valida rol
+│   │   │                         - registrarCheckIn(id) → Enfermería/Admin
+│   │   │                         - registrarCheckOut(id) → Doctor/Enfermería
+│   │   │                         - finalizarCita(id) → Genera check_out
+│   │   │                         - cancelarCita(id) → Cancela cita
+│   │   │                         - subscribeToCitas(callback) → Real-time (solo autorizado)
+│   │   │
+│   │   │                         IMPORTANTE: 
+│   │   │                         • NO NECESITA validar SAP (RLS lo hace)
+│   │   │                         • Pacientes ven SOLO sus citas
+│   │   │                         • Médicos ven citas asignadas
+│   │   │                         • Enfermería ve todas
 │   │   │
 │   │   ├── notify.js            ← NOTIFICACIONES (Telegram)
 │   │   │                         Envía mensajes a usuarios vía Telegram

@@ -21,66 +21,61 @@
 
 El sistema **MedyLink** maneja datos sensibles de salud en un contexto médico corporativo. El análisis identifica **3 hallazgos críticos, 4 altos, 5 medios** que deben resolverse antes de uso en producción.
 
+### 📊 Estado Actual (2026-03-12)
+- ✅ **RLS (Row Level Security)** - IMPLEMENTADO
+- ⏳ 2 críticos pendientes (Tokens + Validación server-side)
+- 🟠 4 altos * 🟡 5 medios pendientes
+
 | Severidad | Cantidad | Estado |
 |-----------|----------|--------|
-| 🔴 CRÍTICA | 3 | ⚠️ Bloqueante |
+| 🔴 CRÍTICA | 3 | 1/3 ✅ Resuelto, 2/3 ⏳ Pendiente |
 | 🟠 ALTO | 4 | ⚠️ Urgente |
 | 🟡 MEDIO | 5 | ⚠️ Importante |
 | 🟢 BAJO | 3 | ⏳ Considerar |
 
 ---
 
-## 🔴 Hallazgos Críticos
+## 🔴 Hallazgos Críticos (Status: 1/3 Resuelto ✅)
 
-### ❌ 1. Falta de RLS (Row Level Security)
-**Archivo:** Supabase (tablas)  
-**Riesgo:** Usuario autenticado puede leer/modificar citas de otros usuarios
+### ✅ 1. RLS (Row Level Security) - IMPLEMENTADO
+**Archivo:** Supabase (tablas: app_users, citas, allowed_users)  
+**Status:** ✅ RESUELTO (2026-03-12)  
+**Impacto:** Pacientes NO pueden leer/modificar citas de otros
 
-**Código actual - SIN PROTECCIÓN:**
-```javascript
-// citasData.js - línea ~20
-const { data, error } = await supabase
-  .from('citas')
-  .select('*')
-  .eq('idsap', idSAP)
-  // ❌ Client confía en client-side filter
-  // ❌ SIN política RLS = cualquier usuario autenticado puede cambiar idSAP en request
-```
-
-**Escenario de ataque:**
-```javascript
-// Hacker modifica el request:
-supabase.from('citas').select('*') // obtiene TODAS las citas
-supabase.from('citas').update({doctor_name: 'Juan'}).eq('id', id) // modifica sin validar idsap
-```
-
-**Solución (URGENTE):**
+**Implementación completada:**
 ```sql
--- En Supabase dashboard, ir a SQL Editor y ejecutar:
+-- ✅ RLS HABILITADO en 3 tablas
+ALTER TABLE app_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE citas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE allowed_users ENABLE ROW LEVEL SECURITY;
 
--- Política para SELECT
-CREATE POLICY "Users can read own citas" ON citas
-  FOR SELECT
-  USING (
-    auth.uid()::text = (SELECT id FROM app_users WHERE idsap = citas.idsap)
-  );
-
--- Política para INSERT
-CREATE POLICY "Only admin and enfermeria can insert" ON citas
-  FOR INSERT
-  WITH CHECK (
-    (SELECT role FROM app_users WHERE id = auth.uid()) IN ('admin', 'enfermeria')
-  );
-
--- Política para UPDATE
-CREATE POLICY "Only own doctor or enfermeria can update" ON citas
-  FOR UPDATE
-  USING (
-    (SELECT role FROM app_users WHERE id = auth.uid()) IN ('admin', 'enfermeria', 'medico')
-  );
+-- ✅ POLÍTICAS ACTIVAS EN CITAS:
+CREATE POLICY "pacientes_ver_propias_citas" ... -- Paciente ve solo sus citas
+CREATE POLICY "medicos_ver_citas" ... -- Médico ve asignadas
+CREATE POLICY "enfermeria_ver_citas" ... -- Enfermeria ve todas (gestiona)
+CREATE POLICY "admin_full_access_citas" ... -- Admin ve/modifica todo
+CREATE POLICY "pacientes_crear_cita" ... -- INSERT solo propia
+CREATE POLICY "medicos_actualizar_citas" ... -- UPDATE solo asignadas
+CREATE POLICY "enfermeria_actualizar_citas" ... -- UPDATE todas
 ```
 
-**Impacto:** ⚠️ BLOQUEANTE - Implementar ANTES de producción
+**Archivos modificados:**
+- `src/lib/citasData.js`: Refactorizado con JSDoc explicando RLS automático
+- `src/pages/enfermeria.js` y `medico.js`: Mantienen compatibilidad, RLS filtra automáticamente
+- `migrations/01-implement-rls.sql`: Migración aplicada en Supabase
+- Tests de integración: 6/7 pasaron (86%)
+
+**Validación:**
+```javascript
+// ✅ AHORA: RLS bloquea automáticamente en BD
+const { data } = await supabase.from('citas').select('*'); 
+// Paciente solo ve sus citas (RLS filtra automáticamente)
+// Médico solo ve asignadas
+// Enfermería ve todas
+// Admin ve todo
+```
+
+**Impacto:** ✅ RESUELTO - RLS protege acceso automáticamente en BD
 
 ---
 

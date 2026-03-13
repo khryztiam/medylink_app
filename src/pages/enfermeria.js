@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
-  getTodasLasCitas,
+  getAllCitas,
   getCitasPorPaciente,
   actualizarCita,
   agregarCita,
@@ -110,7 +110,7 @@ export default function Enfermeria() {
 
   // ── Carga de datos ───────────────────────────────────────────────
   const load = useCallback(async () => {
-    const todas = await getTodasLasCitas();
+    const todas = await getAllCitas();
     if (!Array.isArray(todas)) return;
 
     // Registrar todos los IDs actuales como "conocidos"
@@ -237,7 +237,7 @@ export default function Enfermeria() {
     if (!selected) return;
 
     // Traer citas del paciente para calcular orden (fix: sin argumento indefinido)
-    const todas = await getTodasLasCitas();
+    const todas = await getAllCitas();
     const hoy = new Date().toISOString().slice(0, 10);
     const hoyCitas = todas.filter((c) => {
       const fechaProg = c.programmer_at?.slice(0, 10);

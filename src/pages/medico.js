@@ -1,6 +1,6 @@
 // pages/doctor.js
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getTodasLasCitas, actualizarCita } from "../lib/citasData";
+import { getAllCitas, actualizarCita } from "../lib/citasData";
 import { supabase } from "@/lib/supabase";
 import DoctorPanel from "../components/DoctorPanel";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -60,7 +60,7 @@ export default function Doctor() {
 
   // ── Carga ────────────────────────────────────────────────────────
   const load = useCallback(async () => {
-    const todas = await getTodasLasCitas();
+    const todas = await getAllCitas();
     if (!Array.isArray(todas)) return;
 
     // Registrar IDs actuales como conocidos
