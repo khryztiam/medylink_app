@@ -1,6 +1,5 @@
 // components/admin/ResumenUsuarios.jsx
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import {
   FaUserCog, FaUserMd, FaUserNurse,
   FaUserInjured, FaUsers, FaUserShield, FaCalendarAlt,
@@ -27,16 +26,20 @@ export default function ResumenUsuariosCard() {
 
   useEffect(() => {
     const fetchResumen = async () => {
-      const { data, error } = await supabase.from("app_users").select("role");
-      if (error) { console.error(error.message); return; }
-
-      const conteo = data.reduce((acc, { role }) => {
-        const key = role || "Sin rol";
-        acc[key]   = (acc[key]   || 0) + 1;
-        acc.total  = (acc.total  || 0) + 1;
-        return acc;
-      }, {});
-      setResumen(conteo);
+      try {
+        // ✅ Llamar a endpoint API que usa supabaseAdmin (sin filtro RLS)
+        const res = await fetch("/api/admin/summary");
+        const data = await res.json();
+        
+        if (!res.ok) {
+          console.error("Error fetching summary:", data);
+          return;
+        }
+        
+        setResumen(data);
+      } catch (err) {
+        console.error("Error en fetchResumen:", err);
+      }
     };
     fetchResumen();
   }, []);
