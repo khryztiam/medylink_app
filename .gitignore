@@ -13,6 +13,8 @@
 
 # testing
 /coverage
+test-*.js
+test-*.sql
 
 # next.js
 /.next/
