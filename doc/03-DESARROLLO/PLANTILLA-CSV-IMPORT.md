@@ -1,78 +1,91 @@
 # 📋 Plantilla de Importación CSV - Usuarios Autorizados
 
+## 🎯 Propósito
+
+La tabla `allowed_users` es la **nómina autorizada** del sistema. Cuando alguien intenta registrarse:
+
+1. **Sistema verifica** si su SAP (`idsap`) está en `allowed_users`
+2. **Si SÍ existe** → Usuario activado automáticamente → Puede hacer login
+3. **Si NO existe** → Usuario desactivado → No puede login hasta que admin lo agregue
+
+---
+
 ## 📥 Descarga la Plantilla
 
 **URL:** `/api/admin/template/download`
 
-Descarga el archivo `allowed_users_template.csv` desde el panel de administración usando el botón de descarga.
+Descarga desde el panel de administración: **Botón "Plantilla"** en "Importar Lista Maestro"
 
 ---
 
 ## 📌 Estructura del CSV
 
-La plantilla **DEBE** tener estos campos en este orden:
+**El CSV DEBE tener estos campos en este orden:**
 
 ```
-idsap,nombre,grupo,puesto
+idsap,nombre
 ```
 
 ### Campos
 
 | Campo | Tipo | Requerido | Descripción | Ejemplo |
 |-------|------|-----------|-------------|---------|
-| **idsap** | Número | ✅ SÍ | ID único del empleado/usuario. Debe ser numérico | `99991` |
-| **nombre** | Texto | ✅ SÍ | Nombre completo de la persona. No puede estar vacío | `Juan Pérez García` |
-| **grupo** | Número | ❌ NO | Código numérico del grupo/departamento | `1` (Médicos), `2` (Enfermería), `3` (Coordinación) |
-| **puesto** | Texto | ❌ NO | Descripción del puesto o especialidad | `Médico General`, `Enfermera`, `Coordinador` |
+| **idsap** | Número | ✅ SÍ | SAP único del empleado. Debe ser numérico entero | `99991` |
+| **nombre** | Texto | ✅ SÍ | Nombre completo (se muestra en el login del usuario) | `Juan Pérez García` |
 
 ---
 
 ## ✅ Validaciones Automáticas
 
-El sistema valida automáticamente:
+### Cliente (en el navegador):
+```javascript
+//  Valida ANTES de enviar al servidor
+if (!row.idsap || !row.nombre || isNaN(Number(row.idsap))) {
+  Error: "Fila X: idsap inválido o nombre faltante"
+}
+```
 
-1. **idsap REQUERIDO y válido:**
+### Servidor (seguridad):
+```javascript
+// Revalida NUEVAMENTE (nunca confiar en cliente)
+if (!row.idsap || isNaN(Number(row.idsap))) → Error
+if (!row.nombre || row.nombre.trim() === '') → Error
+```
+
+**Reglas:**
+
+1. **idsap REQUERIDO:**
    - ❌ No puede estar vacío
-   - ❌ Debe ser un número entero
-   - ❌ No puede tener decimales
+   - ❌ Debe ser número entero (sin decimales)
    - ✅ Ejemplo válido: `99991`
 
 2. **nombre REQUERIDO:**
    - ❌ No puede estar vacío
-   - ❌ No puede tener solo espacios
-   - ✅ Se trimean espacios al inicio/fin automáticamente
-   - ✅ Ejemplo válido: `Juan Pérez García`
-
-3. **grupo OPCIONAL:**
-   - ✅ Si se omite, se guardará como `NULL` en la BD
-   - ❌ Si tiene valor, DEBE ser un número entero
-   - ✅ Se pueden dejar celdas vacías
-
-4. **puesto OPCIONAL:**
-   - ✅ Si se omite, se guardará como `NULL` en la BD
-   - ✅ Puede ser cualquier texto
+   - ❌ No puede ser solo espacios
    - ✅ Se trimean espacios automáticamente
+   - ✅ Ejemplo válido: `Juan Pérez García`
 
 ---
 
-## 📝 Ejemplo Completo
+## 📝 Ejemplo Correcto
 
 ```csv
-idsap,nombre,grupo,puesto
-99991,Juan Pérez García,1,Médico General
-99992,María López Hernández,1,Médica Internista
-99993,Carlos Rodríguez López,2,Enfermero
-99994,Ana Martínez Gómez,2,Enfermera
-99995,Roberto Flores Sánchez,3,Coordinador
-99996,Sandra Morales Castro,1,Médica Pediatra
-99997,Fernando González López,,
+idsap,nombre
+99991,Juan Pérez García
+99992,María López Hernández
+99993,Carlos Rodríguez López
+99994,Ana Martínez Gómez
+99995,Roberto Flores Sánchez
+99996,Sandra Morales Castro
+99997,Fernando González López
 ```
 
-**Notas:**
-- Última fila: campos `grupo` y `puesto` vacíos (válido)
-- Primera fila: **SIEMPRE** debe ser el encabezado
-- El orden de columnas **ES importante**
-- Codificación **DEBE ser UTF-8**
+**Checklist:**
+- ✅ Primera fila con encabezados exactos: `idsap,nombre`
+- ✅ Todos los idsap son números
+- ✅ Todos los nombres están completos
+- ✅ Codificación UTF-8
+- ✅ Separador: coma (,)
 
 ---
 
@@ -80,132 +93,173 @@ idsap,nombre,grupo,puesto
 
 ### 1️⃣ Preparar el archivo
 - Descargar plantilla desde panel admin
-- Editar en Excel, Google Sheets, o editor de texto
-- **IMPORTANTE:** Guardar como UTF-8 CSV (no XLSX)
+- Editar en Excel, Google Sheets, o Notepad
+- **Guardar como UTF-8 CSV** (no XLSX)
 
-### 2️⃣ Validar antes de subir
-
-**Checklist:**
-- ✅ Primera fila tiene encabezados: `idsap,nombre,grupo,puesto`
-- ✅ Columna `idsap`: todos son números
-- ✅ Columna `nombre`: ninguno está vacío
-- ✅ Columna `grupo`: solo números o vacío
-- ✅ Archivo codificado en **UTF-8**
+### 2️⃣ Validar estructura
+- ✅ Primera fila: `idsap,nombre`
+- ✅ Columna idsap: todos números
+- ✅ Columna nombre: ninguno vacío
+- ✅ Codificación: UTF-8
 
 ### 3️⃣ Subir archivo
 ```
-Admin Panel → Importar Lista Maestro → Seleccionar archivo → Esperar confirmación
+Panel Admin → Importar Lista Maestro → Botón [Plantilla] → Seleccionar archivo CSV
 ```
 
 ### 4️⃣ Revisar resultados
-El sistema mostrará:
 ```
 ✅ Importación completada
+───────────────────────
 Procesados: X
-Nuevos: X
-Actualizados: X
-Eliminados: X
+Nuevos:     X  (agregados a la tabla)
+Actualizados: X (sus datos se actualizaron)
+Eliminados: X  (removidos de la tabla)
 ```
 
 ---
 
 ## 🔄 Comportamiento de Sincronización
 
-Cuando importas un CSV, el sistema realiza:
+Cuando importas CSV, el sistema sincroniza:
 
-| Acción | Descripción |
-|--------|-------------|
-| **Agregar** | Usuarios en CSV pero NO en BD → Se crean |
-| **Actualizar** | Usuarios en CSV Y en BD → Se actualizan sus datos |
-| **Eliminar** | Usuarios en BD pero NO en CSV → Se eliminan |
+| Acción | Significa | Resultado |
+|--------|-----------|-----------|
+| **Nuevos** | En CSV pero NO en BD | Se crean registros |
+| **Actualizados** | En CSV Y en BD | Se actualiza nombre (y otros campos si cambiaron) |
+| **Eliminados** | En BD pero NO en CSV | Se eliminan registros |
 
 **Ejemplo:**
 ```
-CSV actual:                    BD anterior:
-99991 Juan               →     99991 Juan
-99992 María              →     99992 María
-99995 Roberto            →     99993 Carlos (ELIMINADO)
-                                99995 Roberto (ACTUALIZADO)
+CSV ACTUAL:           BD ANTERIOR:
+99991 Juan      →     99991 Juan (sin cambios)
+99992 María     →     99992 María (sin cambios)
+99995 Roberto   →     99993 Carlos (ELIMINADO ❌)
+                      99995 Roberto (sin cambios)
 ```
 
-**Resultado:**
-- ✅ 99991 Juan: sin cambios
-- ✅ 99992 María: sin cambios
-- 🗑️ 99993 Carlos: eliminado
-- 📝 99995 Roberto: actualizado con datos del CSV
+**Resultado mostraría:**
+- Procesados: 3
+- Nuevos: 0  
+- Actualizados: 0
+- Eliminados: 1
 
 ---
 
-## ❌ Errores Comunes
+## ⚠️ Flujo de Validación de Registro
 
-### Error: "Filas inválidas"
+Cuando un **nuevo usuario intenta registrarse:**
 
-**Causas posibles:**
+```
+Usuario entra SAP: 99991
+    ↓
+Sistema crea en BD:
+  app_users { idsap: 99991, status: false, role: 'paciente' }
+    ↓
+¿Existe 99991 en allowed_users?
+    ├─ SÍ → status: true ✅ Usuario ACTIVADO  → Puede hacer login
+    └─ NO → status: false ❌ Usuario RECHAZADO → No puede hacer login
+```
+
+---
+
+## ❌ Errores Comunes y Soluciones
+
+### Error: "X filas inválidas. IDs: 99991, 99992, ..."
+
+**Causas:**
 1. **idsap faltante o no numérico**
-   - ✅ Solución: Verificar que TODOS tengan un número en `idsap`
-   - ❌ Evitar: `ABC123`, `null`, espacios en blanco
+   - ❌ Evitar: Vacío, `ABC123`, `null`
+   - ✅ Solución: Asegurar todos tengan número
 
 2. **nombre faltante o vacío**
+   - ❌ Evitar: Celdas en blanco en columna nombre
    - ✅ Solución: Agregar nombre a todas las filas
-   - ❌ Evitar: Celdas vacías en columna `nombre`
-
-3. **grupo no es número (si tiene valor)**
-   - ✅ Solución: Usar solo números o dejar vacío
-   - ❌ Evitar: `1A`, `Grupo A`, `1.5`
 
 ### Error: "Error al leer CSV"
 
-**Causas posibles:**
 1. **Codificación incorrecta**
-   - ✅ Solución: Guardar como UTF-8 CSV
+   - ✅ Solución: Guardar como **UTF-8 CSV**
    - ❌ Evitar: XLSX, ANSI, UTF-16
 
 2. **Delimitador incorrecto**
-   - ✅ Solución: Usar `,` (coma) como separador
+   - ✅ Solución: Usar `,` (coma)
    - ❌ Evitar: `;` (punto y coma), `\t` (tabulación)
 
-3. **Saltos de línea incorrectos**
-   - ✅ Solución: Usar `\n` (Unix/Mac) o `\r\n` (Windows)
-   - ❌ Evitar: Mezclar tipos de saltos de línea
+3. **Saltos de línea**
+   - ✅ Solución: Usar `\n` o `\r\n`
+   - ❌ Evitar: Mezclar tipos
+
+### Error: "RPC sync_users_complete not found"
+
+- ⚠️ Significa que la función de sincronización NO existe en Supabase
+- 🔧 Contactar al dev para crear la RPC
+- Ver: [audit-admin-components.md]
 
 ---
 
-## 💡 Tips Útiles
+## 💡 Tips por Programa
 
-### Exportar desde Excel
-
-1. Editar en Excel
+### Excel
+1. Editar datos
 2. **Guardar Como** → Formato: **CSV UTF-8** (no CSV estándar)
-3. Confirmar que quieres guardar solo como CSV
-4. Usar el archivo generado
+3. Usar ese archivo
 
-### Exportar desde Google Sheets
-
-1. Abrir hoja en Google Sheets
+### Google Sheets
+1. Editar datos
 2. **Archivo** → **Descargar** → **CSV**
 3. Google guarda automáticamente en UTF-8
 
-### Verificar UTF-8 en Notepad++
-
-1. Abrir archivo en Notepad++
-2. **Encoding** → Verificar que sea **UTF-8 without BOM**
-3. Si no, convertir: **Encoding** → **Convert to UTF-8 without BOM**
-
----
-
-## 🔗 Referencias
-
-- **Tabla BD:** `allowed_users` (tabla de usuarios autorizados para usar el sistema)
-- **API Endpoint:** `POST /api/admin/importarAllowed`
-- **RPC Database:** `sync_users_complete` (sincroniza add/update/delete)
-- **Documentación:** Ver [doc/05-SEGURIDAD/SEGURIDAD.md](../../doc/05-SEGURIDAD/SEGURIDAD.md)
+### Notepad++ (Verificar UTF-8)
+1. Abrir archivo
+2. **Encoding** → Verificar **UTF-8 without BOM**
+3. Si no: **Encoding** → **Convert to UTF-8 without BOM**
 
 ---
 
-## 📞 Soporte
+## 🔗 Referencias Técnicas
 
-Si encuentras errores:
-1. Revisa el mensaje de error en el panel
-2. Verifica el checklist de validación arriba
-3. Consulta la sección de "Errores Comunes"
-4. Intenta descargar la plantilla nueva y edita nuevamente
+**Tabla:** `allowed_users`
+- Campo clave: `idsap` (BIGINT, UNIQUE)
+- Campo usado: `nombre` (TEXT)
+
+**Endpoints:**
+- `GET /api/admin/template/download` — Descarga plantilla
+- `POST /api/admin/importarAllowed` — Importa CSV
+
+**Función RPC** (en Supabase):
+- `sync_users_complete(add_users, update_users, remove_ids)` — Sincroniza BD
+
+**Integración:**
+- Login: Verifica `idsap` en `allowed_users` para activar usuario
+- Registro: Crea usuario, luego valida contra `allowed_users`
+
+---
+
+## � Campos Adicionales (Opcionales)
+
+Si necesitas agregar información referencial, el sistema ACEPTA pero NO REQUIERE:
+
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| **grupo** | Número | Código de grupo/departamento (almacenado pero no usado en autenticación) |
+| **puesto** | Texto | Descripción de puesto (almacenado pero no usado en autenticación) |
+
+**Si quieres agregar estos campos:**
+```csv
+idsap,nombre,grupo,puesto
+99991,Juan Pérez García,1,Médico General
+99992,María López Hernández,1,Médica Internista
+```
+
+**Validaciones para campos opcionales:**
+- `grupo`: Debe ser número si existe
+- `puesto`: Puede ser cualquier texto
+
+---
+
+1. Revisa "Errores Comunes" arriba
+2. Verifica "Checklist" en Pasos
+3. Descarga plantilla nueva y reintenta
+4. Si persiste: Contacta al admin
+
