@@ -53,14 +53,16 @@ CREATE POLICY "pacientes_ver_propias_citas"
     AND "idSAP" = (SELECT app_users.idsap FROM app_users WHERE id = auth.uid())
   );
 
--- Política 2: Médico ve citas donde es responsable + suyas (si paciente)
-CREATE POLICY "medicos_ver_citas_asignadas"
+-- Política 2: Médico ve citas EN ESPERA (para atender) + citas ASIGNADAS
+CREATE POLICY "medicos_ver_citas_correcta"
   ON citas FOR SELECT
   USING (
     (SELECT app_users.role FROM app_users WHERE id = auth.uid()) = 'medico'
     AND (
+      -- Puede ver citas que LE ESTÁN ASIGNADAS
       doctor_name IS NOT NULL 
-      OR "idSAP" = (SELECT app_users.idsap FROM app_users WHERE id = auth.uid())
+      -- O puede ver citas EN ESPERA (sin asignar) para elegir cuál atender
+      OR estado = 'en espera'
     )
   );
 
@@ -79,14 +81,16 @@ CREATE POLICY "pacientes_crear_cita"
     AND "idSAP" = (SELECT app_users.idsap FROM app_users WHERE id = auth.uid())
   );
 
--- Política 5: Médico actualiza estado de su cita
-CREATE POLICY "medicos_actualizar_citas_asignadas"
+-- Política 5: Médico actualiza citas EN ESPERA (para asignarse) + ASIGNADAS
+CREATE POLICY "medicos_actualizar_citas_correcta"
   ON citas FOR UPDATE
   USING (
     (SELECT app_users.role FROM app_users WHERE id = auth.uid()) = 'medico'
     AND (
+      -- Puede actualizar si ES EL DOCTOR ASIGNADO
       doctor_name IS NOT NULL
-      OR "idSAP" = (SELECT app_users.idsap FROM app_users WHERE id = auth.uid())
+      -- O puede actualizar citas en espera (para asignarse a sí mismo)
+      OR estado = 'en espera'
     )
   );
 
