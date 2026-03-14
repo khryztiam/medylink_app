@@ -104,6 +104,35 @@ const { data } = await supabase.from('citas').select('*');
 
 ---
 
+### ✅ 1.B. RLS en allowed_users - Relación Foreign Key (CORREGIDO)
+**Status:** ✅ RESUELTO (2026-03-14)  
+**Problema:** AuthContext no podía traer `allowed_users.nombre` vía relación foreign key  
+**Causa:** RLS bloqueaba lectura en tabla de referencia while allowing write via admin policies  
+
+**Solución aplicada:**
+```sql
+-- ✅ AGREGADA POLÍTICA DE LECTURA:
+CREATE POLICY "allow_read_allowed_users" ON allowed_users
+  FOR SELECT
+  USING (true);
+```
+
+**Rationale:** `allowed_users` es tabla de referencia/datos maestros (lista blanca de usuarios permitidos). Su lectura debe ser pública para que:
+1. AuthContext cargue el nombre del usuario autenticado
+2. Formularios muestren nombres completos
+3. Reports y dashboards funcionen
+
+Las escrituras sigue protegidas por política `admin_access_allowed_users` (solo admin/enfermería).
+
+**Archivos modificados:**
+- Supabase: Políticas RLS en allowed_users
+- `doc/RLS_ALLOWED_USERS_FIX.md`: Documentación detallada
+- AuthContext `src/context/AuthContext.js`: Sin cambios necesarios (ya tiene fallback)
+
+**Impacto:** ✅ RESUELTO - Nombres de usuarios ahora cargan correctamente
+
+---
+
 ### ❌ 2. Tokens Públicos Expuestos
 **Archivo:** `src/lib/supabase.js`  
 **Riesgo:** Clave pública de Supabase visible en cliente (esperado en Supabase, pero mal configurada)
@@ -506,13 +535,13 @@ grep -r "TODO\|FIXME\|HACK\|XXX" src/
 
 ## ✅ Checklist de Seguridad
 
-- [ ] **Crítica 1:** Implementar RLS en todas las tablas
+- [x] **Crítica 1:** Implementar RLS en todas las tablas ✅ (+ fix relación allowed_users)
 - [ ] **Crítica 2:** Regenerar Supabase keys (ambiente limpio)
 - [ ] **Crítica 3:** Validación server-side en RPC Supabase
 - [ ] **Alto 1:** Configurar CSP headers + HTTPS obligatorio
 - [ ] **Alto 2:** Auditar dónde se usa supabaseAdmin
 - [ ] **Alto 3:** Sanitizar error messages públicos
-- [ ] **Alto 4:** Implementar rate limiting en APIs
+- [x] **Alto 4:** Implementar rate limiting en APIs ✅ (commit 769a87c)
 - [ ] **Medio 1:** HTTPS + mkcert en desarrollo
 - [ ] **Medio 2:** Agregar CORS headers en next.config.mjs
 - [ ] **Medio 3:** Auditar console.log en producción
