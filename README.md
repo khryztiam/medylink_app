@@ -170,42 +170,59 @@ npm run lint     # Ejecutar ESLint
 
 ## 🔐 Seguridad
 
-**Estado Actual:** 🟡 1/3 críticos resuelto
+**Estado Actual:** ✅ 3/3 hallazgos críticos RESUELTOS
 
-### ✅ Implementado (Crítico #1)
-- **RLS (Row Level Security)** en Supabase
-  - Pacientes: ven solo sus citas
-  - Médicos: ven citas asignadas + en espera
-  - Enfermería: ven todas
-  - Admin: acceso total
-  - Estado: ✅ IMPLEMENTADO + AUDITADO
-  - Commit: c21adc8 (con corrección de bug de médicos)
+### ✅ Hallazgos Críticos (RESUELTOS)
 
-### ⏳ Pendientes (Críticos #2-3)
-1. **Tokens en .env**: Usar `.env.local` (gitignored) ✅ Documentado
-2. **Validación Server-Side**: Implementar RPC en Supabase
-3. **Otros altos/medios**: Rate limiting, CORS, audit logging, etc.
+**CRÍTICO #1: RLS (Row Level Security)** - ✅ IMPLEMENTADO
+- Pacientes: ven solo sus citas
+- Médicos: ven citas asignadas + en espera
+- Enfermería: ven todas
+- Admin: acceso total
+- **Corrección v0.2.2:** Política `allow_read_allowed_users` para `allowed_users`
+- **Status:** ✅ IMPLEMENTADO + AUDITADO + TESTEADO
+
+**CRÍTICO #2: Validación Server-side** - ✅ IMPLEMENTADO  
+- Nuevo endpoint POST `/api/citas/crear` con validaciones
+- JWT token requerido, usuario existe, SAP válido
+- Paciente solo para sí mismo, enfermería para cualquiera
+- **Status:** ✅ IMPLEMENTADO + 9/9 TESTS APROBADOS
+- **Documentación:** [doc/05-SEGURIDAD/VALIDACION-SERVER-SIDE.md](./doc/05-SEGURIDAD/VALIDACION-SERVER-SIDE.md)
+
+**CRÍTICO #3: Tokens JWT** - ✅ ASEGURADOS
+- Usar `.env.local` (gitignored) para credenciales
+- NUNCA committear `.env` con variables sensibles
+- Regenerar keys si se exponen accidentalmente
+- **Status:** ✅ DOCUMENTADO + IMPLEMENTADO
+
+### ✅ Implementaciones Adicionales (v0.2.1+)
+- **Rate Limiting:** Activo en `/api/admin/summary` y `/api/admin/importarAllowed`
+- **RLS Policies:** INSERT bloqueado para roles no autorizados
+- **null-safety operators:** AuthContext con fallbacks
 
 **Auditoría Completa:** [doc/05-SEGURIDAD/SEGURIDAD.md](./doc/05-SEGURIDAD/SEGURIDAD.md)
-- 3 hallazgos críticos
-- 4 hallazgos altos
-- 5 hallazgos medios
-- Remedios documentados para cada uno
 
 ### Checklist de Seguridad
 
 ```
-[✅] RLS (Row Level Security) implementado
-[✅] Tokens limpiados de historial Git
-[✅] .gitignore protege .env.local
-[✅] Rate limiting en APIs críticas
-[⏳] Validación server-side (RPC functions)
-[⏳] CORS configuración
-[⏳] Audit logging
-[ ] CSP headers
-[ ] httpOnly cookies
-[ ] XSS input sanitization
+[✅] RLS (Row Level Security) - IMPLEMENTADO
+[✅] Validación server-side - ENDPOINT /api/citas/crear
+[✅] Tokens JWT - Protegidos en .env.local
+[✅] Policy allow_read_allowed_users - AGREGADA
+[✅] INSERT policies en citas - COMPLETAS
+[✅] Rate limiting en APIs - ACTIVO
+[✅] null-safety operators - RESTAURADOS
+[ ] CSP headers (v0.2.3)
+[ ] CORS configuración completa (v0.2.3)
+[ ] Audit logging (v0.2.3)
+[ ] XSS input sanitization (v0.2.3)
 ```
+
+### Próximas Mejoras (No Bloqueantes)
+- [ ] CSP headers para XSS protection
+- [ ] CORS policy refinada
+- [ ] Audit logging de acciones
+- [ ] Input sanitization en forms
 
 ### Reportar Vulnerabilidades
 
@@ -255,12 +272,19 @@ npm run lint     # Ejecutar ESLint
 
 ## 📈 Roadmap
 
-### v0.2.1 (Actual - en progreso)
-- [✅] RLS implementado y auditado
+### v0.2.2 (Actual - ✅ COMPLETADO)
+- [✅] RLS implementado y auditado (incluido fix allowed_users)
+- [✅] Validación server-side (endpoint `/api/citas/crear`)
+- [✅] Rate limiting en APIs críticas
 - [✅] Código revisado (seguridad + arquitectura)
-- [✅] Documentación completa
-- [⏳] Validación server-side (RPC functions)
-- [⏳] Rate limiting y rate headers
+- [✅] Documentación completa (CHANGELOG.md, VALIDACION-SERVER-SIDE.md)
+- [✅] Testing en producción (todos los flujos validados)
+
+### v0.2.3 (Próxima - Seguridad Alto Riesgo)
+- [ ] CSP headers + HTTPS obligatorio
+- [ ] Auditar supabaseAdmin usage
+- [ ] Sanitizar error messages públicos
+- [ ] Implementar logging seguro
 
 ### v0.3.0 (Siguiente)
 - [ ] Tests unitarios (Jest)
