@@ -51,13 +51,13 @@ export const AuthProvider = ({ children }) => {
     }
 
     // Update state
-    setUserName(userData.allowed_users.nombre);
+    setUserName(userData.allowed_users?.nombre || `Usuario ${userData.idsap}`);
     setRole(userData.role);
     setIdsap(userData.idsap);
     setStatus(userData.status);
 
     // Return role and name for immediate login logic
-    return { role: userData.role, userName: userData.allowed_users.nombre };
+    return { role: userData.role, userName: userData.allowed_users?.nombre || `Usuario ${userData.idsap}` };
   };
 
   // Logout clears state
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }) => {
         setUser(session.user);
         const userData = await fetchUserData(session.user.id);
         if (userData && userData.status) {
-          setUserName(userData.allowed_users.nombre);
+          setUserName(userData.allowed_users?.nombre || `Usuario ${userData.idsap}`);
           setRole(userData.role);
           setIdsap(userData.idsap);
           setStatus(userData.status);
