@@ -77,18 +77,18 @@ export async function getCitasPorPaciente(idSAP, limite = 15) {
 /**
  * 3. AGREGAR NUEVA CITA
  * 
- * ✅ RLS VALIDA automáticamente:
- *    - Paciente: Solo puede crear cita CON SU PROPIO idSAP
+ * ✅ VALIDACIÓN SERVER-SIDE (commit f3dd61c):
+ *    - Endpoint /api/citas/crear valida JWT, usuario, SAP, rol
+ *    - Paciente: Solo puede crear cita para SÍ MISMO
  *    - Enfermería: Puede crear para cualquiera
  *    - Admin: Puede crear para cualquiera
  * 
- * Si un paciente intenta crear cita con SAP ajeno → RLS bloqueará
- * Si enfermería intenta → RLS permite
+ * ✅ RLS también valida en la BD como doble protección
  * 
- * Validación client-side: Solo para UX, RLS lo asegura en DB
+ * Validación client-side: Solo para UX, servidor lo asegura
  */
 export async function agregarCita({ nombre, motivo, idSAP, emergency, isss }) {
-  // Validación client-side (UX, no seguridad)
+  // Validación client-side (UX)
   if (!idSAP || isNaN(idSAP)) {
     throw new Error('El campo idSAP es obligatorio y debe ser un número válido.');
   }
@@ -96,28 +96,37 @@ export async function agregarCita({ nombre, motivo, idSAP, emergency, isss }) {
     throw new Error('Nombre y motivo son obligatorios.')
   }
 
-  const { data, error } = await supabase
-    .from('citas')
-    .insert([{ 
-      idSAP, 
-      nombre, 
-      motivo, 
-      estado: 'pendiente', 
-      emergency: !!emergency, 
-      isss: !!isss 
-    }])
-    .select()
-    .single();
+  // ✅ AHORA: Usar endpoint con validación server-side
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
 
-  // Si RLS rechaza: error.code = 'PGRST202' (Policy violation)
-  if (error) {
-    if (error.code === 'PGRST202') {
-      throw new Error('No tienes permiso para crear citas con este SAP.');
-    }
-    throw error;
+  if (!token) {
+    throw new Error('No autenticado. Por favor, inicia sesión.');
   }
-  
-  return data;
+
+  // Llamar endpoint validador
+  const response = await fetch('/api/citas/crear', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      nombre,
+      motivo,
+      idSAP: Number(idSAP),
+      emergency: !!emergency,
+      isss: !!isss
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Error al crear la cita');
+  }
+
+  const result = await response.json();
+  return result.cita;
 }
 
 /**

@@ -13,7 +13,7 @@ function reproducirVozConsulta(cita) {
   window.speechSynthesis.cancel();
 
   const nombre  = cita.nombre      || "el paciente";
-  const medico  = cita.doctor_name ? ` con el/la médico ${cita.doctor_name}` : "";
+  const medico  = cita.doctor_name ? ` con médico ${cita.doctor_name}` : "";
   const mensaje = `Turno para ${nombre}, favor de pasar a consulta${medico}.`;
 
   const utterance  = new SpeechSynthesisUtterance(mensaje);

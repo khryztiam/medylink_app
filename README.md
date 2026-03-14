@@ -1,9 +1,9 @@
 # 🏥 MedyLink - Sistema de Gestión Médica
 
-**Estado:** v0.2.0 - En desarrollo  
-**Última actualización:** 2026-03-12  
-**Seguridad:** 🟡 1/3 críticos resuelto (RLS ✅ | Tokens limpiados ✅)  
-**Auditoría:** ✅ Código revisado y analizado
+**Estado:** v0.2.2 - En desarrollo  
+**Última actualización:** 2026-03-14  
+**Seguridad:** ✅ 3/3 críticos resueltos (RLS ✅ | Tokens ✅ | Validación Server-side ✅)  
+**Auditoría:** ✅ Código revisado y analizado - Flujos testeados en producción
 
 ---
 
