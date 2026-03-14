@@ -1,6 +1,8 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin"
+import { rateLimit } from "@/lib/rateLimit"
 
-export default async function handler(req, res) {
+// Handler base
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' })
   }
@@ -75,3 +77,6 @@ export default async function handler(req, res) {
     })
   }
 }
+
+// ✅ Rate limiting: 10 requests / 15 min por user (más estricto para upload CSV)
+export default rateLimit(handler, { max: 10, window: 15 * 60 * 1000, key: 'user' });

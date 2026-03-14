@@ -1,7 +1,9 @@
 // /pages/api/admin/summary.js
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { rateLimit } from "@/lib/rateLimit";
 
-export default async function handler(req, res) {
+// Handler base
+async function handler(req, res) {
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -37,3 +39,6 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// ✅ Rate limiting: 60 requests / 15 min por IP
+export default rateLimit(handler, { max: 60, window: 15 * 60 * 1000, key: 'ip' });

@@ -319,35 +319,48 @@ catch (err) {
 
 ---
 
-### ⚠️ 4. No Hay Rate Limiting
-**Archivo:** API routes (api/telegram-webhook.js, api/admin/*)  
-**Riesgo:** Brute force, DDoS posible
+### ✅ 4. Rate Limiting - IMPLEMENTADO
+**Archivo:** `src/lib/rateLimit.js` + endpoints aplicados  
+**Status:** ✅ RESUELTO (2026-03-14)
 
-**Endpoint vulnerable:**
+**Implementación:**
 ```javascript
-// pages/api/admin/importarAllowed.js
-export default async function handler(req, res) {
-  // ❌ SIN rate limiting
-  // ❌ Usuario puede hacer 1000 requests/segundo
-  // ❌ Bloquear BD
+// src/lib/rateLimit.js - Middleware reutilizable
+export function rateLimit(handler, options = {}) {
+  const { max = 100, window = 15 * 60 * 1000, key = 'ip' } = options;
+  
+  return async (req, res) => {
+    // Tracking de requests por IP/user
+    // Bloquea con 429 si excede límite
+    // Headers informativos (X-RateLimit-*)
+  };
 }
 ```
 
-**Solución recomendada:**
+**Endpoints Protegidos:**
+1. `/api/admin/summary` - 60 req/15min por IP (lectura)
+2. `/api/admin/importarAllowed` - 10 req/15min por usuario (escritura/CSV)
+
+**Ejemplo de uso:**
 ```javascript
-import rateLimit from 'express-rate-limit';
+import { rateLimit } from '@/lib/rateLimit';
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
-  max: 100 // 100 requests/ventana
-});
+async function handler(req, res) {
+  // Tu lógica aquí
+}
 
-export default limiter(handler);
+// Aplicar rate limiting
+export default rateLimit(handler, { max: 60, window: 15 * 60 * 1000, key: 'ip' });
 ```
 
-**O usar Supabase Edge Functions** (mejor, outsourced)
+**Características:**
+- ✅ In-memory con Map (sin dependencias externas)
+- ✅ IP-based o User-based
+- ✅ Headers HTTP informativos (X-RateLimit-Limit, Remaining, Reset)
+- ✅ Respuesta 429 cuando se excede
+- ✅ Permite solicitud original si hay error en middleware
 
-**Impacto:** 🟠 ALTO - Implementar rate limiting en APIs
+**Impacto:** ✅ RESUELTO - Rate limiting activo en APIs críticas
 
 ---
 

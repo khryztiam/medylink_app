@@ -198,8 +198,8 @@ npm run lint     # Ejecutar ESLint
 [✅] RLS (Row Level Security) implementado
 [✅] Tokens limpiados de historial Git
 [✅] .gitignore protege .env.local
+[✅] Rate limiting en APIs críticas
 [⏳] Validación server-side (RPC functions)
-[⏳] Rate limiting
 [⏳] CORS configuración
 [⏳] Audit logging
 [ ] CSP headers
