@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify:supabase": "node scripts/verify-supabase-live.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
@@ -23,6 +24,7 @@
     "@eslint/eslintrc": "^3",
     "dotenv": "^17.3.1",
     "eslint": "^9",
-    "eslint-config-next": "15.3.1"
+    "eslint-config-next": "15.3.1",
+    "pg": "^8.20.0"
   }
 }
